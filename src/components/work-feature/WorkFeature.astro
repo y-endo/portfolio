@@ -1,0 +1,105 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import type { Work } from "../../data/works";
+import "./work-feature.scss";
+
+type Props = { work: Work; headingLevel?: "h2" | "h3" };
+const { work, headingLevel: Heading = "h3" } = Astro.props;
+---
+
+<article class="work-feature" data-work-shader>
+  <div class="work-feature__media-register">
+    <span
+      class="work-feature__register-mark work-feature__register-mark--top-left"
+      aria-hidden="true"></span>
+    <span
+      class="work-feature__register-mark work-feature__register-mark--top-right"
+      aria-hidden="true"></span>
+    <span
+      class="work-feature__register-mark work-feature__register-mark--bottom-left"
+      aria-hidden="true"></span>
+    <span
+      class="work-feature__register-mark work-feature__register-mark--bottom-right"
+      aria-hidden="true"></span>
+    <a
+      class="work-feature__media-link"
+      href={`/works/${work.slug}/`}
+      aria-label={`${work.title}の詳細を見る`}
+    >
+      <figure class="work-feature__media" data-shader-media>
+        <img
+          class="work-feature__image"
+          src={work.cover.src}
+          width={work.cover.width}
+          height={work.cover.height}
+          alt={work.cover.alt}
+          loading="lazy"
+          decoding="async"
+          data-shader-source
+        />
+        <canvas
+          class="work-feature__canvas"
+          data-shader-canvas
+          aria-hidden="true"></canvas>
+      </figure>
+    </a>
+  </div>
+  <div class="work-feature__dossier">
+    <div class="work-feature__copy">
+      <p class="meta-label">{work.number} / {work.category} / {work.year}</p>
+      <Heading class="work-feature__title">
+        <a href={`/works/${work.slug}/`}>{work.title}</a>
+      </Heading>
+      <p class="work-feature__summary">{work.summary}</p>
+      <dl class="work-feature__facts">
+        <div class="work-feature__fact">
+          <dt class="meta-label">課題</dt>
+          <dd class="work-feature__fact-value">{work.challenge}</dd>
+        </div>
+        <div class="work-feature__fact">
+          <dt class="meta-label">役割</dt>
+          <dd class="work-feature__fact-value">{work.role}</dd>
+        </div>
+        <div class="work-feature__fact">
+          <dt class="meta-label">担当範囲</dt>
+          <dd class="work-feature__fact-value">{work.scope}</dd>
+        </div>
+        <div
+          class="work-feature__fact"
+          class:list={[{ "work-feature__fact--last": !work.url }]}
+        >
+          <dt class="meta-label">実現したこと</dt>
+          <dd class="work-feature__fact-value">{work.outcome}</dd>
+        </div>
+        {
+          work.url && (
+            <div class="work-feature__fact work-feature__fact--last">
+              <dt class="meta-label">公開URL</dt>
+              <dd class="work-feature__fact-value">
+                <a href={work.url} target="_blank" class="text-link">
+                  {work.url}
+                </a>
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+      <a
+        class="work-feature__detail-link"
+        href={`/works/${work.slug}/`}
+        aria-label={`${work.title}の詳細を見る`}
+      >
+        <span class="work-feature__detail-label">詳細を見る</span>
+        <span class="work-feature__detail-arrow" aria-hidden="true">
+          <ArrowRight class="work-feature__detail-arrow-icon" />
+        </span>
+      </a>
+    </div>
+  </div>
+</article>
+
+<script>
+  import { initWorkShaders } from "../../scripts/work-shaders";
+
+  initWorkShaders();
+</script>

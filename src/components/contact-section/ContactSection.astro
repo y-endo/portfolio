@@ -1,0 +1,43 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import SectionHeading from "../section-heading/SectionHeading.astro";
+import "./contact-section.scss";
+---
+
+<section
+  class="archive-section contact"
+  id="contact"
+  aria-labelledby="contact-title"
+  data-archive-section
+>
+  <SectionHeading index="04" id="contact-title" title="Contact" />
+  <div class="contact__letter">
+    <p class="contact__status">Open to frontend opportunities</p>
+    <div class="contact__copy">
+      <h3 class="contact__title">一緒に働ける機会を探しています。</h3>
+      <p class="contact__description">
+        AIを活用した生産性の向上、フロントエンドの設計・実装に加えて、品質保証、コードレビューや開発ルールの整備まで担えます。<br
+        />
+        個人の実装に閉じず、複数人で継続して改善できる開発体制づくりに貢献します。
+      </p>
+    </div>
+    <div class="contact__actions">
+      <a class="contact__action" href="mailto:yuki.endo.1993@gmail.com"
+        ><span class="contact__action-label">Email</span><ArrowUpRight
+          class="contact__action-icon"
+        /></a
+      >
+      <a
+        class="contact__action"
+        href="https://github.com/y-endo"
+        target="_blank"
+        rel="noreferrer"
+      >
+        <>
+          <span class="contact__action-label">Github</span>
+          <ArrowUpRight class="contact__action-icon" />
+        </>
+      </a>
+    </div>
+  </div>
+</section>

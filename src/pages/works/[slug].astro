@@ -1,0 +1,190 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import WorkCarousel from "../../components/work-carousel/WorkCarousel.astro";
+import { works, type Work } from "../../data/works";
+import "../../styles/pages/work-detail.scss";
+
+export const getStaticPaths = () =>
+  works.map((work) => ({
+    params: { slug: work.slug },
+    props: { work },
+  }));
+
+type Props = { work: Work };
+const { work } = Astro.props;
+const currentIndex = works.findIndex((item) => item.slug === work.slug);
+const nextWork = works[(currentIndex + 1) % works.length];
+const overviewTitleId = `${work.slug}-overview-title`;
+const portfolioUrl = new URL("https://endoyuki.jp");
+const workUrl = work.url ? new URL(work.url, portfolioUrl) : undefined;
+const isExternalWorkUrl =
+  workUrl !== undefined && workUrl.hostname !== portfolioUrl.hostname;
+---
+
+<BaseLayout title={work.title} description={work.summary}>
+  <article class="work-detail">
+    <header class="work-detail__header">
+      <div class="work-detail__rail" aria-hidden="true">
+        <span>PROJECT {work.number} / {work.year}</span>
+      </div>
+      <div class="work-detail__header-body">
+        <div class="work-detail__identity">
+          <p class="work-detail__category meta-label">{work.category}</p>
+          <div class="work-detail__heading">
+            <h1 class="work-detail__title">
+              {
+                work.url ? (
+                  <a
+                    class="work-detail__title-link text-link"
+                    href={work.url}
+                    target={isExternalWorkUrl ? "_blank" : undefined}
+                    rel={
+                      isExternalWorkUrl ? "noopener noreferrer" : undefined
+                    }
+                  >
+                    {work.title}
+                  </a>
+                ) : (
+                  work.title
+                )
+              }
+            </h1>
+            <p class="work-detail__summary">{work.summary}</p>
+          </div>
+        </div>
+        <section
+          class="work-detail__overview"
+          aria-labelledby={overviewTitleId}
+        >
+          <h2 class="work-detail__overview-title" id={overviewTitleId}>
+            プロジェクト概要
+          </h2>
+          <dl class="work-detail__overview-list">
+            <div class="work-detail__overview-item">
+              <dt class="meta-label">時期</dt>
+              <dd class="work-detail__overview-value">{work.year}</dd>
+            </div>
+            <div class="work-detail__overview-item">
+              <dt class="meta-label">規模</dt>
+              <dd class="work-detail__overview-value">{work.scale}</dd>
+            </div>
+            <div class="work-detail__overview-item">
+              <dt class="meta-label">体制</dt>
+              <dd class="work-detail__overview-value">{work.team}</dd>
+            </div>
+            <div class="work-detail__overview-item">
+              <dt class="meta-label">役割</dt>
+              <dd class="work-detail__overview-value">{work.role}</dd>
+            </div>
+            <div
+              class="work-detail__overview-item work-detail__overview-item--last"
+            >
+              <dt class="meta-label">担当範囲</dt>
+              <dd class="work-detail__overview-value">{work.scope}</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </header>
+
+    <WorkCarousel images={work.detailImages} title={work.title} />
+
+    <div class="work-detail__content">
+      <aside
+        class="work-detail__sidebar"
+        aria-label={`${work.title}のケース情報`}
+      >
+        <nav class="work-detail__index" aria-label="ケーススタディの目次">
+          <p class="meta-label">Index</p>
+          <ol class="work-detail__index-list">
+            {
+              work.sections.map((section, index) => (
+                <li class="work-detail__index-item">
+                  <a
+                    class="work-detail__index-link"
+                    href={`#${work.slug}-section-${index}`}
+                  >
+                    <span class="work-detail__index-number" aria-hidden="true">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span>{section.title}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ol>
+        </nav>
+
+        <div class="work-detail__technology">
+          <p class="meta-label">技術構成</p>
+          <dl class="work-detail__technology-groups">
+            {
+              work.technologyGroups.map((group) => (
+                <div class="work-detail__technology-group">
+                  <dt class="work-detail__technology-label">{group.label}</dt>
+                  <dd class="work-detail__technology-value">
+                    {group.items.join(" / ")}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </aside>
+
+      <div class="work-detail__narrative">
+        {
+          work.sections.map((section, index) => (
+            <section
+              class="work-detail__section"
+              aria-labelledby={`${work.slug}-section-${index}-title`}
+              id={`${work.slug}-section-${index}`}
+            >
+              <header class="work-detail__section-header">
+                <p class="work-detail__section-index meta-label">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <h2
+                  class="work-detail__section-title"
+                  id={`${work.slug}-section-${index}-title`}
+                >
+                  {section.title}
+                </h2>
+              </header>
+              <p class="work-detail__section-lead">{section.lead}</p>
+              <div class="work-detail__section-copy">
+                {section.paragraphs.map((paragraph) => (
+                  <p class="work-detail__section-paragraph">{paragraph}</p>
+                ))}
+                {section.points && (
+                  <ul class="work-detail__point-list">
+                    {section.points.map((point, pointIndex) => (
+                      <li class="work-detail__point-item">
+                        <span
+                          class="work-detail__point-index"
+                          aria-hidden="true"
+                        >
+                          {String(pointIndex + 1).padStart(2, "0")}
+                        </span>
+                        <span class="work-detail__point-text">{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+
+    <nav class="work-detail__next" aria-label="次の作品">
+      <p class="meta-label">次の作品</p>
+      <a class="work-detail__next-link" href={`/works/${nextWork.slug}/`}>
+        <span class="work-detail__next-title">{nextWork.title}</span>
+        <ArrowRight class="work-detail__next-icon" aria-hidden="true" />
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

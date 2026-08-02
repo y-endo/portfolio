@@ -1,0 +1,6 @@
+@use "../tools" as *;
+
+.selected-works__stack {
+  display: grid;
+  gap: clamp(rem(80), vw-at-design(120), rem(120));
+}

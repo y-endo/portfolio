@@ -1,0 +1,39 @@
+@use "../tools" as *;
+
+.not-found {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  overflow: hidden;
+}
+
+.not-found__content {
+  z-index: 1;
+  display: grid;
+  gap: rem(24);
+  width: var(--page-inline);
+}
+
+.not-found__title {
+  margin-block: 0;
+  font-size: clamp(rem(35), vw-at-design(86), rem(67));
+  font-weight: 520;
+  line-height: 0.98;
+}
+
+.not-found__description {
+  color: var(--color-muted);
+}
+
+.not-found__link {
+  width: fit-content;
+}
+
+.not-found__field {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  color: color-mix(in oklab, var(--color-muted), transparent 70%);
+}

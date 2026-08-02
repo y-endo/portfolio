@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import HeroScene from "../components/hero-scene/HeroScene.astro";
+import ProfileSection from "../components/profile-section/ProfileSection.astro";
+import CareerList from "../components/career-list/CareerList.astro";
+import WorkFeature from "../components/work-feature/WorkFeature.astro";
+import ContactSection from "../components/contact-section/ContactSection.astro";
+import SectionHeading from "../components/section-heading/SectionHeading.astro";
+import { works } from "../data/works";
+import "../styles/pages/home.scss";
+---
+
+<BaseLayout>
+  <HeroScene />
+  <ProfileSection />
+  <CareerList />
+  <section
+    class="archive-section selected-works"
+    id="works"
+    aria-labelledby="works-title"
+    data-archive-section
+  >
+    <SectionHeading index="03" id="works-title" title="Works" />
+    <div class="selected-works__stack">
+      {works.map((work) => <WorkFeature work={work} />)}
+    </div>
+  </section>
+  <ContactSection />
+</BaseLayout>

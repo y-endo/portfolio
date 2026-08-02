@@ -1,0 +1,93 @@
+@use "../../styles/tools" as *;
+
+.contact__letter {
+  display: grid;
+  grid-template-columns: rem(120) minmax(0, 1fr) minmax(rem(280), rem(360));
+  min-block-size: rem(360);
+  border: rem(1) solid var(--color-line);
+  background: var(--color-sheet);
+
+  @include mq(narrow) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.contact__status {
+  display: grid;
+  place-items: center;
+  margin-block: 0;
+  color: var(--color-accent);
+  font-size: rem(11);
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+
+  @include mq(narrow) {
+    min-block-size: rem(48);
+    border-block-end: rem(1) solid var(--color-line);
+    border-inline-end: 0;
+    writing-mode: horizontal-tb;
+  }
+}
+
+.contact__title {
+  margin-block: 0;
+  font-size: clamp(rem(30), vw-at-design(42), rem(50));
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.contact__copy {
+  display: grid;
+  align-content: center;
+  gap: rem(32);
+  padding: rem(56) rem(56) rem(56) rem(28);
+
+  @include mq(narrow) {
+    padding: rem(32);
+  }
+}
+
+.contact__description {
+  color: var(--color-muted);
+}
+
+.contact__actions {
+  display: grid;
+  align-content: center;
+  gap: rem(12);
+  padding: rem(40);
+  border-inline-start: rem(1) solid var(--color-line);
+
+  @include mq(narrow) {
+    padding: rem(32);
+    border-block-start: rem(1) solid var(--color-line);
+    border-inline-start: 0;
+  }
+}
+
+.contact__action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-block-size: rem(56);
+  border-block-end: rem(1) solid var(--color-ink);
+  font-size: rem(12);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.contact__action-icon {
+  inline-size: rem(16);
+  block-size: rem(16);
+}
+
+.contact__draft {
+  margin-block-start: rem(16);
+  color: var(--color-muted);
+  font-size: rem(11);
+}

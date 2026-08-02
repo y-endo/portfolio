@@ -1,0 +1,6 @@
+node_modules/
+.agents/
+.codex/
+.astro/
+dist/
+pnpm-lock.yaml

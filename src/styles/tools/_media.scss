@@ -1,0 +1,24 @@
+@use "sass:map";
+@use "functions" as *;
+
+$media-queries: (
+  narrow: "(width <= #{rem(768)})",
+  wide: "(width > #{rem(768)})",
+  reduced-motion: "(prefers-reduced-motion: reduce)",
+  forced-colors: "(forced-colors: active)",
+  coarse-or-reduced-motion:
+    "(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)",
+) !default;
+
+/// Applies a named layout or capability media query.
+@mixin mq($name) {
+  $query: map.get($media-queries, $name);
+
+  @if not $query {
+    @error "Unknown media query `#{$name}`. Available queries: #{map.keys($media-queries)}.";
+  }
+
+  @media #{$query} {
+    @content;
+  }
+}

@@ -1,0 +1,360 @@
+@use "../../styles/tools" as *;
+
+.site-header-scroll-lock {
+  position: fixed;
+  inset-block-start: var(--site-header-scroll-lock-top);
+  inset-inline-start: var(--site-header-scroll-lock-left);
+  inline-size: 100%;
+  overflow: hidden;
+}
+
+.site-header {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  inline-size: min(100%, var(--display-shell-max));
+  margin-inline: auto;
+  padding-block: rem(18);
+  padding-inline: var(--display-shell-gutter);
+  pointer-events: none;
+  mix-blend-mode: multiply;
+
+  @include mq(narrow) {
+    align-items: center;
+    padding-block: rem(12);
+    mix-blend-mode: normal;
+  }
+}
+
+.site-header__identity {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  min-block-size: rem(44);
+  pointer-events: auto;
+}
+
+.site-header__logo {
+  inline-size: clamp(rem(144), vw-at-design(230), rem(176));
+  block-size: auto;
+}
+
+.site-header__toggle {
+  display: none;
+
+  @include mq(narrow) {
+    display: grid;
+    place-items: center;
+    inline-size: rem(44);
+    min-block-size: rem(44);
+    padding: 0;
+    border: 0;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+}
+
+.site-header__toggle-label {
+  position: absolute;
+  inline-size: rem(1);
+  block-size: rem(1);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site-header__menu {
+  display: none;
+
+  @include mq(narrow) {
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    max-inline-size: none;
+    block-size: 100dvh;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    border: 0;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    overscroll-behavior: contain;
+    pointer-events: auto;
+    isolation: isolate;
+  }
+
+  &:open {
+    @include mq(narrow) {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+  }
+
+  &::backdrop {
+    @include mq(narrow) {
+      background: transparent;
+    }
+  }
+}
+
+.site-header__nav {
+  @include mq(narrow) {
+    display: none;
+  }
+}
+
+.site-header__list {
+  display: flex;
+  gap: clamp(rem(14), vw-at-design(38), rem(32));
+  font-size: rem(14);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.site-header__link {
+  position: relative;
+  display: block;
+  min-block-size: rem(32);
+  pointer-events: auto;
+
+  &::after {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: rem(3);
+    block-size: rem(1);
+    background: currentcolor;
+    content: "";
+    scale: 0 1;
+    transform-origin: right;
+    transition: scale var(--motion-fast) ease;
+
+    @include mq(reduced-motion) {
+      transition: none;
+    }
+  }
+
+  &:hover::after,
+  &:focus-visible::after {
+    scale: 1 1;
+    transform-origin: left;
+  }
+}
+
+.site-header__toggle-icon {
+  @include mq(narrow) {
+    display: grid;
+    gap: rem(5);
+    inline-size: rem(24);
+  }
+}
+
+.site-header__toggle-line {
+  @include mq(narrow) {
+    display: block;
+    block-size: rem(1);
+    background: currentcolor;
+  }
+}
+
+.site-header__menu-header {
+  @include mq(narrow) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding-block: rem(12);
+    padding-inline: var(--display-shell-gutter);
+  }
+}
+
+.site-header__menu-identity {
+  @include mq(narrow) {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    min-block-size: rem(44);
+  }
+}
+
+.site-header__menu-logo {
+  @include mq(narrow) {
+    inline-size: clamp(rem(144), vw-at-design(230), rem(176));
+    block-size: auto;
+  }
+}
+
+.site-header__menu-close-form {
+  @include mq(narrow) {
+    margin: 0;
+  }
+}
+
+.site-header__menu-close {
+  @include mq(narrow) {
+    display: grid;
+    place-items: center;
+    inline-size: rem(44);
+    min-block-size: rem(44);
+    padding: 0;
+    border: 0;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+}
+
+.site-header__menu-close-icon {
+  @include mq(narrow) {
+    position: relative;
+    display: block;
+    inline-size: rem(24);
+    block-size: rem(24);
+  }
+}
+
+.site-header__menu-close-line {
+  @include mq(narrow) {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline: 0;
+    display: block;
+    block-size: rem(1);
+    background: currentcolor;
+  }
+}
+
+.site-header__menu-close-line--forward {
+  @include mq(narrow) {
+    rotate: 45deg;
+  }
+}
+
+.site-header__menu-close-line--backward {
+  @include mq(narrow) {
+    rotate: -45deg;
+  }
+}
+
+.site-header__menu-nav {
+  @include mq(narrow) {
+    display: grid;
+    align-items: center;
+    padding-block: rem(32);
+    opacity: 0;
+    transform: translateY(rem(12));
+    transition:
+      opacity var(--motion-fast) ease,
+      transform var(--motion-fast) var(--ease-out);
+  }
+
+  @include mq(reduced-motion) {
+    transform: none;
+    transition: none;
+  }
+
+  .site-header__menu:open & {
+    @include mq(narrow) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 60ms;
+
+      @starting-style {
+        opacity: 0;
+        transform: translateY(rem(12));
+      }
+    }
+
+    @include mq(reduced-motion) {
+      transition-delay: 0ms;
+    }
+  }
+}
+
+.site-header__menu-list {
+  @include mq(narrow) {
+    inline-size: min(calc(100% - rem(32)), rem(720));
+    margin-inline: auto;
+    border-block-start: rem(1) solid var(--color-line);
+  }
+}
+
+.site-header__menu-item {
+  @include mq(narrow) {
+    border-block-end: rem(1) solid var(--color-line);
+  }
+}
+
+.site-header__menu-link {
+  @include mq(narrow) {
+    display: grid;
+    grid-template-columns: rem(40) minmax(0, 1fr);
+    gap: rem(16);
+    align-items: center;
+    min-block-size: rem(72);
+    padding-inline: rem(8);
+  }
+
+  &:hover,
+  &:focus-visible {
+    @include mq(narrow) {
+      color: var(--color-accent);
+    }
+  }
+}
+
+.site-header__menu-index {
+  @include mq(narrow) {
+    color: var(--color-muted);
+    font-size: rem(11);
+    letter-spacing: 0.09em;
+  }
+}
+
+.site-header__menu-link-label {
+  @include mq(narrow) {
+    font-size: clamp(rem(28), vw-at-design(154), rem(42));
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+}
+
+.site-header__menu-footer {
+  @include mq(narrow) {
+    inline-size: min(calc(100% - rem(32)), rem(720));
+    margin-inline: auto;
+    padding-block: rem(16) rem(24);
+    color: var(--color-muted);
+    font-size: rem(10);
+    letter-spacing: 0.08em;
+    opacity: 0;
+    text-transform: uppercase;
+    transition: opacity var(--motion-fast) ease;
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+
+  .site-header__menu:open & {
+    @include mq(narrow) {
+      opacity: 1;
+      transition-delay: 100ms;
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
+
+    @include mq(reduced-motion) {
+      transition-delay: 0ms;
+    }
+  }
+}

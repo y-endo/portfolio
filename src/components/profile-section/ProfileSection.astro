@@ -1,0 +1,99 @@
+---
+import SectionHeading from "../section-heading/SectionHeading.astro";
+import "./profile-section.scss";
+---
+
+<section
+  class="archive-section profile"
+  id="profile"
+  aria-labelledby="profile-title"
+  data-archive-section
+>
+  <SectionHeading index="01" id="profile-title" title="Profile" />
+  <div class="profile__layout">
+    <figure class="profile__portrait">
+      <span
+        class="profile__portrait-mark profile__portrait-mark--top-left"
+        aria-hidden="true"></span>
+      <span
+        class="profile__portrait-mark profile__portrait-mark--top-right"
+        aria-hidden="true"></span>
+      <span
+        class="profile__portrait-mark profile__portrait-mark--bottom-left"
+        aria-hidden="true"></span>
+      <span
+        class="profile__portrait-mark profile__portrait-mark--bottom-right"
+        aria-hidden="true"></span>
+      <div class="profile__portrait-ticks" aria-hidden="true">
+        <span class="profile__portrait-tick"></span><span
+          class="profile__portrait-tick"></span><span
+          class="profile__portrait-tick"></span><span
+          class="profile__portrait-tick"></span><span
+          class="profile__portrait-tick"></span><span
+          class="profile__portrait-tick"></span>
+      </div>
+      <div class="profile__portrait-image">
+        <img
+          class="profile__portrait-source"
+          src="/images/profile/portrait.webp"
+          width="1122"
+          height="1402"
+          alt="Yuki Endoのイメージ"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="profile__portrait-caption">
+          遠藤 勇気 / Yuki Endo
+        </figcaption>
+      </div>
+    </figure>
+    <div class="profile__copy">
+      <p class="profile__lead">
+        12年以上の経験 +
+        AIの活用で、運用まで見据えた品質の高いフロントエンドを設計します。
+      </p>
+      <div class="profile__lenses">
+        <article class="profile__lens">
+          <div class="profile__lens-heading">
+            <p class="meta-label">Strength 01</p>
+            <h3 class="profile__lens-title">大規模Webサイトの設計・開発</h3>
+          </div>
+          <div class="profile__lens-body">
+            <p>
+              2014年から、フロントエンドエンジニアとしてWebサイトの構築・運用・リニューアルに携わっています。
+            </p>
+            <p>
+              これまで、大手企業のコーポレートサイトや官公庁の公式サイトなど、長期運用を前提とした大規模Webサイトを中心に経験してきました。
+            </p>
+            <p>
+              HTML、CSS、JavaScriptによる実装を基盤として、Astro、React、Vue.jsなどを使用した開発、ヘッドレスCMSや従来型CMSのテンプレート開発、アクセシビリティ対応、Webパフォーマンス改善などに取り組んでいます。
+            </p>
+          </div>
+        </article>
+        <article class="profile__lens">
+          <div class="profile__lens-heading">
+            <p class="meta-label">Strength 02</p>
+            <h3 class="profile__lens-title">フロントエンドチームのリード</h3>
+          </div>
+          <div class="profile__lens-body">
+            <p>
+              最大4名のフロントエンドチームにおいて、技術選定、開発環境の構築、UI設計・ベース実装、コードレビュー、メンバーの開発支援、進捗管理を担当してきました。
+            </p>
+          </div>
+        </article>
+        <article class="profile__lens">
+          <div class="profile__lens-heading">
+            <p class="meta-label">Strength 03</p>
+            <h3 class="profile__lens-title">AIを活用した開発プロセス改善</h3>
+          </div>
+          <div class="profile__lens-body">
+            <p>
+              現在は、Claude Code、Codex、GitHub
+              CopilotなどのAIツールを活用し、要件整理、設計、実装、テスト、コードレビューまでを含めた開発プロセス全体の生産性向上にも取り組んでいます。
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>

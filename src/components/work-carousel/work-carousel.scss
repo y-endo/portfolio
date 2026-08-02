@@ -1,0 +1,200 @@
+@use "../../styles/tools" as *;
+
+.work-carousel {
+  --work-carousel-control-inline-size: #{rem(56)};
+  --work-carousel-control-block-size: #{rem(72)};
+  --work-carousel-control-background: color-mix(
+    in oklab,
+    var(--color-sheet) 78%,
+    transparent
+  );
+
+  margin-block-end: rem(60);
+}
+
+.work-carousel__stage {
+  position: relative;
+  overflow: hidden;
+  border: rem(1) solid var(--color-line);
+  background: var(--color-field);
+}
+
+.work-carousel__main {
+  overflow: hidden;
+}
+
+.work-carousel__main-list {
+  margin: 0;
+  padding: 0;
+}
+
+.work-carousel__slide {
+  position: relative;
+  display: grid;
+  aspect-ratio: 16 / 10;
+  margin: 0;
+  place-items: center;
+  background: var(--color-sheet);
+}
+
+.work-carousel__image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.work-carousel__index {
+  position: absolute;
+  inset-inline-start: rem(16);
+  inset-block-end: rem(16);
+  padding: rem(6) rem(9);
+  background: var(--color-sheet);
+  color: var(--color-ink);
+  font-size: rem(11);
+  letter-spacing: 0.07em;
+  line-height: 1;
+}
+
+.work-carousel__controls {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: rem(16);
+  pointer-events: none;
+
+  @include mq(narrow) {
+    display: none;
+  }
+}
+
+.work-carousel__control {
+  display: grid;
+  inline-size: var(--work-carousel-control-inline-size);
+  block-size: var(--work-carousel-control-block-size);
+  padding: 0;
+  border: 0;
+  background: var(--work-carousel-control-background);
+  color: var(--color-ink);
+  cursor: pointer;
+  line-height: 0;
+  pointer-events: auto;
+  place-items: center;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+
+  @include mq(narrow) {
+    --work-carousel-control-inline-size: #{rem(48)};
+    --work-carousel-control-block-size: #{rem(56)};
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+
+  &:hover {
+    background: var(--color-ink);
+    color: var(--color-sheet);
+  }
+
+  &:focus-visible {
+    outline: rem(2) solid var(--color-accent);
+    outline-offset: rem(3);
+  }
+
+  &.swiper-button-disabled {
+    opacity: calc(45 / 100);
+    cursor: default;
+
+    &:hover {
+      background: var(--work-carousel-control-background);
+      color: var(--color-ink);
+    }
+  }
+}
+
+.work-carousel__control-icon {
+  display: block;
+  inline-size: rem(18);
+  block-size: rem(18);
+}
+
+.work-carousel__thumbs {
+  overflow: hidden;
+  margin-block-start: rem(12);
+}
+
+.work-carousel__thumb-list {
+  margin: 0;
+  padding: 0;
+}
+
+.work-carousel__thumb {
+  inline-size: clamp(rem(96), vw-at-design(176), rem(160));
+}
+
+.work-carousel__thumb-button {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 16 / 10;
+  padding: rem(4);
+  border: rem(1) solid var(--color-line);
+  background: var(--color-sheet);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    opacity 180ms ease;
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+
+  &:hover {
+    border-color: var(--color-muted);
+  }
+
+  &:focus-visible {
+    outline: rem(2) solid var(--color-accent);
+    outline-offset: rem(3);
+  }
+
+  .work-carousel__thumb.swiper-slide-thumb-active & {
+    border-color: var(--color-ink);
+
+    &::after {
+      position: absolute;
+      inset-inline: rem(4);
+      inset-block-end: rem(4);
+      block-size: rem(3);
+      background: var(--color-accent);
+      content: "";
+    }
+  }
+}
+
+.work-carousel__thumb-image {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.work-carousel__thumb-index {
+  position: absolute;
+  inset-inline-start: rem(8);
+  inset-block-start: rem(8);
+  padding: rem(3) rem(5);
+  background: var(--color-sheet);
+  font-size: rem(10);
+  line-height: 1;
+}
+
+.work-carousel--static .work-carousel__slide {
+  border: 0;
+}

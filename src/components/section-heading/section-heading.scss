@@ -1,0 +1,43 @@
+@use "../../styles/tools" as *;
+
+.section-heading {
+  display: grid;
+  grid-template-areas: "title index";
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: rem(32);
+  margin-block-end: clamp(rem(64), vw-at-design(134), rem(112));
+
+  @include mq(narrow) {
+    gap: rem(16);
+  }
+}
+
+.section-heading__title {
+  grid-area: title;
+  display: flex;
+  align-items: center;
+  gap: rem(16);
+  max-inline-size: none;
+  font-size: clamp(rem(28), vw-at-design(77), rem(54));
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+
+  &::after {
+    flex: 0 1 rem(144);
+    block-size: rem(2);
+    background: var(--color-accent);
+    content: "";
+  }
+}
+
+.section-heading__index {
+  grid-area: index;
+  color: var(--color-line);
+  font-size: clamp(rem(48), vw-at-design(134), rem(96));
+  font-weight: 400;
+  line-height: 0.7;
+}

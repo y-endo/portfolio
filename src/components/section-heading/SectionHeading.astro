@@ -1,0 +1,15 @@
+---
+import "./section-heading.scss";
+
+type Props = {
+  index: string;
+  title: string;
+  id: string;
+};
+const { index, title, id } = Astro.props;
+---
+
+<header class="section-heading">
+  <h2 class="section-heading__title" id={id}>{title}</h2>
+  <span class="section-heading__index" aria-hidden="true">{index}</span>
+</header>

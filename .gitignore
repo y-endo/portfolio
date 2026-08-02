@@ -1,0 +1,16 @@
+.DS_Store
+node_modules/
+.pnpm-store/
+dist/
+build/
+.turbo/
+.vite/
+.astro/
+.playwright-mcp/
+.agents/
+.codex/
+/mobile-menu-open-animation.png
+
+.env
+.env.*
+!.env.example

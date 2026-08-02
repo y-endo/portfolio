@@ -1,0 +1,27 @@
+@use "tools" as *;
+
+:root {
+  color-scheme: light;
+
+  --color-paper: #f7f8f5;
+  --color-sheet: #fcfdf9;
+  --color-ink: #151817;
+  --color-muted: #626a67;
+  --color-line: #cbd0cd;
+  --color-field: #dfe4e1;
+  --color-accent: #315f68;
+  --font-sans: "Noto Sans JP", sans-serif;
+  --page-inline: min(100% - #{rem(48)}, #{rem(1344)});
+  --display-shell-max: #{rem(1920)};
+  --display-shell-gutter: clamp(#{rem(24)}, #{vw-at-design(38)}, #{rem(40)});
+  --section-space: #{vw-at-design(80)};
+  --motion-fast: 220ms;
+  --motion-material: 560ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @include mq(narrow) {
+    --page-inline: min(100% - #{rem(32)}, #{rem(1344)});
+    --display-shell-gutter: #{rem(16)};
+    --section-space: #{rem(50)};
+  }
+}

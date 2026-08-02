@@ -1,0 +1,44 @@
+@use "sass:math";
+
+$root-font-size: 16px !default;
+$design-viewport-width: 1920px !default;
+
+/// Converts a pixel value to rem using the project root font size.
+/// Unitless values are interpreted as pixels.
+@function rem($value) {
+  @if math.is-unitless($value) {
+    $value: $value * 1px;
+  }
+
+  @if not math.compatible($value, 1px) {
+    @error "rem() expects a unitless pixel value or a value with a px unit.";
+  }
+
+  $pixel-value: math.div($value, 1px);
+
+  @if $pixel-value != math.round($pixel-value) {
+    @error "rem() expects a whole pixel value without a decimal fraction.";
+  }
+
+  @return math.div($value, $root-font-size) * 1rem;
+}
+
+/// Converts a pixel size at the 1920px design viewport into vw.
+/// Unitless values are interpreted as pixels at the design viewport width.
+@function vw-at-design($value) {
+  @if math.is-unitless($value) {
+    $value: $value * 1px;
+  }
+
+  @if not math.compatible($value, 1px) {
+    @error "vw-at-design() expects a unitless pixel value or a value with a px unit.";
+  }
+
+  $pixel-value: math.div($value, 1px);
+
+  @if $pixel-value != math.round($pixel-value) {
+    @error "vw-at-design() expects a whole pixel value without a decimal fraction.";
+  }
+
+  @return math.div($value, $design-viewport-width) * 100vw;
+}

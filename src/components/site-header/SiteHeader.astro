@@ -1,0 +1,228 @@
+---
+import "./site-header.scss";
+
+type Props = { currentPath: string };
+const { currentPath } = Astro.props;
+const isHome = currentPath === "/";
+---
+
+<header class="site-header" data-site-header>
+  <a class="site-header__identity" href="/" aria-label="ホーム">
+    <img
+      class="site-header__logo"
+      src="/images/logo.svg"
+      alt=""
+      width="959"
+      height="189"
+    />
+  </a>
+  <button
+    class="site-header__toggle"
+    type="button"
+    aria-controls="site-header-menu"
+    aria-expanded="false"
+    data-site-menu-toggle
+  >
+    <span class="site-header__toggle-label">メニュー</span>
+    <span class="site-header__toggle-icon" aria-hidden="true">
+      <span class="site-header__toggle-line site-header__toggle-line--top"
+      ></span>
+      <span class="site-header__toggle-line site-header__toggle-line--middle"
+      ></span>
+      <span class="site-header__toggle-line site-header__toggle-line--bottom"
+      ></span>
+    </span>
+  </button>
+  <nav class="site-header__nav" aria-label="主要ナビゲーション">
+    <ul class="site-header__list">
+      <li class="site-header__item">
+        <a class="site-header__link" href={isHome ? "#profile" : "/#profile"}
+          >Profile</a
+        >
+      </li>
+      <li class="site-header__item">
+        <a class="site-header__link" href={isHome ? "#career" : "/#career"}
+          >Career</a
+        >
+      </li>
+      <li class="site-header__item">
+        <a class="site-header__link" href={isHome ? "#works" : "/#works"}
+          >Works</a
+        >
+      </li>
+      <li class="site-header__item site-header__item--last">
+        <a class="site-header__link" href={isHome ? "#contact" : "/#contact"}
+          >Contact</a
+        >
+      </li>
+    </ul>
+  </nav>
+  <dialog
+    class="site-header__menu"
+    id="site-header-menu"
+    aria-label="主要ナビゲーション"
+    data-site-menu
+  >
+    <div class="site-header__menu-header">
+      <a class="site-header__menu-identity" href="/" aria-label="ホーム">
+        <img
+          class="site-header__menu-logo"
+          src="/images/logo.svg"
+          alt=""
+          width="959"
+          height="189"
+        />
+      </a>
+      <form class="site-header__menu-close-form" method="dialog">
+        <button
+          class="site-header__menu-close"
+          type="submit"
+          aria-label="メニューを閉じる"
+        >
+          <span class="site-header__menu-close-icon" aria-hidden="true">
+            <span
+              class="site-header__menu-close-line site-header__menu-close-line--forward"
+            ></span>
+            <span
+              class="site-header__menu-close-line site-header__menu-close-line--backward"
+            ></span>
+          </span>
+        </button>
+      </form>
+    </div>
+    <nav
+      class="site-header__menu-nav"
+      aria-label="スマートフォンナビゲーション"
+    >
+      <ul class="site-header__menu-list">
+        <li class="site-header__menu-item">
+          <a
+            class="site-header__menu-link"
+            href={isHome ? "#profile" : "/#profile"}
+          >
+            <span class="site-header__menu-index" aria-hidden="true">01</span>
+            <span class="site-header__menu-link-label">Profile</span>
+          </a>
+        </li>
+        <li class="site-header__menu-item">
+          <a
+            class="site-header__menu-link"
+            href={isHome ? "#career" : "/#career"}
+          >
+            <span class="site-header__menu-index" aria-hidden="true">02</span>
+            <span class="site-header__menu-link-label">Career</span>
+          </a>
+        </li>
+        <li class="site-header__menu-item">
+          <a
+            class="site-header__menu-link"
+            href={isHome ? "#works" : "/#works"}
+          >
+            <span class="site-header__menu-index" aria-hidden="true">03</span>
+            <span class="site-header__menu-link-label">Works</span>
+          </a>
+        </li>
+        <li class="site-header__menu-item site-header__menu-item--last">
+          <a
+            class="site-header__menu-link"
+            href={isHome ? "#contact" : "/#contact"}
+          >
+            <span class="site-header__menu-index" aria-hidden="true">04</span>
+            <span class="site-header__menu-link-label">Contact</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <p class="site-header__menu-footer">YUKI ENDO / FRONTEND ENGINEER</p>
+  </dialog>
+</header>
+
+<script>
+  const initSiteMenu = () => {
+    const header = document.querySelector<HTMLElement>("[data-site-header]");
+    const toggle = header?.querySelector<HTMLButtonElement>(
+      "[data-site-menu-toggle]",
+    );
+    const menu = header?.querySelector<HTMLDialogElement>("[data-site-menu]");
+
+    if (
+      !header ||
+      !toggle ||
+      !menu ||
+      header.dataset.menuInitialized === "true"
+    )
+      return;
+
+    header.dataset.menuInitialized = "true";
+    const narrowScreen = window.matchMedia("(max-width: 48rem)");
+    const scrollPosition = { x: 0, y: 0 };
+    let pageScrollLocked = false;
+
+    const lockPageScroll = () => {
+      if (pageScrollLocked) return;
+
+      scrollPosition.x = window.scrollX;
+      scrollPosition.y = window.scrollY;
+      document.body.style.setProperty(
+        "--site-header-scroll-lock-top",
+        `${scrollPosition.y * -1}px`,
+      );
+      document.body.style.setProperty(
+        "--site-header-scroll-lock-left",
+        `${scrollPosition.x * -1}px`,
+      );
+      document.body.classList.add("site-header-scroll-lock");
+      pageScrollLocked = true;
+    };
+
+    const unlockPageScroll = () => {
+      if (!pageScrollLocked) return;
+
+      document.body.classList.remove("site-header-scroll-lock");
+      document.body.style.removeProperty("--site-header-scroll-lock-top");
+      document.body.style.removeProperty("--site-header-scroll-lock-left");
+
+      const scrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+      window.scrollTo(scrollPosition.x, scrollPosition.y);
+      document.documentElement.style.scrollBehavior = scrollBehavior;
+      pageScrollLocked = false;
+    };
+
+    const closeMenu = () => {
+      if (menu.open) menu.close();
+    };
+
+    toggle.addEventListener("click", () => {
+      if (menu.open) closeMenu();
+      else {
+        lockPageScroll();
+        try {
+          menu.showModal();
+          toggle.setAttribute("aria-expanded", "true");
+        } catch {
+          unlockPageScroll();
+        }
+      }
+    });
+
+    menu.querySelectorAll<HTMLAnchorElement>("a").forEach((link) =>
+      link.addEventListener("click", () => {
+        unlockPageScroll();
+        closeMenu();
+      }),
+    );
+
+    menu.addEventListener("close", () => {
+      unlockPageScroll();
+      toggle.setAttribute("aria-expanded", "false");
+    });
+
+    narrowScreen.addEventListener("change", (event) => {
+      if (!event.matches) closeMenu();
+    });
+  };
+
+  initSiteMenu();
+  document.addEventListener("astro:page-load", initSiteMenu);
+</script>

@@ -1,0 +1,228 @@
+---
+import { ChevronLeft, ChevronRight } from "@lucide/astro";
+import "swiper/css";
+import "swiper/css/a11y";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
+import "./work-carousel.scss";
+
+type WorkImage = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+};
+
+type Props = {
+  images: WorkImage[];
+  title: string;
+};
+
+const { images, title } = Astro.props;
+const hasMultipleImages = images.length > 1;
+---
+
+<div
+  class:list={[
+    "work-carousel",
+    { "work-carousel--static": !hasMultipleImages },
+  ]}
+  data-work-carousel={hasMultipleImages ? "" : undefined}
+  data-work-carousel-title={hasMultipleImages ? title : undefined}
+>
+  <div class="work-carousel__stage">
+    <div
+      class:list={["work-carousel__main", { swiper: hasMultipleImages }]}
+      data-work-carousel-main={hasMultipleImages ? "" : undefined}
+    >
+      <div
+        class:list={[
+          "work-carousel__main-list",
+          { "swiper-wrapper": hasMultipleImages },
+        ]}
+      >
+        {
+          images.map((image, index) => (
+            <figure
+              class:list={[
+                "work-carousel__slide",
+                { "swiper-slide": hasMultipleImages },
+              ]}
+            >
+              <img
+                class="work-carousel__image"
+                src={image.src}
+                width={image.width}
+                height={image.height}
+                alt={image.alt}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              {hasMultipleImages && (
+                <figcaption class="work-carousel__index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")} /{" "}
+                  {String(images.length).padStart(2, "0")}
+                </figcaption>
+              )}
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      hasMultipleImages && (
+        <div class="work-carousel__controls">
+          <button
+            class="work-carousel__control work-carousel__control--previous"
+            type="button"
+            aria-label="前の画像を表示"
+            data-work-carousel-previous
+          >
+            <ChevronLeft class="work-carousel__control-icon" />
+          </button>
+          <button
+            class="work-carousel__control work-carousel__control--next"
+            type="button"
+            aria-label="次の画像を表示"
+            data-work-carousel-next
+          >
+            <ChevronRight class="work-carousel__control-icon" />
+          </button>
+        </div>
+      )
+    }
+  </div>
+
+  {
+    hasMultipleImages && (
+      <div
+        class="swiper work-carousel__thumbs"
+        data-work-carousel-thumbs
+        aria-label={`${title}の画像を選択`}
+      >
+        <div class="swiper-wrapper work-carousel__thumb-list">
+          {images.map((image, index) => (
+            <div class="swiper-slide work-carousel__thumb">
+              <button
+                class="work-carousel__thumb-button"
+                type="button"
+                aria-label={`${index + 1}枚目を表示`}
+              >
+                <img
+                  class="work-carousel__thumb-image"
+                  src={image.src}
+                  width={image.width}
+                  height={image.height}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="work-carousel__thumb-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  import Swiper from "swiper";
+  import { A11y, Keyboard, Navigation, Thumbs } from "swiper/modules";
+
+  type CarouselInstances = {
+    main: Swiper;
+    thumbs: Swiper;
+  };
+
+  const carouselInstances = new Map<HTMLElement, CarouselInstances>();
+
+  const initWorkCarousels = () => {
+    document
+      .querySelectorAll<HTMLElement>("[data-work-carousel]")
+      .forEach((carousel) => {
+        if (carouselInstances.has(carousel)) return;
+
+        const mainElement = carousel.querySelector<HTMLElement>(
+          "[data-work-carousel-main]",
+        );
+        const thumbsElement = carousel.querySelector<HTMLElement>(
+          "[data-work-carousel-thumbs]",
+        );
+        const previousElement = carousel.querySelector<HTMLButtonElement>(
+          "[data-work-carousel-previous]",
+        );
+        const nextElement = carousel.querySelector<HTMLButtonElement>(
+          "[data-work-carousel-next]",
+        );
+        const title = carousel.dataset.workCarouselTitle ?? "作品";
+
+        if (!mainElement || !thumbsElement || !previousElement || !nextElement)
+          return;
+
+        const reducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const thumbs = new Swiper(thumbsElement, {
+          modules: [A11y],
+          slidesPerView: "auto",
+          spaceBetween: 8,
+          watchSlidesProgress: true,
+          a11y: {
+            enabled: true,
+            containerRole: "group",
+            containerMessage: `${title}のサムネイルナビゲーション`,
+            itemRoleDescriptionMessage: "サムネイル",
+            slideLabelMessage: "{{index}} / {{slidesLength}}",
+          },
+        });
+        const main = new Swiper(mainElement, {
+          modules: [A11y, Keyboard, Navigation, Thumbs],
+          speed: reducedMotion ? 0 : 500,
+          keyboard: {
+            enabled: true,
+            onlyInViewport: true,
+            pageUpDown: false,
+          },
+          navigation: {
+            prevEl: previousElement,
+            nextEl: nextElement,
+            addIcons: false,
+          },
+          thumbs: {
+            swiper: thumbs,
+            multipleActiveThumbs: false,
+          },
+          a11y: {
+            enabled: true,
+            prevSlideMessage: "前の画像を表示",
+            nextSlideMessage: "次の画像を表示",
+            firstSlideMessage: "最初の画像です",
+            lastSlideMessage: "最後の画像です",
+            containerRole: "group",
+            containerMessage: `${title}の画面ギャラリー`,
+            itemRoleDescriptionMessage: "画像",
+            slideLabelMessage: "{{index}} / {{slidesLength}}",
+          },
+        });
+
+        carouselInstances.set(carousel, { main, thumbs });
+      });
+  };
+
+  const destroyWorkCarousels = () => {
+    carouselInstances.forEach(({ main, thumbs }) => {
+      main.destroy(true, true);
+      thumbs.destroy(true, true);
+    });
+    carouselInstances.clear();
+  };
+
+  initWorkCarousels();
+  document.addEventListener("astro:page-load", initWorkCarousels);
+  document.addEventListener("astro:before-swap", destroyWorkCarousels);
+</script>

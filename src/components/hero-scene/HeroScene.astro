@@ -1,0 +1,33 @@
+---
+import "./hero-scene.scss";
+---
+
+<section class="hero-scene" id="top" aria-labelledby="hero-title" data-hero>
+  <canvas class="hero-scene__canvas" data-hero-canvas aria-hidden="true"
+  ></canvas>
+  <div class="hero-scene__layout">
+    <div class="hero-scene__copy">
+      <h1 class="hero-scene__title" id="hero-title">
+        Yuki Endo<br />Portfolio
+      </h1>
+      <p class="hero-scene__role">Frontend Engineer</p>
+    </div>
+  </div>
+  <a
+    class="hero-scene__scroll"
+    href="#profile"
+    aria-label="プロフィールへ移動"
+    data-scroll-cue
+  >
+    <span class="hero-scene__scroll-label">Scroll</span>
+    <span class="hero-scene__scroll-track" aria-hidden="true">
+      <span class="hero-scene__scroll-marker"></span>
+    </span>
+  </a>
+</section>
+
+<script>
+  import { initHeroScene } from "../../scripts/hero-scene";
+
+  initHeroScene();
+</script>

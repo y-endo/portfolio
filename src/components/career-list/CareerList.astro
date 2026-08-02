@@ -1,0 +1,45 @@
+---
+import { career } from "../../data/career";
+import SectionHeading from "../section-heading/SectionHeading.astro";
+import "./career-list.scss";
+---
+
+<section
+  class="archive-section career"
+  id="career"
+  aria-labelledby="career-title"
+  data-archive-section
+>
+  <SectionHeading index="02" id="career-title" title="Career" />
+  <div class="career__scale" aria-hidden="true">
+    <time class="career__year career__year--2014">2014</time>
+    <time class="career__year career__year--2018">2018</time>
+    <time class="career__year career__year--2020">2020</time>
+    <span class="career__year career__year--now">Now</span>
+    <span class="career__band career__band--accent">Accenture</span>
+    <span class="career__band career__band--muted">IMJ</span>
+    <span class="career__band career__band--field">Utix</span>
+  </div>
+  <ol class="career__list" reversed>
+    {
+      career.map((entry, index) => (
+        <li
+          class:list={[
+            "career__item",
+            {
+              "career__item--muted": index === 1,
+              "career__item--field": index === 2,
+            },
+          ]}
+        >
+          <p class="career__period">{entry.period}</p>
+          <div class="career__position">
+            <h3 class="career__role">{entry.role}</h3>
+            <p class="career__organization">{entry.organization}</p>
+          </div>
+          <p class="career__summary" set:html={entry.summary} />
+        </li>
+      ))
+    }
+  </ol>
+</section>

@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/pages/not-found.scss";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="お探しのページは見つかりませんでした。"
+>
+  <section class="not-found">
+    <svg class="not-found__field" viewBox="0 0 800 500" aria-hidden="true">
+      <g fill="none" stroke="currentColor"
+        ><path d="M20 80 180 30l120 130 170-90 130 140 180-80"></path><path
+          d="M70 330 220 210l150 100 160-80 180 120"></path><path
+          d="M180 30l40 180M300 160l70 150M470 70l60 160M600 210l110 140"
+        ></path></g
+      >
+      <g fill="currentColor"
+        ><circle cx="180" cy="30" r="4"></circle><circle cx="300" cy="160" r="4"
+        ></circle><circle cx="470" cy="70" r="4"></circle><circle
+          cx="600"
+          cy="210"
+          r="4"></circle></g
+      >
+    </svg>
+    <div class="not-found__content">
+      <p class="eyebrow">404 / Missing coordinate</p><h1
+        class="not-found__title"
+      >
+        Page not found.
+      </h1><p class="not-found__description">
+        お探しのページは移動したか、まだ公開されていません。
+      </p><a class="case-link not-found__link" href="/"
+        ><span>Back to home</span><span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </section>
+</BaseLayout>

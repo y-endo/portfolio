@@ -1,0 +1,13 @@
+{
+  "config": {
+    "MD013": false,
+  },
+  "ignores": [
+    "AGENTS.md",
+    ".agents/**",
+    ".codex/**",
+    "frontend-engineer-portfolio-content.md",
+    "node_modules/**",
+    "dist/**",
+  ],
+}

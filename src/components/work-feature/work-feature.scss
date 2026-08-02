@@ -1,0 +1,202 @@
+@use "../../styles/tools" as *;
+
+.work-feature {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  gap: clamp(rem(32), vw-at-design(96), rem(80));
+
+  @include mq(narrow) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.work-feature__media-register {
+  position: relative;
+  align-self: start;
+}
+
+.work-feature__register-mark {
+  position: absolute;
+  z-index: 4;
+  inline-size: rem(20);
+  block-size: rem(20);
+  pointer-events: none;
+}
+
+.work-feature__register-mark--top-left {
+  inset-block-start: rem(-7);
+  inset-inline-start: rem(-7);
+  border-block-start: rem(2) solid var(--color-accent);
+  border-inline-start: rem(2) solid var(--color-accent);
+}
+
+.work-feature__register-mark--top-right {
+  inset-block-start: rem(-7);
+  inset-inline-end: rem(-7);
+  border-block-start: rem(2) solid var(--color-accent);
+  border-inline-end: rem(2) solid var(--color-accent);
+}
+
+.work-feature__register-mark--bottom-left {
+  inset-block-end: rem(-7);
+  inset-inline-start: rem(-7);
+  border-block-end: rem(2) solid var(--color-accent);
+  border-inline-start: rem(2) solid var(--color-accent);
+}
+
+.work-feature__register-mark--bottom-right {
+  inset-inline-end: rem(-7);
+  inset-block-end: rem(-7);
+  border-inline-end: rem(2) solid var(--color-accent);
+  border-block-end: rem(2) solid var(--color-accent);
+}
+
+.work-feature__media-link {
+  display: block;
+}
+
+.work-feature__media {
+  position: relative;
+  align-self: center;
+  inline-size: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  margin-inline: 0;
+  background: var(--color-field);
+  isolation: isolate;
+}
+
+.work-feature__image {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: visibility 0s linear 120ms;
+}
+
+.work-feature__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-fast) ease;
+
+  @include mq(coarse-or-reduced-motion) {
+    display: none;
+  }
+
+  .work-feature--shader-ready & {
+    opacity: 1;
+  }
+}
+
+.work-feature__dossier {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-self: stretch;
+  border: rem(1) solid var(--color-line);
+  background: var(--color-sheet);
+}
+
+.work-feature__copy {
+  display: grid;
+  align-content: center;
+  gap: rem(20);
+  padding: rem(28);
+
+  @include mq(narrow) {
+    padding: rem(24);
+  }
+}
+
+.work-feature__title {
+  margin-block: 0;
+  font-size: clamp(rem(24), vw-at-design(30), rem(36));
+  font-weight: 400;
+  line-height: 1.2;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.work-feature__summary {
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.work-feature__facts {
+  display: grid;
+}
+
+.work-feature__fact {
+  display: grid;
+  grid-template-columns: rem(104) minmax(0, 1fr);
+  gap: rem(16);
+  padding-block: rem(10);
+  border-block-start: rem(1) solid var(--color-line);
+
+  @include mq(narrow) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.work-feature__fact--last {
+  border-block-end: 0;
+}
+
+.work-feature__fact-value {
+  margin-inline-start: 0;
+}
+
+.work-feature__detail-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) rem(48);
+  align-items: stretch;
+  inline-size: min(100%, rem(270));
+  min-block-size: rem(48);
+  border: rem(1) solid var(--color-ink);
+  font-size: rem(16);
+
+  &:hover {
+    .work-feature__detail-arrow {
+      color: var(--color-sheet);
+      background: var(--color-accent);
+    }
+  }
+}
+
+.work-feature__detail-arrow {
+  display: grid;
+  place-items: center;
+}
+
+.work-feature__detail-arrow-icon {
+  inline-size: rem(15);
+  block-size: rem(15);
+}
+
+.work-feature__detail-label {
+  display: flex;
+  align-items: center;
+  padding-inline: rem(16);
+  transition: color var(--motion-fast) ease;
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.work-feature__detail-arrow {
+  border-inline-start: rem(1) solid var(--color-ink);
+  color: var(--color-muted);
+  transition:
+    color var(--motion-fast) ease,
+    background-color var(--motion-fast) ease;
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}

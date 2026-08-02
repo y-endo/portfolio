@@ -1,0 +1,164 @@
+@use "../../styles/tools" as *;
+
+.archive-section {
+  width: var(--page-inline);
+  margin-inline: auto;
+  padding-block: var(--section-space);
+}
+
+.profile__layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: clamp(rem(48), vw-at-design(96), rem(80));
+  align-items: start;
+
+  @include mq(narrow) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile__portrait {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  margin: 0;
+}
+
+.profile__portrait-image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border: rem(1) solid var(--color-line);
+  background: var(--color-field);
+}
+
+.profile__portrait-source {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+.profile__portrait-caption {
+  position: absolute;
+  inset-inline-start: rem(16);
+  inset-block-end: rem(16);
+  z-index: 2;
+  padding: rem(6) rem(9);
+  background: var(--color-sheet);
+  font-size: rem(11);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.profile__portrait-mark {
+  position: absolute;
+  z-index: 3;
+  inline-size: rem(19);
+  block-size: rem(19);
+}
+
+.profile__portrait-mark--top-left {
+  inset-block-start: rem(-7);
+  inset-inline-start: rem(-7);
+  border-block-start: rem(2) solid var(--color-accent);
+  border-inline-start: rem(2) solid var(--color-accent);
+}
+
+.profile__portrait-mark--top-right {
+  inset-block-start: rem(-7);
+  inset-inline-end: rem(-7);
+  border-block-start: rem(2) solid var(--color-accent);
+  border-inline-end: rem(2) solid var(--color-accent);
+}
+
+.profile__portrait-mark--bottom-left {
+  inset-block-end: rem(-7);
+  inset-inline-start: rem(-7);
+  border-block-end: rem(2) solid var(--color-accent);
+  border-inline-start: rem(2) solid var(--color-accent);
+}
+
+.profile__portrait-mark--bottom-right {
+  inset-block-end: rem(-7);
+  inset-inline-end: rem(-7);
+  border-block-end: rem(2) solid var(--color-accent);
+  border-inline-end: rem(2) solid var(--color-accent);
+}
+
+.profile__portrait-ticks {
+  position: absolute;
+  inset-block: 14%;
+  inset-inline-end: rem(-5);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.profile__portrait-tick {
+  inline-size: rem(9);
+  block-size: rem(1);
+  background: var(--color-muted);
+}
+
+.profile__copy {
+  display: grid;
+  gap: rem(40);
+}
+
+.profile__lead {
+  font-size: clamp(rem(22), vw-at-design(38), rem(34));
+  line-height: 1.2;
+
+  @include mq(narrow) {
+    line-height: 1.4;
+  }
+}
+
+.profile__lenses {
+  display: grid;
+  border-block-start: rem(1) solid var(--color-ink);
+}
+
+.profile__lens {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: rem(24);
+  padding: rem(24) rem(20);
+  border-block-end: rem(1) solid var(--color-line);
+
+  @include mq(narrow) {
+    gap: rem(20);
+    padding: rem(20);
+  }
+
+  &::before {
+    position: absolute;
+    inset-block-start: rem(-3);
+    inset-inline-start: rem(20);
+    inline-size: rem(6);
+    aspect-ratio: 1;
+    background: var(--color-accent);
+    content: "";
+  }
+}
+
+.profile__lens-heading {
+  display: grid;
+  align-content: start;
+  gap: rem(12);
+}
+
+.profile__lens-title {
+  font-size: rem(16);
+  font-weight: 400;
+}
+
+.profile__lens-body {
+  display: grid;
+  align-content: start;
+  gap: rem(16);
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
