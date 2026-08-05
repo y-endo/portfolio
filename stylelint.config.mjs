@@ -56,7 +56,7 @@ export default {
       "/.*/": ["rem", "vw"],
     },
     "declaration-property-value-disallowed-list": {
-      "/.*/": ["/(?:rem|vw-at-design)\\(\\s*-?\\d*\\.\\d+\\s*\\)/"],
+      "/.*/": ["/clamp\\(/", "/rem\\(\\s*-?\\d*\\.\\d+\\s*\\)/"],
       "font-size": ["/(?:^|[\\s,(])(?:\\d*\\.)?\\d+(?:px|rem)(?=$|[\\s,)])/"],
     },
     [pseudoNestingRuleName]: true,

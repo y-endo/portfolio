@@ -6,10 +6,11 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: rem(32);
-  margin-block-end: clamp(rem(64), vw-at-design(134), rem(112));
+  margin-block-end: rem(112);
 
   @include mq(narrow) {
     gap: rem(16);
+    margin-block-end: rem(64);
   }
 }
 
@@ -19,12 +20,16 @@
   align-items: center;
   gap: rem(16);
   max-inline-size: none;
-  font-size: clamp(rem(28), vw-at-design(77), rem(54));
+  font-size: rem(54);
   font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 1;
   white-space: nowrap;
   text-transform: uppercase;
+
+  @include mq(narrow) {
+    font-size: rem(28);
+  }
 
   &::after {
     flex: 0 1 rem(144);
@@ -37,7 +42,11 @@
 .section-heading__index {
   grid-area: index;
   color: var(--color-line);
-  font-size: clamp(rem(48), vw-at-design(134), rem(96));
+  font-size: rem(96);
   font-weight: 400;
   line-height: 0.7;
+
+  @include mq(narrow) {
+    font-size: rem(48);
+  }
 }

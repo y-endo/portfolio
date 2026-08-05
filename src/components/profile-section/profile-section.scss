@@ -9,11 +9,12 @@
 .profile__layout {
   display: grid;
   grid-template-columns: 320px 1fr;
-  gap: clamp(rem(48), vw-at-design(96), rem(80));
+  gap: rem(80);
   align-items: start;
 
   @include mq(narrow) {
     grid-template-columns: 1fr;
+    gap: rem(48);
   }
 }
 
@@ -107,10 +108,11 @@
 }
 
 .profile__lead {
-  font-size: clamp(rem(22), vw-at-design(38), rem(34));
+  font-size: rem(34);
   line-height: 1.2;
 
   @include mq(narrow) {
+    font-size: rem(22);
     line-height: 1.4;
   }
 }

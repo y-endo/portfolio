@@ -3,10 +3,11 @@
 .work-feature {
   display: grid;
   grid-template-columns: 0.8fr 1fr;
-  gap: clamp(rem(32), vw-at-design(96), rem(80));
+  gap: rem(80);
 
   @include mq(narrow) {
     grid-template-columns: 1fr;
+    gap: rem(32);
   }
 }
 
@@ -113,9 +114,13 @@
 
 .work-feature__title {
   margin-block: 0;
-  font-size: clamp(rem(24), vw-at-design(30), rem(36));
+  font-size: rem(30);
   font-weight: 400;
   line-height: 1.2;
+
+  @include mq(narrow) {
+    font-size: rem(24);
+  }
 
   &:hover {
     color: var(--color-accent);

@@ -134,7 +134,11 @@
 }
 
 .work-carousel__thumb {
-  inline-size: clamp(rem(96), vw-at-design(176), rem(160));
+  inline-size: rem(160);
+
+  @include mq(narrow) {
+    inline-size: rem(96);
+  }
 }
 
 .work-carousel__thumb-button {

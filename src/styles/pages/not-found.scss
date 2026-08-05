@@ -17,9 +17,13 @@
 
 .not-found__title {
   margin-block: 0;
-  font-size: clamp(rem(35), vw-at-design(86), rem(67));
+  font-size: rem(67);
   font-weight: 520;
   line-height: 0.98;
+
+  @include mq(narrow) {
+    font-size: rem(35);
+  }
 }
 
 .not-found__description {

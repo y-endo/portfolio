@@ -106,8 +106,12 @@
 
 .career__role {
   margin-block: 0 rem(6);
-  font-size: clamp(rem(18), vw-at-design(27), rem(23));
+  font-size: rem(23);
   font-weight: 400;
+
+  @include mq(narrow) {
+    font-size: rem(18);
+  }
 }
 
 .career__summary {

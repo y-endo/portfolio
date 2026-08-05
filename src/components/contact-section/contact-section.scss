@@ -32,9 +32,13 @@
 
 .contact__title {
   margin-block: 0;
-  font-size: clamp(rem(30), vw-at-design(42), rem(50));
+  font-size: rem(42);
   font-weight: 500;
   line-height: 1.2;
+
+  @include mq(narrow) {
+    font-size: rem(30);
+  }
 }
 
 .contact__copy {

@@ -7,7 +7,7 @@
 - Scope: ポートフォリオサイト全体
 - Direction: Computational Archive
 - Maturity: Implementation-ready
-- Last reviewed: 2026-07-26
+- Last reviewed: 2026-08-05
 - Baseline: Astro 7.0.7、TypeScript 6.0.3、SCSS、Three.js 0.185.1、Swiper 14.0.6
 - Blocking open decisions: なし
 
@@ -114,7 +114,7 @@
 - 本文は読みやすい行長とし、長文には`text-wrap: pretty`を使用できる。
 - 短い見出しには`text-wrap: balance`を使用できる。
 - 見出しはビューポートの大部分を占有させない。
-- 文字サイズの可変指定は`rem()`と`vw-at-design()`を使った有界な`clamp()`とする。
+- 文字サイズはPCとNarrowでそれぞれ固定値を定義し、`rem()`を使用する。
 
 ### Layout
 
@@ -299,7 +299,8 @@
 
 - 色、余白、モーションは既存トークンを使用する。
 - コンポーネントとページ固有のスタイルはBEMクラスだけで指定する。
-- 長さは`rem()`と`vw-at-design()`を使用し、整数のpx相当値を渡す。
+- px相当の長さは`rem()`を使用し、整数のpx相当値を渡す。
+- PCとNarrowで異なる長さは`mq()`で固定値を切り替える。
 - レスポンシブ条件は`mq()`を使用する。
 - 状態、疑似要素、親Modifierとの関係は元のBEMセレクター内へネストする。
 - 詳細なSCSS規約は`AGENTS.md`を正本とする。

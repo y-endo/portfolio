@@ -36,7 +36,7 @@
   align-items: end;
   inline-size: min(100%, var(--display-shell-max));
   margin-inline: auto;
-  padding-block: clamp(rem(128), 14vh, rem(160)) rem(48);
+  padding-block: rem(160) rem(48);
   padding-inline: var(--display-shell-gutter);
 
   @include mq(narrow) {
@@ -54,23 +54,27 @@
 
 .hero-scene__title {
   max-inline-size: 15ch;
-  font-size: clamp(rem(35), vw-at-design(86), rem(67));
+  font-size: rem(67);
   font-weight: 520;
   line-height: 1.1;
   text-wrap: balance;
 
   @include mq(narrow) {
-    font-size: clamp(rem(36), vw-at-design(202), rem(50));
+    font-size: rem(36);
   }
 }
 
 .hero-scene__role {
   max-inline-size: rem(608);
   color: var(--color-accent);
-  font-size: clamp(rem(13), vw-at-design(23), rem(16));
+  font-size: rem(16);
   letter-spacing: 0.14em;
   line-height: 1.4;
   text-transform: uppercase;
+
+  @include mq(narrow) {
+    font-size: rem(13);
+  }
 }
 
 .hero-scene__scroll {

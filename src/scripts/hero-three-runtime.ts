@@ -87,8 +87,8 @@ export const startHeroThreeRuntime = (
 
   const markerGeometry = new SphereGeometry(
     0.055,
-    compact ? 6 : 10,
-    compact ? 4 : 8,
+    compact ? 24 : 32,
+    compact ? 16 : 24,
   );
   const markerMaterial = new MeshBasicMaterial({ color: 0x315f68 });
   const orbitTube = compact ? 0.006 : 0.007;

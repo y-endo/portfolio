@@ -39,8 +39,12 @@
 }
 
 .site-header__logo {
-  inline-size: clamp(rem(144), vw-at-design(230), rem(176));
+  inline-size: rem(176);
   block-size: auto;
+
+  @include mq(narrow) {
+    inline-size: rem(144);
+  }
 }
 
 .site-header__toggle {
@@ -112,7 +116,7 @@
 
 .site-header__list {
   display: flex;
-  gap: clamp(rem(14), vw-at-design(38), rem(32));
+  gap: rem(32);
   font-size: rem(14);
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -184,7 +188,7 @@
 
 .site-header__menu-logo {
   @include mq(narrow) {
-    inline-size: clamp(rem(144), vw-at-design(230), rem(176));
+    inline-size: rem(144);
     block-size: auto;
   }
 }
@@ -318,7 +322,7 @@
 
 .site-header__menu-link-label {
   @include mq(narrow) {
-    font-size: clamp(rem(28), vw-at-design(154), rem(42));
+    font-size: rem(28);
     font-weight: 500;
     letter-spacing: -0.03em;
     line-height: 1;
