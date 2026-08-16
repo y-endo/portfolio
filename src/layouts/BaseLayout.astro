@@ -24,8 +24,9 @@ const ogImage = new URL("/images/og.png", Astro.url.origin);
       src="https://www.googletagmanager.com/gtag/js?id=G-V8C2P15644"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
-      function gtag(...args) {
-        window.dataLayer.push(args);
+      function gtag() {
+        // eslint-disable-next-line prefer-rest-params -- gtag.js requires an Arguments object.
+        window.dataLayer.push(arguments);
       }
       gtag("js", new Date());
 
