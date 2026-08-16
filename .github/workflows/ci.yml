@@ -26,7 +26,7 @@ jobs:
             exit 1
           fi
 
-          if git log --format='%ae%n%ce' | grep -Evq '(@users\.noreply\.github\.com|@github\.com)$'; then
+          if git log "${{ github.event.pull_request.head.sha || github.sha }}" --format='%ae%n%ce' | grep -Evq '(@users\.noreply\.github\.com|@github\.com)$'; then
             echo 'Error: commit email addresses must use a GitHub noreply address.' >&2
             exit 1
           fi
