@@ -16,8 +16,8 @@ importers:
   .:
     dependencies:
       '@lucide/astro':
-        specifier: 1.28.0
-        version: 1.28.0(astro@7.2.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@26.1.2)(sass@1.102.0)(yaml@2.9.0))
+        specifier: 1.33.0
+        version: 1.33.0(astro@7.2.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@26.1.2)(sass@1.102.0)(yaml@2.9.0))
       swiper:
         specifier: 14.0.7
         version: 14.0.7
@@ -801,8 +801,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lucide/astro@1.28.0':
-    resolution: {integrity: sha512-0X79U67Rvv9yb9iVI7wiW5wqaA/v+ofYHJnM7Jj3/5mBwjQcQJIJMo6rrjAd9y/9roPgurOnedXa8ER0wFrlUA==}
+  '@lucide/astro@1.33.0':
+    resolution: {integrity: sha512-vhqvQKoPIW3vsOoCb+ZUDgWCP2zfiwhwRqwrnIkNxvtrm4pbaaO0qUlfPK+RvIdn9AlUmyouXFM+9w9AuUbrFA==}
     peerDependencies:
       astro: ^4 || ^5 || ^6 || ^7
 
@@ -3515,7 +3515,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/astro@1.28.0(astro@7.2.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@26.1.2)(sass@1.102.0)(yaml@2.9.0))':
+  '@lucide/astro@1.33.0(astro@7.2.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@26.1.2)(sass@1.102.0)(yaml@2.9.0))':
     dependencies:
       astro: 7.2.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.2)(@types/node@26.1.2)(sass@1.102.0)(yaml@2.9.0)
 
