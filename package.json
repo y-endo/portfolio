@@ -39,7 +39,7 @@
     "typescript-eslint": "8.67.0"
   },
   "dependencies": {
-    "@lucide/astro": "1.28.0",
+    "@lucide/astro": "1.33.0",
     "swiper": "14.0.7",
     "three": "0.185.1"
   }
