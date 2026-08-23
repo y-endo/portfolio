@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@lucide/astro": "1.28.0",
-    "swiper": "14.0.7",
+    "swiper": "14.1.0",
     "three": "0.185.1"
   }
 }
