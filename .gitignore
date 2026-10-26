@@ -9,6 +9,7 @@ build/
 .playwright-mcp/
 .agents/
 .codex/
+.claude/
 /mobile-menu-open-animation.png
 
 .env

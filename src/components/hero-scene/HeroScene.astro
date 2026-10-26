@@ -1,33 +1,47 @@
 ---
-import "./hero-scene.scss";
+import './hero-scene.scss';
 ---
 
-<section class="hero-scene" id="top" aria-labelledby="hero-title" data-hero>
-  <canvas class="hero-scene__canvas" data-hero-canvas aria-hidden="true"
-  ></canvas>
-  <div class="hero-scene__layout">
-    <div class="hero-scene__copy">
-      <h1 class="hero-scene__title" id="hero-title">
-        Yuki Endo<br />Portfolio
+<section class="m-hero-scene js-hero-scene" id="top" aria-labelledby="hero-title">
+  <div class="m-hero-scene__viewport js-hero-viewport">
+    <div class="m-hero-scene__stage js-hero-stage">
+      <img
+        class="m-hero-scene__poster"
+        src="/assets/img/img_hero_avatar.webp"
+        alt=""
+        width="800"
+        height="800"
+        decoding="async"
+      />
+      <canvas class="m-hero-scene__canvas js-hero-canvas" aria-hidden="true"></canvas>
+    </div>
+    <div class="m-hero-scene__introduction">
+      <p class="m-hero-scene__edition">Welcome to my place.</p>
+      <h1 class="m-hero-scene__title" id="hero-title">
+        <span class="m-hero-scene__name">Yuki Endo</span>
+        <span class="m-hero-scene__portfolio">Portfolio</span>
       </h1>
-      <p class="hero-scene__role">Frontend Engineer</p>
+      <p class="m-hero-scene__discipline">Frontend Engineer</p>
+      <p class="m-hero-scene__statement">設計から、その先の運用まで。</p>
+    </div>
+    <p class="m-hero-scene__status js-hero-status" role="status"></p>
+    <div class="m-hero-scene__footer">
+      <a class="m-hero-scene__scroll js-journey-next" href="#profile"
+        ><span class="js-journey-next-label">Scroll to explore</span>
+        <span class="js-journey-next-icon" aria-hidden="true">↓</span></a
+      >
+      <p class="m-hero-scene__room js-journey-label">The study</p>
+      <div class="m-hero-scene__controls">
+        <button class="m-hero-scene__motion js-hero-motion" type="button" aria-pressed="false">動きを止める</button>
+        <p class="m-hero-scene__count"><span class="m-hero-scene__current js-journey-count">01</span> / 05</p>
+      </div>
     </div>
   </div>
-  <a
-    class="hero-scene__scroll"
-    href="#profile"
-    aria-label="プロフィールへ移動"
-    data-scroll-cue
-  >
-    <span class="hero-scene__scroll-label">Scroll</span>
-    <span class="hero-scene__scroll-track" aria-hidden="true">
-      <span class="hero-scene__scroll-marker"></span>
-    </span>
-  </a>
+  <div class="m-hero-scene__travel" aria-hidden="true"></div>
+  <div class="m-hero-scene__destination js-hero-destination"><slot /></div>
 </section>
 
 <script>
-  import { initHeroScene } from "../../scripts/hero-scene";
-
+  import { initHeroScene } from '../../scripts/hero-scene';
   initHeroScene();
 </script>

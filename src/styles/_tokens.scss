@@ -1,16 +1,18 @@
-@use "tools" as *;
+@use 'tools' as *;
 
 :root {
   color-scheme: light;
 
-  --color-paper: #f7f8f5;
-  --color-sheet: #fcfdf9;
-  --color-ink: #151817;
-  --color-muted: #626a67;
-  --color-line: #cbd0cd;
-  --color-field: #dfe4e1;
-  --color-accent: #315f68;
-  --font-sans: "Noto Sans JP", sans-serif;
+  --color-paper: #fff;
+  --color-sheet: #fff;
+  --color-ink: #121620;
+  --color-muted: #626d80;
+  --color-line: #d5ddec;
+  --color-field: #eef2fb;
+  --color-accent: #304df0;
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --font-display: anton, impact, 'Arial Narrow', sans-serif;
+  --font-meta: 'SFMono-Regular', consolas, monospace;
   --page-inline: min(100% - #{rem(48)}, #{rem(1344)});
   --display-shell-max: #{rem(1920)};
   --display-shell-gutter: #{rem(38)};

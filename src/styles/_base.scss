@@ -1,4 +1,12 @@
-@use "tools" as *;
+@use 'tools' as *;
+
+@font-face {
+  font-family: Anton;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/font/anton/Anton-Regular.ttf') format('truetype');
+}
 
 html {
   scroll-behavior: smooth;
@@ -20,33 +28,11 @@ body {
   font-family: var(--font-sans);
   font-size: rem(16);
   font-size-adjust: from-font;
-  line-height: 1.55;
+  line-height: 1.7;
   text-rendering: optimizelegibility;
 }
 
-:where(
-  header,
-  main,
-  footer,
-  section,
-  article,
-  div,
-  nav,
-  ul,
-  ol,
-  li,
-  a,
-  p,
-  h1,
-  h2,
-  h3,
-  dl,
-  dt,
-  dd,
-  img,
-  canvas,
-  span
-) {
+:where(header, main, footer, section, article, div, nav, ul, ol, li, a, p, h1, h2, h3, dl, dt, dd, img, canvas, span) {
   box-sizing: border-box;
   min-inline-size: 0;
 }
@@ -77,16 +63,16 @@ a {
     text-decoration: none;
   }
 
-  &[target="_blank"] {
+  &[target='_blank'] {
     &::after {
       display: inline-block;
       inline-size: 1em;
       block-size: 1em;
       margin-inline-start: calc(1em / 4);
       background-color: currentcolor;
-      content: "";
+      content: '';
       vertical-align: middle;
-      mask: url("/icons/lucide/external-link.svg") center / contain no-repeat;
+      mask: url('/icons/lucide/external-link.svg') center / contain no-repeat;
     }
   }
 }
@@ -178,6 +164,7 @@ select {
 .eyebrow,
 .meta-label {
   color: var(--color-muted);
+  font-family: var(--font-meta);
   font-size: rem(12);
   letter-spacing: 0.1em;
 }

@@ -1,99 +1,46 @@
 ---
-import SectionHeading from "../section-heading/SectionHeading.astro";
-import "./profile-section.scss";
+import { profile } from '../../data/profile';
+import './profile-section.scss';
 ---
 
-<section
-  class="archive-section profile"
-  id="profile"
-  aria-labelledby="profile-title"
-  data-archive-section
->
-  <SectionHeading index="01" id="profile-title" title="Profile" />
-  <div class="profile__layout">
-    <figure class="profile__portrait">
-      <span
-        class="profile__portrait-mark profile__portrait-mark--top-left"
-        aria-hidden="true"></span>
-      <span
-        class="profile__portrait-mark profile__portrait-mark--top-right"
-        aria-hidden="true"></span>
-      <span
-        class="profile__portrait-mark profile__portrait-mark--bottom-left"
-        aria-hidden="true"></span>
-      <span
-        class="profile__portrait-mark profile__portrait-mark--bottom-right"
-        aria-hidden="true"></span>
-      <div class="profile__portrait-ticks" aria-hidden="true">
-        <span class="profile__portrait-tick"></span><span
-          class="profile__portrait-tick"></span><span
-          class="profile__portrait-tick"></span><span
-          class="profile__portrait-tick"></span><span
-          class="profile__portrait-tick"></span><span
-          class="profile__portrait-tick"></span>
-      </div>
-      <div class="profile__portrait-image">
-        <img
-          class="profile__portrait-source"
-          src="/images/profile/portrait.webp"
-          width="1122"
-          height="1402"
-          alt="Yuki Endoのイメージ"
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption class="profile__portrait-caption">
-          遠藤 勇気 / Yuki Endo
-        </figcaption>
-      </div>
-    </figure>
-    <div class="profile__copy">
-      <p class="profile__lead">
-        12年以上の経験 +
-        AIの活用で、運用まで見据えた品質の高いフロントエンドを設計します。
+<section class="p-home-panel p-home-profile js-journey-content" id="profile" aria-labelledby="profile-title">
+  <p class="p-home-panel__eyebrow">02 / The landing</p>
+  <h2 class="p-home-panel__title js-journey-title" id="profile-title">Profile</h2>
+  <p class="p-home-profile__lead">{profile.lead}</p>
+  <div class="p-home-profile__signature">
+    <img
+      class="p-home-profile__portrait"
+      src="/images/profile/portrait.webp"
+      width="1122"
+      height="1402"
+      alt="Yuki Endoのイメージ"
+      loading="lazy"
+      decoding="async"
+    />
+    <div>
+      <p class="p-home-profile__name">遠藤 勇気 / Yuki Endo</p><p class="p-home-profile__role">
+        Frontend Engineer / Since 2014
       </p>
-      <div class="profile__lenses">
-        <article class="profile__lens">
-          <div class="profile__lens-heading">
-            <p class="meta-label">Strength 01</p>
-            <h3 class="profile__lens-title">大規模Webサイトの設計・開発</h3>
-          </div>
-          <div class="profile__lens-body">
-            <p>
-              2014年から、フロントエンドエンジニアとしてWebサイトの構築・運用・リニューアルに携わっています。
-            </p>
-            <p>
-              これまで、大手企業のコーポレートサイトや官公庁の公式サイトなど、長期運用を前提とした大規模Webサイトを中心に経験してきました。
-            </p>
-            <p>
-              HTML、CSS、JavaScriptによる実装を基盤として、Astro、React、Vue.jsなどを使用した開発、ヘッドレスCMSや従来型CMSのテンプレート開発、アクセシビリティ対応、Webパフォーマンス改善などに取り組んでいます。
-            </p>
-          </div>
-        </article>
-        <article class="profile__lens">
-          <div class="profile__lens-heading">
-            <p class="meta-label">Strength 02</p>
-            <h3 class="profile__lens-title">フロントエンドチームのリード</h3>
-          </div>
-          <div class="profile__lens-body">
-            <p>
-              最大4名のフロントエンドチームにおいて、技術選定、開発環境の構築、UI設計・ベース実装、コードレビュー、メンバーの開発支援、進捗管理を担当してきました。
-            </p>
-          </div>
-        </article>
-        <article class="profile__lens">
-          <div class="profile__lens-heading">
-            <p class="meta-label">Strength 03</p>
-            <h3 class="profile__lens-title">AIを活用した開発プロセス改善</h3>
-          </div>
-          <div class="profile__lens-body">
-            <p>
-              現在は、Claude Code、Codex、GitHub
-              CopilotなどのAIツールを活用し、要件整理、設計、実装、テスト、コードレビューまでを含めた開発プロセス全体の生産性向上にも取り組んでいます。
-            </p>
-          </div>
-        </article>
-      </div>
     </div>
+  </div>
+  <div class="p-home-profile__strengths">
+    {
+      profile.strengths.map((strength, index) => (
+        <details class="p-home-profile__strength">
+          <summary class="p-home-profile__summary">
+            <span class="p-home-profile__number">{String(index + 1).padStart(2, '0')}</span>
+            <h3 class="p-home-profile__strength-title">{strength.title}</h3>
+            <span class="p-home-profile__plus" aria-hidden="true">
+              +
+            </span>
+          </summary>
+          <div class="p-home-profile__body">
+            {strength.paragraphs.map((paragraph) => (
+              <p class="p-home-profile__paragraph">{paragraph}</p>
+            ))}
+          </div>
+        </details>
+      ))
+    }
   </div>
 </section>

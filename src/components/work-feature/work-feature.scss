@@ -1,207 +1,116 @@
-@use "../../styles/tools" as *;
+@use '../../styles/tools' as *;
 
-.work-feature {
-  display: grid;
-  grid-template-columns: 0.8fr 1fr;
-  gap: rem(80);
-
-  @include mq(narrow) {
-    grid-template-columns: 1fr;
-    gap: rem(32);
-  }
-}
-
-.work-feature__media-register {
+.p-home-work__media {
   position: relative;
-  align-self: start;
-}
-
-.work-feature__register-mark {
-  position: absolute;
-  z-index: 4;
-  inline-size: rem(20);
-  block-size: rem(20);
-  pointer-events: none;
-}
-
-.work-feature__register-mark--top-left {
-  inset-block-start: rem(-7);
-  inset-inline-start: rem(-7);
-  border-block-start: rem(2) solid var(--color-accent);
-  border-inline-start: rem(2) solid var(--color-accent);
-}
-
-.work-feature__register-mark--top-right {
-  inset-block-start: rem(-7);
-  inset-inline-end: rem(-7);
-  border-block-start: rem(2) solid var(--color-accent);
-  border-inline-end: rem(2) solid var(--color-accent);
-}
-
-.work-feature__register-mark--bottom-left {
-  inset-block-end: rem(-7);
-  inset-inline-start: rem(-7);
-  border-block-end: rem(2) solid var(--color-accent);
-  border-inline-start: rem(2) solid var(--color-accent);
-}
-
-.work-feature__register-mark--bottom-right {
-  inset-inline-end: rem(-7);
-  inset-block-end: rem(-7);
-  border-inline-end: rem(2) solid var(--color-accent);
-  border-block-end: rem(2) solid var(--color-accent);
-}
-
-.work-feature__media-link {
   display: block;
-}
-
-.work-feature__media {
-  position: relative;
-  align-self: center;
-  inline-size: 100%;
-  aspect-ratio: 16 / 10;
+  width: 100%;
   overflow: hidden;
-  margin-inline: 0;
-  background: var(--color-field);
-  isolation: isolate;
+  aspect-ratio: 8 / 5;
+  background: transparent;
 }
 
-.work-feature__image {
-  inline-size: 100%;
-  block-size: 100%;
+.p-home-work__image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  transition: visibility 0s linear 120ms;
-}
-
-.work-feature__canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  inline-size: 100%;
-  block-size: 100%;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--motion-fast) ease;
-
-  @include mq(coarse-or-reduced-motion) {
-    display: none;
-  }
-
-  .work-feature--shader-ready & {
-    opacity: 1;
-  }
-}
-
-.work-feature__dossier {
-  display: grid;
-  grid-template-columns: 1fr;
-  align-self: stretch;
-  border: rem(1) solid var(--color-line);
-  background: var(--color-sheet);
-}
-
-.work-feature__copy {
-  display: grid;
-  align-content: center;
-  gap: rem(20);
-  padding: rem(28);
-
-  @include mq(narrow) {
-    padding: rem(24);
-  }
-}
-
-.work-feature__title {
-  margin-block: 0;
-  font-size: rem(30);
-  font-weight: 400;
-  line-height: 1.2;
-
-  @include mq(narrow) {
-    font-size: rem(24);
-  }
-
-  &:hover {
-    color: var(--color-accent);
-  }
-}
-
-.work-feature__summary {
-  color: var(--color-muted);
-  text-wrap: pretty;
-}
-
-.work-feature__facts {
-  display: grid;
-}
-
-.work-feature__fact {
-  display: grid;
-  grid-template-columns: rem(104) minmax(0, 1fr);
-  gap: rem(16);
-  padding-block: rem(10);
-  border-block-start: rem(1) solid var(--color-line);
-
-  @include mq(narrow) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.work-feature__fact--last {
-  border-block-end: 0;
-}
-
-.work-feature__fact-value {
-  margin-inline-start: 0;
-}
-
-.work-feature__detail-link {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) rem(48);
-  align-items: stretch;
-  inline-size: min(100%, rem(270));
-  min-block-size: rem(48);
-  border: rem(1) solid var(--color-ink);
-  font-size: rem(16);
-
-  &:hover {
-    .work-feature__detail-arrow {
-      color: var(--color-sheet);
-      background: var(--color-accent);
-    }
-  }
-}
-
-.work-feature__detail-arrow {
-  display: grid;
-  place-items: center;
-}
-
-.work-feature__detail-arrow-icon {
-  inline-size: rem(15);
-  block-size: rem(15);
-}
-
-.work-feature__detail-label {
-  display: flex;
-  align-items: center;
-  padding-inline: rem(16);
-  transition: color var(--motion-fast) ease;
-
-  &:hover {
-    color: var(--color-accent);
-  }
-}
-
-.work-feature__detail-arrow {
-  border-inline-start: rem(1) solid var(--color-ink);
-  color: var(--color-muted);
-  transition:
-    color var(--motion-fast) ease,
-    background-color var(--motion-fast) ease;
+  transition: opacity 0.3s ease;
 
   @include mq(reduced-motion) {
     transition: none;
   }
+}
+
+.p-home-work__image-label {
+  position: absolute;
+  right: rem(16);
+  bottom: rem(16);
+  display: flex;
+  align-items: center;
+  gap: rem(12);
+  padding: rem(8) rem(12);
+  color: #fff;
+  background: var(--color-ink);
+  font-family: var(--font-meta);
+  font-size: rem(9);
+}
+
+.p-home-work__image-arrow {
+  width: rem(14);
+  height: rem(14);
+}
+
+.p-home-work__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: rem(16);
+  padding: rem(14) 0;
+  color: var(--color-muted);
+  font-family: var(--font-meta);
+  font-size: rem(9);
+}
+
+.p-home-work__title {
+  margin: rem(18) 0;
+  font-size: rem(22);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.6;
+
+  @include mq(wide) {
+    font-size: rem(25);
+  }
+}
+
+.p-home-work__summary {
+  margin: 0 0 rem(24);
+  color: var(--color-muted);
+  font-size: rem(14);
+  line-height: 1.9;
+}
+
+.p-home-work__role {
+  margin: 0 0 rem(20);
+  color: var(--color-muted);
+  font-size: rem(11);
+}
+
+.p-home-work__details {
+  margin-top: rem(24);
+}
+
+.p-home-work__details-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: rem(44);
+  color: var(--color-muted);
+  font-size: rem(11);
+  list-style: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+}
+
+.p-home-work__facts {
+  margin: rem(16) 0 0;
+}
+
+.p-home-work__fact {
+  padding: rem(16) 0;
+  border-top: rem(1) solid var(--color-line);
+}
+
+.p-home-work__fact-label {
+  margin-bottom: rem(8);
+  color: var(--color-muted);
+  font-size: rem(10);
+}
+
+.p-home-work__fact-value {
+  margin: 0;
+  font-size: rem(13);
+  line-height: 1.9;
 }

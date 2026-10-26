@@ -1,41 +1,15 @@
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-const narrowScreen = window.matchMedia("(max-width: 48rem)");
+export async function initHeroScene() {
+  const root = document.querySelector<HTMLElement>('.js-hero-scene');
+  if (!root) return;
 
-const canUseWebGL = () => {
   try {
-    const probe = document.createElement("canvas");
-    return Boolean(probe.getContext("webgl2"));
-  } catch {
-    return false;
+    const { default: HeroAvatar } = await import('./hero-three-runtime');
+    new HeroAvatar(root);
+  } catch (error) {
+    console.warn('Hero の3D表示を初期化できませんでした。', error);
+    root.classList.add('m-hero-scene--fallback');
+    document.querySelector('.js-site-header')?.classList.remove('site-header--intro');
+    const status = root.querySelector<HTMLElement>('.js-hero-status');
+    if (status) status.textContent = '3Dモデルを表示できませんでした。';
   }
-};
-
-export const initHeroScene = () => {
-  const root = document.querySelector<HTMLElement>("[data-hero]");
-  const canvas = root?.querySelector<HTMLCanvasElement>("[data-hero-canvas]");
-
-  if (
-    !root ||
-    !canvas ||
-    reduceMotion.matches ||
-    !canUseWebGL() ||
-    root.dataset.heroInitialized === "true"
-  )
-    return;
-
-  root.dataset.heroInitialized = "true";
-  const compact = narrowScreen.matches;
-  const loadRuntime = () => {
-    void import("./hero-three-runtime")
-      .then(({ startHeroThreeRuntime }) =>
-        startHeroThreeRuntime(root, canvas, { compact }),
-      )
-      .catch(() => {
-        root.dataset.webglReady = "false";
-        root.classList.remove("hero-scene--ready");
-      });
-  };
-
-  if (compact) window.requestAnimationFrame(loadRuntime);
-  else loadRuntime();
-};
+}

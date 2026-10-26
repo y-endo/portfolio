@@ -1,97 +1,62 @@
-@use "../../styles/tools" as *;
+@use '../../styles/tools' as *;
 
-.contact__letter {
-  display: grid;
-  grid-template-columns: rem(120) minmax(0, 1fr) minmax(rem(280), rem(360));
-  min-block-size: rem(360);
-  border: rem(1) solid var(--color-line);
-  background: var(--color-sheet);
-
-  @include mq(narrow) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.contact__status {
-  display: grid;
-  place-items: center;
-  margin-block: 0;
-  color: var(--color-accent);
-  font-size: rem(11);
-  letter-spacing: 0.1em;
-  writing-mode: vertical-rl;
-  text-transform: uppercase;
-
-  @include mq(narrow) {
-    min-block-size: rem(48);
-    border-block-end: rem(1) solid var(--color-line);
-    border-inline-end: 0;
-    writing-mode: horizontal-tb;
-  }
-}
-
-.contact__title {
-  margin-block: 0;
-  font-size: rem(42);
-  font-weight: 500;
-  line-height: 1.2;
-
-  @include mq(narrow) {
-    font-size: rem(30);
-  }
-}
-
-.contact__copy {
-  display: grid;
-  align-content: center;
-  gap: rem(32);
-  padding: rem(56) rem(56) rem(56) rem(28);
-
-  @include mq(narrow) {
-    padding: rem(32);
-  }
-}
-
-.contact__description {
-  color: var(--color-muted);
-}
-
-.contact__actions {
-  display: grid;
-  align-content: center;
-  gap: rem(12);
-  padding: rem(40);
-  border-inline-start: rem(1) solid var(--color-line);
-
-  @include mq(narrow) {
-    padding: rem(32);
-    border-block-start: rem(1) solid var(--color-line);
-    border-inline-start: 0;
-  }
-}
-
-.contact__action {
+.p-home-contact__status {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  min-block-size: rem(56);
-  border-block-end: rem(1) solid var(--color-ink);
-  font-size: rem(12);
-  letter-spacing: 0.06em;
+  gap: rem(10);
+  margin: rem(32) 0;
+  color: var(--color-muted);
+  font-family: var(--font-meta);
+  font-size: rem(9);
   text-transform: uppercase;
+}
 
-  &:hover {
+.p-home-contact__status-mark {
+  width: rem(5);
+  height: rem(5);
+  background: var(--color-accent);
+}
+
+.p-home-contact__title {
+  margin: 0 0 rem(24);
+  font-size: rem(27);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.6;
+
+  @include mq(wide) {
+    font-size: rem(26);
+  }
+}
+
+.p-home-contact__description {
+  margin: 0 0 rem(16);
+  color: var(--color-muted);
+  font-size: rem(14);
+  line-height: 1.9;
+}
+
+.p-home-contact__email {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(24);
+  margin-top: rem(48);
+  padding: rem(20) 0;
+  border-top: rem(1) solid var(--color-line);
+  border-bottom: rem(1) solid var(--color-line);
+  font-family: var(--font-sans);
+  font-size: rem(32);
+  font-size-adjust: none;
+  letter-spacing: -0.02em;
+
+  &:hover,
+  &:focus-visible {
     color: var(--color-accent);
   }
 }
 
-.contact__action-icon {
-  inline-size: rem(16);
-  block-size: rem(16);
-}
-
-.contact__draft {
-  margin-block-start: rem(16);
-  color: var(--color-muted);
-  font-size: rem(11);
+.p-home-contact__email-icon {
+  width: rem(40);
+  height: rem(40);
 }

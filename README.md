@@ -17,7 +17,8 @@
 - Astroによる完全な静的サイトとして構築しています。
 - TypeScriptでコンポーネントと掲載データを型付けしています。
 - SCSSとBEMを使用し、コンポーネント単位でスタイルを管理しています。
-- Three.jsとWebGLを使用したヒーロービジュアルを、利用環境に応じて段階的に読み込みます。
+- Three.jsで生成したローポリの家を、書斎・踊り場・リビング・キッチン・玄関の順に巡ります。
+- 人物の動きとBlender用の参照モデルについては [家を巡るポートフォリオ](docs/house-journey.md) を参照してください。
 - Swiperを使用し、プロジェクト詳細の画像をカルーセルで表示します。
 - ESLint、Stylelint、markdownlint、Prettierでコードと文書の品質を確認します。
 
@@ -36,7 +37,7 @@
 
 ## セットアップ
 
-Node.js 24以降とpnpm 11が必要です。
+Node.js 24.22.1以降の24系とpnpm 11が必要です。
 
 miseを使用する場合は、リポジトリに定義されたバージョンをインストールできます。
 
@@ -59,11 +60,15 @@ pnpm dev
 pnpm dev          # 開発サーバーを起動
 pnpm build        # 型チェックと静的ビルドを実行
 pnpm preview      # ビルド結果をローカルで確認
-pnpm check        # Lintと静的ビルドを実行
-pnpm lint         # ESLint、Stylelint、markdownlintを実行
-pnpm format       # Prettierでファイルを整形
+pnpm check        # Lint、整形検査、型チェック、静的ビルドを実行
+pnpm lint         # ESLint、Stylelint、markdownlint、整形検査を実行
+pnpm format       # Lintの自動修正とPrettierによる整形を実行
 pnpm format:check # Prettierによる整形漏れを確認
 ```
+
+`.editorconfig` で改行を LF、インデントをスペース2個に揃えます。
+Prettier は120文字幅とシングルクォートを基本にし、Astro の構文にも対応しています。
+追加する依存パッケージは `pnpm-workspace.yaml` の `saveExact: true` により固定バージョンで保存します。
 
 ## ディレクトリ構成
 

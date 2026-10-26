@@ -1,6 +1,6 @@
 [tools]
-node = "24"
-pnpm = "11.18.0"
+node = "24.22.1"
+pnpm = "11.28.8"
 
 [settings]
 idiomatic_version_file_enable_tools = ["node"]

@@ -1,9 +1,9 @@
 ---
-import { ArrowRight } from "@lucide/astro";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import WorkCarousel from "../../components/work-carousel/WorkCarousel.astro";
-import { works, type Work } from "../../data/works";
-import "../../styles/pages/work-detail.scss";
+import { ArrowRight } from '@lucide/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCarousel from '../../components/work-carousel/WorkCarousel.astro';
+import { works, type Work } from '../../data/works';
+import '../../styles/pages/work-detail.scss';
 
 export const getStaticPaths = () =>
   works.map((work) => ({
@@ -16,14 +16,19 @@ const { work } = Astro.props;
 const currentIndex = works.findIndex((item) => item.slug === work.slug);
 const nextWork = works[(currentIndex + 1) % works.length];
 const overviewTitleId = `${work.slug}-overview-title`;
-const portfolioUrl = new URL("https://endoyuki.jp");
+const portfolioUrl = new URL('https://endoyuki.jp');
 const workUrl = work.url ? new URL(work.url, portfolioUrl) : undefined;
-const isExternalWorkUrl =
-  workUrl !== undefined && workUrl.hostname !== portfolioUrl.hostname;
+const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== portfolioUrl.hostname;
 ---
 
 <BaseLayout title={work.title} description={work.summary}>
   <article class="work-detail">
+    <div class="work-detail__masthead">
+      <a class="work-detail__back" href={currentIndex === 0 ? '/#works' : '/#work-manga'}>Back to the gallery ↗</a><span
+        >Case study / {work.number}</span
+      >
+    </div>
+    <p class="work-detail__display" aria-hidden="true">{currentIndex === 0 ? 'CMS RENEWAL.' : 'MANGA PICK.'}</p>
     <header class="work-detail__header">
       <div class="work-detail__rail" aria-hidden="true">
         <span>PROJECT {work.number} / {work.year}</span>
@@ -38,10 +43,8 @@ const isExternalWorkUrl =
                   <a
                     class="work-detail__title-link text-link"
                     href={work.url}
-                    target={isExternalWorkUrl ? "_blank" : undefined}
-                    rel={
-                      isExternalWorkUrl ? "noopener noreferrer" : undefined
-                    }
+                    target={isExternalWorkUrl ? '_blank' : undefined}
+                    rel={isExternalWorkUrl ? 'noopener noreferrer' : undefined}
                   >
                     {work.title}
                   </a>
@@ -53,13 +56,8 @@ const isExternalWorkUrl =
             <p class="work-detail__summary">{work.summary}</p>
           </div>
         </div>
-        <section
-          class="work-detail__overview"
-          aria-labelledby={overviewTitleId}
-        >
-          <h2 class="work-detail__overview-title" id={overviewTitleId}>
-            プロジェクト概要
-          </h2>
+        <section class="work-detail__overview" aria-labelledby={overviewTitleId}>
+          <h2 class="work-detail__overview-title" id={overviewTitleId}>プロジェクト概要</h2>
           <dl class="work-detail__overview-list">
             <div class="work-detail__overview-item">
               <dt class="meta-label">時期</dt>
@@ -77,9 +75,7 @@ const isExternalWorkUrl =
               <dt class="meta-label">役割</dt>
               <dd class="work-detail__overview-value">{work.role}</dd>
             </div>
-            <div
-              class="work-detail__overview-item work-detail__overview-item--last"
-            >
+            <div class="work-detail__overview-item work-detail__overview-item--last">
               <dt class="meta-label">担当範囲</dt>
               <dd class="work-detail__overview-value">{work.scope}</dd>
             </div>
@@ -91,22 +87,16 @@ const isExternalWorkUrl =
     <WorkCarousel images={work.detailImages} title={work.title} />
 
     <div class="work-detail__content">
-      <aside
-        class="work-detail__sidebar"
-        aria-label={`${work.title}のケース情報`}
-      >
+      <aside class="work-detail__sidebar" aria-label={`${work.title}のケース情報`}>
         <nav class="work-detail__index" aria-label="ケーススタディの目次">
           <p class="meta-label">Index</p>
           <ol class="work-detail__index-list">
             {
               work.sections.map((section, index) => (
                 <li class="work-detail__index-item">
-                  <a
-                    class="work-detail__index-link"
-                    href={`#${work.slug}-section-${index}`}
-                  >
+                  <a class="work-detail__index-link" href={`#${work.slug}-section-${index}`}>
                     <span class="work-detail__index-number" aria-hidden="true">
-                      {String(index + 1).padStart(2, "0")}
+                      {String(index + 1).padStart(2, '0')}
                     </span>
                     <span>{section.title}</span>
                   </a>
@@ -123,9 +113,7 @@ const isExternalWorkUrl =
               work.technologyGroups.map((group) => (
                 <div class="work-detail__technology-group">
                   <dt class="work-detail__technology-label">{group.label}</dt>
-                  <dd class="work-detail__technology-value">
-                    {group.items.join(" / ")}
-                  </dd>
+                  <dd class="work-detail__technology-value">{group.items.join(' / ')}</dd>
                 </div>
               ))
             }
@@ -142,13 +130,8 @@ const isExternalWorkUrl =
               id={`${work.slug}-section-${index}`}
             >
               <header class="work-detail__section-header">
-                <p class="work-detail__section-index meta-label">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <h2
-                  class="work-detail__section-title"
-                  id={`${work.slug}-section-${index}-title`}
-                >
+                <p class="work-detail__section-index meta-label">{String(index + 1).padStart(2, '0')}</p>
+                <h2 class="work-detail__section-title" id={`${work.slug}-section-${index}-title`}>
                   {section.title}
                 </h2>
               </header>
@@ -161,11 +144,8 @@ const isExternalWorkUrl =
                   <ul class="work-detail__point-list">
                     {section.points.map((point, pointIndex) => (
                       <li class="work-detail__point-item">
-                        <span
-                          class="work-detail__point-index"
-                          aria-hidden="true"
-                        >
-                          {String(pointIndex + 1).padStart(2, "0")}
+                        <span class="work-detail__point-index" aria-hidden="true">
+                          {String(pointIndex + 1).padStart(2, '0')}
                         </span>
                         <span class="work-detail__point-text">{point}</span>
                       </li>

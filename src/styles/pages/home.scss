@@ -1,10 +1,103 @@
-@use "../tools" as *;
+@use '../tools' as *;
 
-.selected-works__stack {
-  display: grid;
-  gap: rem(120);
+.p-home-chapter {
+  position: relative;
+  min-height: 100svh;
+  padding-top: rem(72);
+  padding-bottom: rem(80);
+
+  .m-hero-scene--journey & {
+    margin-bottom: 90svh;
+  }
 
   @include mq(narrow) {
-    gap: rem(80);
+    padding-top: rem(24);
+    padding-bottom: rem(24);
   }
+}
+
+.p-home-chapter--last {
+  .m-hero-scene--journey & {
+    margin-bottom: 0;
+  }
+}
+
+.p-home-panel {
+  pointer-events: auto;
+  position: relative;
+  box-sizing: border-box;
+  width: min(calc(100% - #{rem(48)}), #{rem(920)});
+  margin: 0 auto;
+  padding: rem(32) 0 rem(48);
+
+  .m-hero-scene--journey & {
+    @include mq(wide) {
+      width: 34%;
+      max-width: rem(510);
+      margin-left: var(--display-shell-gutter);
+      margin-right: auto;
+      padding: rem(24) 0 rem(48);
+    }
+
+    @include mq(narrow) {
+      width: 100%;
+      padding: rem(32) rem(24) rem(72);
+      background: #fff;
+      clip-path: inset(var(--journey-clip-top, 0) 0 0);
+      scroll-margin-top: calc(42svh - #{rem(80)});
+    }
+  }
+}
+
+.p-home-panel__eyebrow {
+  margin: 0 0 rem(20);
+  color: var(--color-muted);
+  font-family: var(--font-meta);
+  font-size: rem(10);
+  letter-spacing: 0.04em;
+}
+
+.p-home-panel__title {
+  margin: 0 0 rem(32);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: rem(56);
+  font-weight: 600;
+  letter-spacing: -0.065em;
+  line-height: 1.06;
+
+  @include mq(gallery-wide) {
+    font-size: rem(76);
+  }
+
+  &--contact {
+    color: var(--color-accent);
+  }
+}
+
+.p-home-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(24);
+  min-height: rem(58);
+  border-bottom: rem(1) solid var(--color-line);
+  font-size: rem(12);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+}
+
+.p-home-link__icon {
+  width: rem(18);
+  height: rem(18);
+  flex-shrink: 0;
+}
+
+.p-home-works__list {
+  display: flex;
+  flex-direction: column;
+  gap: rem(48);
 }

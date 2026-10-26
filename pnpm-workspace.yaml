@@ -1,10 +1,13 @@
+saveExact: true
+
 allowBuilds:
-  "@parcel/watcher": true
+  '@parcel/watcher': true
   esbuild: true
 
 overrides:
-  brace-expansion: 5.0.9
-  fast-uri: 3.1.5
-  js-yaml@4.3.0: 4.3.1
+  brace-expansion: 5.0.12
+  fast-uri: 3.1.9
+  js-yaml@4.3.0: 4.3.2
+  micromark-extension-math>katex: 0.18.2
   nanoid@3.3.17: 3.3.18
-  postcss: 8.5.23
+  postcss: 8.5.31

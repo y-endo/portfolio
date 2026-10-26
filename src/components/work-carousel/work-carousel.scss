@@ -1,13 +1,9 @@
-@use "../../styles/tools" as *;
+@use '../../styles/tools' as *;
 
 .work-carousel {
   --work-carousel-control-inline-size: #{rem(56)};
   --work-carousel-control-block-size: #{rem(72)};
-  --work-carousel-control-background: color-mix(
-    in oklab,
-    var(--color-sheet) 78%,
-    transparent
-  );
+  --work-carousel-control-background: color-mix(in oklab, var(--color-sheet) 78%, transparent);
 
   margin-block-end: rem(60);
 }
@@ -177,7 +173,7 @@
       inset-block-end: rem(4);
       block-size: rem(3);
       background: var(--color-accent);
-      content: "";
+      content: '';
     }
   }
 }

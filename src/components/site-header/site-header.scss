@@ -1,4 +1,4 @@
-@use "../../styles/tools" as *;
+@use '../../styles/tools' as *;
 
 .site-header-scroll-lock {
   position: fixed;
@@ -26,6 +26,12 @@
   @include mq(narrow) {
     align-items: center;
     padding-block: rem(12);
+    mix-blend-mode: normal;
+  }
+
+  &--home {
+    padding-block-end: rem(32);
+    background: linear-gradient(180deg, rgb(255 255 255 / 96%), rgb(255 255 255 / 80%) 65%, rgb(255 255 255 / 0%));
     mix-blend-mode: normal;
   }
 }
@@ -61,6 +67,10 @@
     background: transparent;
     cursor: pointer;
     pointer-events: auto;
+  }
+
+  .site-header--intro & {
+    visibility: hidden;
   }
 }
 
@@ -109,6 +119,10 @@
 }
 
 .site-header__nav {
+  .site-header--intro & {
+    visibility: hidden;
+  }
+
   @include mq(narrow) {
     display: none;
   }
@@ -134,7 +148,7 @@
     inset-block-end: rem(3);
     block-size: rem(1);
     background: currentcolor;
-    content: "";
+    content: '';
     scale: 0 1;
     transform-origin: right;
     transition: scale var(--motion-fast) ease;

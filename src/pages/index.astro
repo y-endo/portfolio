@@ -1,29 +1,27 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import HeroScene from "../components/hero-scene/HeroScene.astro";
-import ProfileSection from "../components/profile-section/ProfileSection.astro";
-import CareerList from "../components/career-list/CareerList.astro";
-import WorkFeature from "../components/work-feature/WorkFeature.astro";
-import ContactSection from "../components/contact-section/ContactSection.astro";
-import SectionHeading from "../components/section-heading/SectionHeading.astro";
-import { works } from "../data/works";
-import "../styles/pages/home.scss";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroScene from '../components/hero-scene/HeroScene.astro';
+import ProfileSection from '../components/profile-section/ProfileSection.astro';
+import CareerList from '../components/career-list/CareerList.astro';
+import WorkFeature from '../components/work-feature/WorkFeature.astro';
+import ContactSection from '../components/contact-section/ContactSection.astro';
+import { works } from '../data/works';
+import '../styles/pages/home.scss';
 ---
 
 <BaseLayout>
-  <HeroScene />
-  <ProfileSection />
-  <CareerList />
-  <section
-    class="archive-section selected-works"
-    id="works"
-    aria-labelledby="works-title"
-    data-archive-section
-  >
-    <SectionHeading index="03" id="works-title" title="Works" />
-    <div class="selected-works__stack">
-      {works.map((work) => <WorkFeature work={work} />)}
+  <HeroScene>
+    <div class="p-home-chapter js-journey-section" data-journey-target="profile"><ProfileSection /></div>
+    <div class="p-home-chapter js-journey-section" data-journey-target="career"><CareerList /></div>
+    <div class="p-home-chapter js-journey-section" data-journey-target="works">
+      <section class="p-home-panel p-home-works js-journey-content" id="works" aria-labelledby="works-title">
+        <p class="p-home-panel__eyebrow">04 / The kitchen</p>
+        <h2 class="p-home-panel__title" id="works-title">Works</h2>
+        <div class="p-home-works__list">{works.map((work, index) => <WorkFeature work={work} index={index} />)}</div>
+      </section>
     </div>
-  </section>
-  <ContactSection />
+    <div class="p-home-chapter p-home-chapter--last js-journey-section" data-journey-target="contact">
+      <ContactSection />
+    </div>
+  </HeroScene>
 </BaseLayout>

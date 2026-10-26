@@ -195,15 +195,7 @@ const createTriangleMesh = () => {
     const centroidY = (points[0][1] + points[1][1] + points[2][1]) / 3;
 
     points.forEach(([x, y], index) => {
-      values.push(
-        x * 2 - 1,
-        y * 2 - 1,
-        x,
-        y,
-        centroidX,
-        centroidY,
-        ...barycentrics[index],
-      );
+      values.push(x * 2 - 1, y * 2 - 1, x, y, centroidX, centroidY, ...barycentrics[index]);
     });
   };
 
@@ -260,17 +252,13 @@ const createTriangleMesh = () => {
   return new Float32Array(values);
 };
 
-const createShader = (
-  gl: WebGLRenderingContext,
-  type: number,
-  source: string,
-) => {
+const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
   const shader = gl.createShader(type);
-  if (!shader) throw new Error("Unable to create WebGL shader");
+  if (!shader) throw new Error('Unable to create WebGL shader');
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    const message = gl.getShaderInfoLog(shader) ?? "Shader compilation failed";
+    const message = gl.getShaderInfoLog(shader) ?? 'Shader compilation failed';
     gl.deleteShader(shader);
     throw new Error(message);
   }
@@ -281,14 +269,14 @@ const createProgram = (gl: WebGLRenderingContext) => {
   const vertex = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
   const fragment = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
   const program = gl.createProgram();
-  if (!program) throw new Error("Unable to create WebGL program");
+  if (!program) throw new Error('Unable to create WebGL program');
   gl.attachShader(program, vertex);
   gl.attachShader(program, fragment);
   gl.linkProgram(program);
   gl.deleteShader(vertex);
   gl.deleteShader(fragment);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    const message = gl.getProgramInfoLog(program) ?? "Program link failed";
+    const message = gl.getProgramInfoLog(program) ?? 'Program link failed';
     gl.deleteProgram(program);
     throw new Error(message);
   }
@@ -299,15 +287,11 @@ export const initWorkShaders = () => {
   if (initialized) return;
   initialized = true;
 
-  const precisePointer = window.matchMedia(
-    "(hover: hover) and (pointer: fine) and (min-width: 48.01rem)",
-  );
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const precisePointer = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 48.01rem)');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   if (!precisePointer.matches || reducedMotion.matches) return;
 
-  const roots = Array.from(
-    document.querySelectorAll<HTMLElement>("[data-work-shader]"),
-  );
+  const roots = Array.from(document.querySelectorAll<HTMLElement>('[data-work-shader]'));
   const items: ShaderItem[] = [];
   let frame = 0;
   let running = false;
@@ -321,13 +305,10 @@ export const initWorkShaders = () => {
 
   function drawItem(item: ShaderItem, time: number) {
     const { gl } = item;
-    const deltaSeconds = item.lastFrameAt
-      ? Math.min((time - item.lastFrameAt) / 1000, 0.05)
-      : 1 / 60;
+    const deltaSeconds = item.lastFrameAt ? Math.min((time - item.lastFrameAt) / 1000, 0.05) : 1 / 60;
     item.lastFrameAt = time;
     const response = item.hoverTarget > item.hover ? 9 : 6.5;
-    item.hover +=
-      (item.hoverTarget - item.hover) * Math.min(1, deltaSeconds * response);
+    item.hover += (item.hoverTarget - item.hover) * Math.min(1, deltaSeconds * response);
     if (Math.abs(item.hoverTarget - item.hover) < 0.01) {
       item.hover = item.hoverTarget;
     }
@@ -358,11 +339,7 @@ export const initWorkShaders = () => {
     gl.uniform2fv(item.directionsUniform, item.directionsData);
     gl.uniform1fv(item.strengthsUniform, item.strengthsData);
     gl.uniform2f(item.pointerUniform, item.pointerX, item.pointerY);
-    gl.uniform2f(
-      item.pointerDirectionUniform,
-      item.pointerDirectionX,
-      item.pointerDirectionY,
-    );
+    gl.uniform2f(item.pointerDirectionUniform, item.pointerDirectionX, item.pointerDirectionY);
     gl.uniform1f(item.hoverUniform, item.hover);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.uniform1f(item.shadowPassUniform, 1);
@@ -399,11 +376,9 @@ export const initWorkShaders = () => {
   }
 
   const createItem = async (root: HTMLElement) => {
-    const media = root.querySelector<HTMLElement>("[data-shader-media]");
-    const canvas = root.querySelector<HTMLCanvasElement>(
-      "[data-shader-canvas]",
-    );
-    const source = root.querySelector<HTMLImageElement>("[data-shader-source]");
+    const media = root.querySelector<HTMLElement>('[data-shader-media]');
+    const canvas = root.querySelector<HTMLCanvasElement>('[data-shader-canvas]');
+    const source = root.querySelector<HTMLImageElement>('[data-shader-source]');
     if (!media || !canvas || !source) return;
 
     try {
@@ -412,10 +387,10 @@ export const initWorkShaders = () => {
       if (!source.complete) return;
     }
 
-    const gl = canvas.getContext("webgl", {
+    const gl = canvas.getContext('webgl', {
       alpha: false,
       antialias: true,
-      powerPreference: "high-performance",
+      powerPreference: 'high-performance',
     });
     if (!gl) return;
 
@@ -440,10 +415,10 @@ export const initWorkShaders = () => {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-    const position = gl.getAttribLocation(program, "aPosition");
-    const uv = gl.getAttribLocation(program, "aUv");
-    const centroid = gl.getAttribLocation(program, "aCentroid");
-    const barycentric = gl.getAttribLocation(program, "aBarycentric");
+    const position = gl.getAttribLocation(program, 'aPosition');
+    const uv = gl.getAttribLocation(program, 'aUv');
+    const centroid = gl.getAttribLocation(program, 'aCentroid');
+    const barycentric = gl.getAttribLocation(program, 'aBarycentric');
     gl.enableVertexAttribArray(position);
     gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 36, 0);
     gl.enableVertexAttribArray(uv);
@@ -461,7 +436,7 @@ export const initWorkShaders = () => {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-    gl.uniform1i(gl.getUniformLocation(program, "uTexture"), 0);
+    gl.uniform1i(gl.getUniformLocation(program, 'uTexture'), 0);
 
     const item: ShaderItem = {
       root,
@@ -472,17 +447,14 @@ export const initWorkShaders = () => {
       buffer,
       texture,
       vertexCount: vertices.length / 9,
-      originsUniform: gl.getUniformLocation(program, "uOrigins[0]"),
-      directionsUniform: gl.getUniformLocation(program, "uDirections[0]"),
-      strengthsUniform: gl.getUniformLocation(program, "uStrengths[0]"),
-      aspectUniform: gl.getUniformLocation(program, "uAspect"),
-      pointerUniform: gl.getUniformLocation(program, "uPointer"),
-      pointerDirectionUniform: gl.getUniformLocation(
-        program,
-        "uPointerDirection",
-      ),
-      hoverUniform: gl.getUniformLocation(program, "uHover"),
-      shadowPassUniform: gl.getUniformLocation(program, "uShadowPass"),
+      originsUniform: gl.getUniformLocation(program, 'uOrigins[0]'),
+      directionsUniform: gl.getUniformLocation(program, 'uDirections[0]'),
+      strengthsUniform: gl.getUniformLocation(program, 'uStrengths[0]'),
+      aspectUniform: gl.getUniformLocation(program, 'uAspect'),
+      pointerUniform: gl.getUniformLocation(program, 'uPointer'),
+      pointerDirectionUniform: gl.getUniformLocation(program, 'uPointerDirection'),
+      hoverUniform: gl.getUniformLocation(program, 'uHover'),
+      shadowPassUniform: gl.getUniformLocation(program, 'uShadowPass'),
       traces: Array.from({ length: TRACE_COUNT }, () => ({
         x: 0,
         y: 0,
@@ -524,11 +496,7 @@ export const initWorkShaders = () => {
       gl.viewport(0, 0, canvas.width, canvas.height);
       const aspect = width / height;
       gl.useProgram(program);
-      gl.uniform2f(
-        item.aspectUniform,
-        aspect >= 1 ? aspect : 1,
-        aspect >= 1 ? 1 : 1 / aspect,
-      );
+      gl.uniform2f(item.aspectUniform, aspect >= 1 ? aspect : 1, aspect >= 1 ? 1 : 1 / aspect);
       item.needsDraw = true;
       requestRender();
     };
@@ -538,7 +506,7 @@ export const initWorkShaders = () => {
 
     const syncInteraction = () => {
       item.hoverTarget = item.pointerInside ? 1 : 0;
-      if (item.pointerInside) root.dataset.shaderActive = "pointer";
+      if (item.pointerInside) root.dataset.shaderActive = 'pointer';
       requestRender();
     };
 
@@ -562,7 +530,7 @@ export const initWorkShaders = () => {
       requestRender();
     };
 
-    media.addEventListener("pointerenter", (event) => {
+    media.addEventListener('pointerenter', (event) => {
       item.bounds = media.getBoundingClientRect();
       const bounds = item.bounds;
       item.pointerX = (event.clientX - bounds.left) / bounds.width;
@@ -574,7 +542,7 @@ export const initWorkShaders = () => {
       item.lastEmissionAt = performance.now();
       syncInteraction();
     });
-    media.addEventListener("pointermove", (event) => {
+    media.addEventListener('pointermove', (event) => {
       const bounds = item.bounds ?? media.getBoundingClientRect();
       const pointerX = (event.clientX - bounds.left) / bounds.width;
       const pointerY = 1 - (event.clientY - bounds.top) / bounds.height;
@@ -587,20 +555,13 @@ export const initWorkShaders = () => {
         return;
       }
 
-      const distance = Math.hypot(
-        pointerX - item.lastTraceX,
-        pointerY - item.lastTraceY,
-      );
+      const distance = Math.hypot(pointerX - item.lastTraceX, pointerY - item.lastTraceY);
       if (distance > 0.001) {
         item.pointerDirectionX = (pointerX - item.lastTraceX) / distance;
         item.pointerDirectionY = (pointerY - item.lastTraceY) / distance;
       }
       const now = performance.now();
-      if (
-        distance < TRACE_DISTANCE ||
-        now - item.lastEmissionAt < TRACE_INTERVAL
-      )
-        return;
+      if (distance < TRACE_DISTANCE || now - item.lastEmissionAt < TRACE_INTERVAL) return;
 
       const steps = Math.min(3, Math.max(1, Math.floor(distance / 0.065)));
       for (let step = 1; step <= steps; step += 1) {
@@ -617,24 +578,24 @@ export const initWorkShaders = () => {
       item.lastTraceY = pointerY;
       item.lastEmissionAt = now;
     });
-    media.addEventListener("pointerleave", () => {
+    media.addEventListener('pointerleave', () => {
       item.pointerKnown = false;
       item.pointerInside = false;
       syncInteraction();
     });
-    canvas.addEventListener("webglcontextlost", () => {
-      root.dataset.shaderReady = "false";
-      root.classList.remove("work-feature--shader-ready");
+    canvas.addEventListener('webglcontextlost', () => {
+      root.dataset.shaderReady = 'false';
+      root.classList.remove('work-feature--shader-ready');
     });
 
     items.push(item);
     resize();
-    root.dataset.shaderReady = "true";
-    root.classList.add("work-feature--shader-ready");
-    root.dataset.shaderEffect = "restrained-floating-fracture";
-    root.dataset.shaderTextureMotion = "bounded-fragment-displacement";
-    root.dataset.shaderDepthCue = "tilt-shadow";
-    root.dataset.shaderIntensity = "medium";
+    root.dataset.shaderReady = 'true';
+    root.classList.add('work-feature--shader-ready');
+    root.dataset.shaderEffect = 'restrained-floating-fracture';
+    root.dataset.shaderTextureMotion = 'bounded-fragment-displacement';
+    root.dataset.shaderDepthCue = 'tilt-shadow';
+    root.dataset.shaderIntensity = 'medium';
     requestRender();
   };
 
@@ -647,7 +608,7 @@ export const initWorkShaders = () => {
         void createItem(root);
       }
     },
-    { rootMargin: "25% 0px" },
+    { rootMargin: '25% 0px' },
   );
   roots.forEach((root) => entryObserver.observe(root));
 
@@ -659,16 +620,13 @@ export const initWorkShaders = () => {
     }
     if (
       items.some(
-        (item) =>
-          item.needsDraw ||
-          item.hoverTarget !== item.hover ||
-          item.traces.some((trace) => trace.active),
+        (item) => item.needsDraw || item.hoverTarget !== item.hover || item.traces.some((trace) => trace.active),
       )
     ) {
       requestRender();
     }
   };
-  document.addEventListener("visibilitychange", handleVisibilityChange);
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 
   const suspend = () => {
     window.cancelAnimationFrame(frame);
@@ -702,9 +660,9 @@ export const initWorkShaders = () => {
     disposed = true;
     window.cancelAnimationFrame(frame);
     entryObserver.disconnect();
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-    window.removeEventListener("pagehide", handlePageHide);
-    window.removeEventListener("pageshow", handlePageShow);
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.removeEventListener('pagehide', handlePageHide);
+    window.removeEventListener('pageshow', handlePageShow);
     for (const item of items) {
       item.resizeObserver.disconnect();
       item.gl.deleteTexture(item.texture);
@@ -712,6 +670,6 @@ export const initWorkShaders = () => {
       item.gl.deleteProgram(item.program);
     }
   };
-  window.addEventListener("pagehide", handlePageHide);
-  window.addEventListener("pageshow", handlePageShow);
+  window.addEventListener('pagehide', handlePageHide);
+  window.addEventListener('pageshow', handlePageShow);
 };

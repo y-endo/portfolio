@@ -1,105 +1,64 @@
 ---
-import { ArrowRight } from "@lucide/astro";
-import type { Work } from "../../data/works";
-import "./work-feature.scss";
-
-type Props = { work: Work; headingLevel?: "h2" | "h3" };
-const { work, headingLevel: Heading = "h3" } = Astro.props;
+import { ArrowUpRight } from '@lucide/astro';
+import type { Work } from '../../data/works';
+import './work-feature.scss';
+type Props = { work: Work; index: number };
+const { work, index } = Astro.props;
+const target = 'work-' + String(index + 1);
 ---
 
-<article class="work-feature" data-work-shader>
-  <div class="work-feature__media-register">
-    <span
-      class="work-feature__register-mark work-feature__register-mark--top-left"
-      aria-hidden="true"></span>
-    <span
-      class="work-feature__register-mark work-feature__register-mark--top-right"
-      aria-hidden="true"></span>
-    <span
-      class="work-feature__register-mark work-feature__register-mark--bottom-left"
-      aria-hidden="true"></span>
-    <span
-      class="work-feature__register-mark work-feature__register-mark--bottom-right"
-      aria-hidden="true"></span>
-    <a
-      class="work-feature__media-link"
-      href={`/works/${work.slug}/`}
-      aria-label={`${work.title}の詳細を見る`}
-    >
-      <figure class="work-feature__media" data-shader-media>
-        <img
-          class="work-feature__image"
-          src={work.cover.src}
-          width={work.cover.width}
-          height={work.cover.height}
-          alt={work.cover.alt}
-          loading="lazy"
-          decoding="async"
-          data-shader-source
-        />
-        <canvas
-          class="work-feature__canvas"
-          data-shader-canvas
-          aria-hidden="true"></canvas>
-      </figure>
-    </a>
-  </div>
-  <div class="work-feature__dossier">
-    <div class="work-feature__copy">
-      <p class="meta-label">{work.number} / {work.category} / {work.year}</p>
-      <Heading class="work-feature__title">
-        <a href={`/works/${work.slug}/`}>{work.title}</a>
-      </Heading>
-      <p class="work-feature__summary">{work.summary}</p>
-      <dl class="work-feature__facts">
-        <div class="work-feature__fact">
-          <dt class="meta-label">課題</dt>
-          <dd class="work-feature__fact-value">{work.challenge}</dd>
-        </div>
-        <div class="work-feature__fact">
-          <dt class="meta-label">役割</dt>
-          <dd class="work-feature__fact-value">{work.role}</dd>
-        </div>
-        <div class="work-feature__fact">
-          <dt class="meta-label">担当範囲</dt>
-          <dd class="work-feature__fact-value">{work.scope}</dd>
-        </div>
-        <div
-          class="work-feature__fact"
-          class:list={[{ "work-feature__fact--last": !work.url }]}
-        >
-          <dt class="meta-label">実現したこと</dt>
-          <dd class="work-feature__fact-value">{work.outcome}</dd>
-        </div>
-        {
-          work.url && (
-            <div class="work-feature__fact work-feature__fact--last">
-              <dt class="meta-label">公開URL</dt>
-              <dd class="work-feature__fact-value">
-                <a href={work.url} target="_blank" class="text-link">
+<article class="p-home-work" aria-labelledby={target + '-title'}>
+  <p class="p-home-work__caption">{work.number} / {work.category} / {work.year}</p>
+  <a class="p-home-work__media" href={'/works/' + work.slug + '/'} aria-label={work.title + 'の詳細を見る'}>
+    <img
+      class="p-home-work__image"
+      src={work.cover.src}
+      width={work.cover.width}
+      height={work.cover.height}
+      alt={work.cover.alt}
+      loading="lazy"
+      decoding="async"
+    />
+    <span class="p-home-work__image-label">VIEW PROJECT <ArrowUpRight class="p-home-work__image-arrow" /></span>
+  </a>
+  <h3 class="p-home-work__title" id={target + '-title'}>{work.title}</h3>
+  <p class="p-home-work__summary">{work.summary}</p>
+  <p class="p-home-work__role">{work.role}</p>
+  <a class="p-home-link" href={'/works/' + work.slug + '/'}
+    ><span>プロジェクトを見る</span><ArrowUpRight class="p-home-link__icon" /></a
+  >
+  <details class="p-home-work__details">
+    <summary class="p-home-work__details-toggle">担当範囲・取り組みを読む <span aria-hidden="true">+</span></summary>
+    <dl class="p-home-work__facts">
+      {
+        [
+          ['課題', work.challenge],
+          ['役割', work.role],
+          ['担当範囲', work.scope],
+          ['実現したこと', work.outcome],
+        ].map(([label, value]) => (
+          <div class="p-home-work__fact">
+            <>
+              <dt class="p-home-work__fact-label">{label}</dt>
+              <dd class="p-home-work__fact-value">{value}</dd>
+            </>
+          </div>
+        ))
+      }
+      {
+        work.url && (
+          <div class="p-home-work__fact">
+            <>
+              <dt class="p-home-work__fact-label">公開URL</dt>
+              <dd class="p-home-work__fact-value">
+                <a class="text-link" href={work.url} target="_blank" rel="noreferrer">
                   {work.url}
                 </a>
               </dd>
-            </div>
-          )
-        }
-      </dl>
-      <a
-        class="work-feature__detail-link"
-        href={`/works/${work.slug}/`}
-        aria-label={`${work.title}の詳細を見る`}
-      >
-        <span class="work-feature__detail-label">詳細を見る</span>
-        <span class="work-feature__detail-arrow" aria-hidden="true">
-          <ArrowRight class="work-feature__detail-arrow-icon" />
-        </span>
-      </a>
-    </div>
-  </div>
+            </>
+          </div>
+        )
+      }
+    </dl>
+  </details>
 </article>
-
-<script>
-  import { initWorkShaders } from "../../scripts/work-shaders";
-
-  initWorkShaders();
-</script>

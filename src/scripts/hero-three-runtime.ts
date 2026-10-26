@@ -1,327 +1,440 @@
-import {
-  AmbientLight,
-  type BufferGeometry,
-  DirectionalLight,
-  Group,
-  IcosahedronGeometry,
-  type Material,
-  Mesh,
-  MeshBasicMaterial,
-  MeshLambertMaterial,
-  PerspectiveCamera,
-  Scene,
-  SphereGeometry,
-  TorusGeometry,
-  WebGLRenderer,
-} from "three";
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { createHouseWorld, createGameController } from './house-world';
+import { houseStops, sampleHouseTour } from './house-tour';
 
-export const startHeroThreeRuntime = (
-  root: HTMLElement,
-  canvas: HTMLCanvasElement,
-  { compact = false }: { compact?: boolean } = {},
-) => {
-  let renderer: WebGLRenderer;
-  try {
-    renderer = new WebGLRenderer({
+type Chapter = { element: HTMLElement; content: HTMLElement; target: string; arrival: number; departure: number };
+
+export default class HouseJourney {
+  root: HTMLElement;
+  canvas: HTMLCanvasElement;
+  viewport: HTMLElement;
+  renderer: THREE.WebGLRenderer;
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(48, 1, 0.05, 90);
+  world = createHouseWorld();
+  actor = new THREE.Group();
+  controller = createGameController();
+  character: THREE.Group | null = null;
+  mixer: THREE.AnimationMixer | null = null;
+  actions = new Map<string, THREE.AnimationAction>();
+  action: THREE.AnimationAction | null = null;
+  lookBones: { bone: THREE.Bone; base: THREE.Quaternion; weight: number }[] = [];
+  motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  chapters: Chapter[] = [];
+  observer: ResizeObserver;
+  frame = 0;
+  previousTime = 0;
+  goalProgress = 0;
+  progress = 0;
+  travelDirection = 1;
+  width = 1;
+  height = 1;
+  renderHeight = 1;
+  pointer = new THREE.Vector2();
+  headYaw = 0;
+  headPitch = 0;
+  paused = false;
+  destroyed = false;
+  ready = false;
+  visible = true;
+
+  constructor(root: HTMLElement) {
+    this.root = root;
+    const canvas = root.querySelector<HTMLCanvasElement>('.js-hero-canvas');
+    const viewport = root.querySelector<HTMLElement>('.js-hero-viewport');
+    if (!canvas || !viewport) throw new Error('3Dの表示領域がありません。');
+    this.canvas = canvas;
+    this.viewport = viewport;
+    this.renderer = new THREE.WebGLRenderer({
       canvas,
-      alpha: true,
-      antialias: !compact,
-      powerPreference: compact ? "low-power" : "high-performance",
+      antialias: true,
+      alpha: false,
+      powerPreference: 'high-performance',
     });
-  } catch {
-    return;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.12;
+    this.scene.background = new THREE.Color(0xeaf0ee);
+    this.scene.fog = new THREE.Fog(0xeaf0ee, 22, 55);
+    this.actor.add(this.controller);
+    this.controller.position.set(0, 0.58, -0.14);
+    this.scene.add(this.world.group, this.actor);
+    this.scene.add(new THREE.HemisphereLight(0xf4f7ff, 0xb9aa8d, 2.6));
+    const sunlight = new THREE.DirectionalLight(0xffefcf, 3.3);
+    sunlight.position.set(-7, 12, 8);
+    sunlight.target.position.set(0, 1.8, 0);
+    sunlight.castShadow = true;
+    sunlight.shadow.mapSize.set(2048, 2048);
+    Object.assign(sunlight.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10, near: 0.5, far: 32 });
+    sunlight.shadow.normalBias = 0.025;
+    sunlight.shadow.bias = -0.0002;
+    this.scene.add(sunlight, sunlight.target);
+    // Soft room fill prevents the roof from turning interiors into silhouettes.
+    const roomFill = new THREE.DirectionalLight(0xffffff, 1.3);
+    roomFill.position.set(1, 5, 3);
+    this.scene.add(roomFill);
+    for (const element of root.querySelectorAll<HTMLElement>('.js-journey-section')) {
+      const content = element.querySelector<HTMLElement>('.js-journey-content');
+      if (content && element.dataset.journeyTarget)
+        this.chapters.push({ element, content, target: element.dataset.journeyTarget, arrival: 0, departure: 0 });
+    }
+    this.observer = new ResizeObserver(this.handleViewportResize);
+    this.initialize();
   }
 
-  const scene = new Scene();
-  const camera = new PerspectiveCamera(40, 1, 0.1, 40);
-  camera.position.set(0, 0, 7.2);
+  initialize() {
+    this.observer.observe(this.viewport);
+    for (const chapter of this.chapters) this.observer.observe(chapter.content);
+    this.attachEvent();
+    this.handleViewportResize();
+    void this.loadCharacter();
+  }
 
-  const ambientLight = new AmbientLight(0xf7f8f5, 2.4);
-  const keyLight = new DirectionalLight(0xffffff, 2.2);
-  keyLight.position.set(-2.5, 3.2, 4.8);
-  const rimLight = new DirectionalLight(0x315f68, 1.5);
-  rimLight.position.set(3.5, -1.8, 2.4);
-  scene.add(ambientLight, keyLight, rimLight);
+  attachEvent() {
+    window.addEventListener('scroll', this.handleWindowScroll, { passive: true });
+    window.addEventListener('pointermove', this.handleWindowPointerMove, { passive: true });
+    document.addEventListener('pointerleave', this.handleDocumentPointerLeave);
+    document.addEventListener('visibilitychange', this.handleDocumentVisibilityChange);
+    document.addEventListener('focusin', this.handleDocumentFocusIn);
+    window.addEventListener('pagehide', this.handleWindowPageHide);
+    window.addEventListener('pageshow', this.handleWindowPageShow);
+    this.motionPreference.addEventListener('change', this.handleMotionPreferenceChange);
+    this.canvas.addEventListener('webglcontextlost', this.handleCanvasContextLost);
+    this.root.querySelector('.js-hero-motion')?.addEventListener('click', this.handleMotionButtonClick);
+  }
 
-  const geometries: BufferGeometry[] = [];
-  const materials: Material[] = [];
+  detachEvent() {
+    window.removeEventListener('scroll', this.handleWindowScroll);
+    window.removeEventListener('pointermove', this.handleWindowPointerMove);
+    document.removeEventListener('pointerleave', this.handleDocumentPointerLeave);
+    document.removeEventListener('visibilitychange', this.handleDocumentVisibilityChange);
+    document.removeEventListener('focusin', this.handleDocumentFocusIn);
+    window.removeEventListener('pagehide', this.handleWindowPageHide);
+    window.removeEventListener('pageshow', this.handleWindowPageShow);
+    this.motionPreference.removeEventListener('change', this.handleMotionPreferenceChange);
+    this.canvas.removeEventListener('webglcontextlost', this.handleCanvasContextLost);
+    this.root.querySelector('.js-hero-motion')?.removeEventListener('click', this.handleMotionButtonClick);
+  }
 
-  const sculpture = new Group();
-  sculpture.position.y = 0.12;
+  async loadCharacter() {
+    try {
+      const model = await new GLTFLoader().loadAsync('/assets/models/human-lowpoly-rigged.glb');
+      if (this.destroyed) {
+        this.disposeObject(model.scene);
+        return;
+      }
+      this.character = model.scene;
+      this.actor.add(model.scene);
+      model.scene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+          const originals = Array.isArray(object.material) ? object.material : [object.material];
+          for (const material of originals) material.dispose();
+          object.material = new THREE.MeshStandardMaterial({ color: 0xb8b9b7, roughness: 0.78, flatShading: true });
+        }
+        if (object instanceof THREE.Bone && ['Head', 'Neck'].includes(object.name))
+          this.lookBones.push({
+            bone: object,
+            base: object.quaternion.clone(),
+            weight: object.name === 'Head' ? 0.65 : 0.35,
+          });
+      });
+      this.mixer = new THREE.AnimationMixer(model.scene);
+      for (const clip of model.animations) {
+        const action = this.mixer.clipAction(clip);
+        if (['StandUp', 'SitDown'].includes(clip.name)) {
+          action.setLoop(THREE.LoopOnce, 1);
+          action.clampWhenFinished = true;
+        }
+        this.actions.set(clip.name, action);
+      }
+      for (const name of ['Typing', 'Idle', 'Walk', 'StandUp', 'SitDown', 'SitIdle']) {
+        if (!this.actions.has(name)) throw new Error('必要なアニメーションがありません: ' + name);
+      }
+      this.ready = true;
+      const status = this.root.querySelector<HTMLElement>('.js-hero-status');
+      if (status) status.textContent = '';
+      this.root.classList.add('m-hero-scene--ready');
+      this.handleMotionPreferenceChange();
+      const hashTarget = this.chapters.find((chapter) => '#' + chapter.target === window.location.hash);
+      if (hashTarget) hashTarget.content.scrollIntoView({ behavior: 'instant', block: 'start' });
+      this.handleWindowScroll();
+      this.progress = this.goalProgress;
+      this.render(0);
+      this.start();
+    } catch (error) {
+      console.warn('家の3D表示を初期化できませんでした。', error);
+      this.destroy();
+    }
+  }
 
-  const core = new Group();
-  const coreGeometry = new IcosahedronGeometry(1.32, compact ? 1 : 2);
-  geometries.push(coreGeometry);
-  const shellMaterial = new MeshLambertMaterial({
-    color: 0x315f68,
-    flatShading: true,
-    transparent: true,
-    opacity: 0.1,
-    depthWrite: false,
-  });
-  const coreMaterial = new MeshBasicMaterial({
-    color: 0x315f68,
-    transparent: true,
-    opacity: 0.62,
-    depthWrite: false,
-    wireframe: true,
-  });
-  materials.push(shellMaterial, coreMaterial);
-  const shell = new Mesh(coreGeometry, shellMaterial);
-  shell.scale.setScalar(0.985);
-  core.add(shell);
-  core.add(new Mesh(coreGeometry, coreMaterial));
-  sculpture.add(core);
-
-  const innerGeometry = new IcosahedronGeometry(0.7, 1);
-  geometries.push(innerGeometry);
-  const innerMaterial = new MeshBasicMaterial({
-    color: 0x151817,
-    transparent: true,
-    opacity: 0.36,
-    wireframe: true,
-  });
-  materials.push(innerMaterial);
-  const innerCore = new Mesh(innerGeometry, innerMaterial);
-  sculpture.add(innerCore);
-
-  const markerGeometry = new SphereGeometry(
-    0.055,
-    compact ? 24 : 32,
-    compact ? 16 : 24,
-  );
-  const markerMaterial = new MeshBasicMaterial({ color: 0x315f68 });
-  const orbitTube = compact ? 0.006 : 0.007;
-  geometries.push(markerGeometry);
-  materials.push(markerMaterial);
-
-  type OrbitOptions = {
-    radius: number;
-    color: number;
-    opacity: number;
-    tilt: [number, number, number];
-    markerOffset: number;
-    speed: number;
-    phase: number;
+  handleMotionPreferenceChange = () => {
+    this.root.classList.toggle('m-hero-scene--journey', !this.motionPreference.matches && this.ready);
+    this.handleViewportResize();
+    this.handleWindowScroll();
+    if (this.motionPreference.matches) {
+      this.progress = 0;
+      this.stop();
+      this.render(0);
+    } else this.start();
   };
 
-  const createOrbit = (options: OrbitOptions) => {
-    const group = new Group();
-    group.rotation.set(...options.tilt);
-    const pivot = new Group();
-    pivot.add(group);
+  handleViewportResize = () => {
+    this.width = this.viewport.clientWidth;
+    this.height = this.viewport.clientHeight;
+    this.renderer.setSize(this.width, this.height, false);
+    const narrow = this.width <= 768;
+    for (const chapter of this.chapters) {
+      chapter.arrival =
+        chapter.content.getBoundingClientRect().top + window.scrollY - this.height * (narrow ? 0.42 : 0.15);
+      chapter.departure = Math.max(
+        chapter.arrival + this.height * 0.3,
+        chapter.content.getBoundingClientRect().bottom + window.scrollY - this.height * 0.7,
+      );
+    }
+    this.handleWindowScroll();
+    if (this.ready) this.render(0);
+  };
 
-    const ringGeometry = new TorusGeometry(
-      options.radius,
-      orbitTube,
-      compact ? 4 : 6,
-      compact ? 72 : 144,
+  handleWindowScroll = () => {
+    if (!this.ready) return;
+    const y = window.scrollY;
+    let progress = 0;
+    let departure = this.root.getBoundingClientRect().top + y + this.height * 0.15;
+    for (let i = 0; i < this.chapters.length; i++) {
+      const chapter = this.chapters[i];
+      if (y < chapter.arrival) {
+        progress = i + THREE.MathUtils.clamp((y - departure) / Math.max(1, chapter.arrival - departure), 0, 1);
+        break;
+      }
+      progress = i + 1;
+      departure = chapter.departure;
+    }
+    if (Math.abs(progress - this.goalProgress) > 0.0001) this.travelDirection = progress >= this.goalProgress ? 1 : -1;
+    this.goalProgress = this.motionPreference.matches ? 0 : progress;
+    this.visible =
+      this.root.getBoundingClientRect().bottom > 100 && this.root.getBoundingClientRect().top < this.height;
+    this.root.classList.toggle('m-hero-scene--offscreen', !this.visible);
+    if (this.paused || this.motionPreference.matches) {
+      this.progress = this.goalProgress;
+      this.render(0);
+    } else this.start();
+  };
+
+  handleWindowPointerMove = (event: PointerEvent) => {
+    this.pointer.set((event.clientX / this.width) * 2 - 1, (event.clientY / this.height) * 2 - 1);
+  };
+
+  handleDocumentPointerLeave = () => {
+    this.pointer.set(0, 0);
+  };
+
+  handleDocumentFocusIn = (event: FocusEvent) => {
+    if (this.width > 768 || this.motionPreference.matches || !(event.target instanceof HTMLElement)) return;
+    const panel = event.target.closest('.js-journey-content');
+    if (!panel) return;
+    const top = event.target.getBoundingClientRect().top;
+    if (top < this.renderHeight + 20) window.scrollBy({ top: top - this.renderHeight - 24, behavior: 'instant' });
+  };
+
+  handleDocumentVisibilityChange = () => {
+    if (document.hidden) this.stop();
+    else this.start();
+  };
+
+  handleMotionButtonClick = () => {
+    this.paused = !this.paused;
+    const button = this.root.querySelector<HTMLButtonElement>('.js-hero-motion');
+    if (button) {
+      button.textContent = this.paused ? '動きを再開' : '動きを止める';
+      button.setAttribute('aria-pressed', String(this.paused));
+    }
+    if (this.paused) this.stop();
+    else this.start();
+  };
+
+  handleWindowPageShow = () => {
+    this.start();
+  };
+
+  handleWindowPageHide = (event: PageTransitionEvent) => {
+    if (event.persisted) this.stop();
+    else this.destroy();
+  };
+
+  handleCanvasContextLost = (event: Event) => {
+    event.preventDefault();
+    this.destroy();
+  };
+
+  play(name: string) {
+    const action = this.actions.get(name);
+    if (!action || action === this.action) return;
+    this.action?.stop();
+    action.reset().play();
+    this.action = action;
+  }
+
+  render(delta: number) {
+    if (this.destroyed || !this.ready) return;
+    const tour = sampleHouseTour(this.progress);
+    this.actor.position.copy(tour.position);
+    const yaw = tour.yaw + (tour.action === 'Walk' && this.travelDirection < 0 ? Math.PI : 0);
+    const difference = Math.atan2(Math.sin(yaw - this.actor.rotation.y), Math.cos(yaw - this.actor.rotation.y));
+    this.actor.rotation.y += delta > 0 ? difference * (1 - Math.exp(-delta * 9)) : difference;
+    this.controller.visible = tour.action === 'SitIdle';
+    this.play(tour.action);
+    for (const { bone, base } of this.lookBones) bone.quaternion.copy(base);
+    if (tour.actionProgress !== null && this.action)
+      this.action.time = this.action.getClip().duration * Math.min(0.999, tour.actionProgress);
+    const moving = Math.abs(this.goalProgress - this.progress) > 0.0001;
+    this.mixer?.update(tour.actionProgress !== null || (tour.action === 'Walk' && !moving) ? 0 : delta);
+    for (const item of this.lookBones) item.base.copy(item.bone.quaternion);
+    // Gaze is limited to the neck and head. Eyes remain part of the supplied model.
+    const gaze = tour.action === 'Typing' || tour.action === 'Idle' ? 1 : 0;
+    this.headYaw = THREE.MathUtils.damp(this.headYaw, this.pointer.x * 0.2 * gaze, 5, delta);
+    this.headPitch = THREE.MathUtils.damp(this.headPitch, this.pointer.y * 0.1 * gaze, 5, delta);
+    for (const { bone, weight } of this.lookBones) {
+      bone.quaternion.multiply(
+        new THREE.Quaternion().setFromEuler(new THREE.Euler(this.headPitch * weight, this.headYaw * weight, 0)),
+      );
+    }
+    this.world.door.rotation.y = -THREE.MathUtils.smoothstep(this.progress, 3.15, 3.88) * 1.35;
+    this.camera.position.copy(tour.camera);
+    this.camera.fov = tour.fov;
+    this.camera.lookAt(tour.target);
+    const firstArrival = this.chapters[0]?.arrival || this.height;
+    const reading = this.motionPreference.matches
+      ? 0
+      : THREE.MathUtils.smoothstep(window.scrollY, firstArrival - this.height * 0.65, firstArrival);
+    this.root.classList.toggle('m-hero-scene--reading', reading > 0.1);
+    this.renderHeight = this.width <= 768 ? this.height * (1 - reading * 0.58) : this.height;
+    this.root.style.setProperty('--footer-bottom', this.height - this.renderHeight + 16 + 'px');
+    this.camera.aspect = this.width / this.renderHeight;
+    this.camera.setViewOffset(
+      this.width,
+      this.renderHeight,
+      -this.width * (this.width <= 768 ? 0.02 : 0.18),
+      0,
+      this.width,
+      this.renderHeight,
     );
-    const ringMaterial = new MeshBasicMaterial({
-      color: options.color,
-      transparent: true,
-      opacity: options.opacity,
-    });
-    const ring = new Mesh(ringGeometry, ringMaterial);
-    group.add(ring);
+    this.camera.updateProjectionMatrix();
+    this.renderer.setScissorTest(false);
+    this.renderer.setClearColor(0xffffff);
+    this.renderer.clear();
+    this.renderer.setViewport(0, this.height - this.renderHeight, this.width, this.renderHeight);
+    this.renderer.setScissor(0, this.height - this.renderHeight, this.width, this.renderHeight);
+    this.renderer.setScissorTest(true);
+    this.renderer.render(this.scene, this.camera);
+    this.renderer.setScissorTest(false);
+    this.root.style.setProperty('--intro-opacity', String(1 - THREE.MathUtils.smoothstep(this.progress, 0.02, 0.4)));
+    for (const chapter of this.chapters) {
+      const clip =
+        this.width <= 768 && !this.motionPreference.matches
+          ? Math.max(0, this.renderHeight - chapter.content.getBoundingClientRect().top)
+          : 0;
+      chapter.content.style.setProperty('--journey-clip-top', clip + 'px');
+    }
+    const stopIndex = Math.min(4, Math.round(this.progress));
+    const label = this.root.querySelector<HTMLElement>('.js-journey-label');
+    if (label) label.textContent = houseStops[stopIndex].label;
+    const count = this.root.querySelector<HTMLElement>('.js-journey-count');
+    if (count) count.textContent = String(stopIndex + 1).padStart(2, '0');
+    const next = this.root.querySelector<HTMLAnchorElement>('.js-journey-next');
+    if (next) next.href = '#' + houseStops[stopIndex === 4 ? 0 : stopIndex + 1].id;
+    const nextLabel = this.root.querySelector<HTMLElement>('.js-journey-next-label');
+    if (nextLabel) nextLabel.textContent = stopIndex === 4 ? 'Back to top' : 'Scroll to explore';
+    const nextIcon = this.root.querySelector<HTMLElement>('.js-journey-next-icon');
+    if (nextIcon) nextIcon.textContent = stopIndex === 4 ? '↑' : '↓';
+    if (this.root.dataset.houseStop !== houseStops[stopIndex].id) {
+      for (const link of document.querySelectorAll<HTMLAnchorElement>('.js-house-nav-link')) {
+        if (link.hash === '#' + houseStops[stopIndex].id) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    }
+    this.root.dataset.houseStop = houseStops[stopIndex].id;
+  }
 
-    const satellite = new Mesh(markerGeometry, markerMaterial);
-    group.add(satellite);
-
-    const counterSatellite = new Mesh(markerGeometry, markerMaterial);
-    counterSatellite.scale.setScalar(0.48);
-    group.add(counterSatellite);
-
-    geometries.push(ringGeometry);
-    materials.push(ringMaterial);
-    sculpture.add(pivot);
-
-    return {
-      ...options,
-      pivot,
-      group,
-      satellite,
-      counterSatellite,
-    };
-  };
-
-  const orbitA = createOrbit({
-    radius: 2.02,
-    color: 0x626a67,
-    opacity: 0.4,
-    tilt: [1.08, 0.14, 0.2],
-    markerOffset: 0.86,
-    speed: 0.31,
-    phase: 0.4,
-  });
-  const orbitB = createOrbit({
-    radius: 1.82,
-    color: 0x315f68,
-    opacity: 0.3,
-    tilt: [0.26, 1.14, -0.18],
-    markerOffset: 0.58,
-    speed: -0.24,
-    phase: 2.3,
-  });
-  const orbitC = createOrbit({
-    radius: 2.26,
-    color: 0x151817,
-    opacity: 0.18,
-    tilt: [0.72, 0.6, 1.12],
-    markerOffset: 1.12,
-    speed: 0.18,
-    phase: 4.2,
-  });
-  scene.add(sculpture);
-
-  let frame = 0;
-  let visible = true;
-  let disposed = false;
-  let lastRenderedAt = 0;
-  let rendererWidth = 0;
-  let rendererHeight = 0;
-  const frameInterval = compact ? 1000 / 30 : 0;
-
-  const resize = () => {
-    const rect = canvas.getBoundingClientRect();
-    const width = Math.round(rect.width);
-    const height = Math.round(rect.height);
-    if (width === 0 || height === 0) return;
-
-    const widthChanged = width !== rendererWidth;
-    const heightChanged = height !== rendererHeight;
-    if (!widthChanged && (!heightChanged || compact)) return;
-
-    rendererWidth = width;
-    rendererHeight = height;
-    renderer.setPixelRatio(
-      compact ? 1 : Math.min(window.devicePixelRatio || 1, 1.5),
-    );
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  };
-
-  const render = (time: number) => {
-    if (disposed || !visible || document.hidden) return;
+  start() {
     if (
-      frameInterval > 0 &&
-      lastRenderedAt > 0 &&
-      time - lastRenderedAt < frameInterval
-    ) {
-      frame = window.requestAnimationFrame(render);
+      this.frame ||
+      this.destroyed ||
+      this.paused ||
+      !this.ready ||
+      !this.visible ||
+      document.hidden ||
+      this.motionPreference.matches
+    )
       return;
-    }
-    lastRenderedAt = time;
-    const elapsed = time * 0.001;
+    this.previousTime = 0;
+    this.frame = requestAnimationFrame(this.animate);
+  }
 
-    core.rotation.x = 0.34 + elapsed * 0.07;
-    core.rotation.y = elapsed * 0.12;
-    shellMaterial.opacity = 0.1 + Math.sin(elapsed * 0.7) * 0.025;
-    innerCore.rotation.x = -elapsed * 0.12;
-    innerCore.rotation.z = elapsed * 0.16;
+  stop() {
+    cancelAnimationFrame(this.frame);
+    this.frame = 0;
+    this.previousTime = 0;
+  }
 
-    for (const [index, orbit] of [orbitA, orbitB, orbitC].entries()) {
-      const angle = orbit.phase + elapsed * orbit.speed;
-      orbit.satellite.position.set(
-        Math.cos(angle + orbit.markerOffset) * orbit.radius,
-        Math.sin(angle + orbit.markerOffset) * orbit.radius,
-        0,
-      );
-      orbit.counterSatellite.position.set(
-        Math.cos(angle + Math.PI * 1.16) * orbit.radius,
-        Math.sin(angle + Math.PI * 1.16) * orbit.radius,
-        0,
-      );
-      orbit.pivot.rotation.x =
-        Math.sin(elapsed * (0.12 + index * 0.018) + orbit.phase) * 0.2;
-      orbit.pivot.rotation.y =
-        elapsed * orbit.speed * 0.38 + Math.cos(elapsed * 0.09 + index) * 0.12;
-      orbit.pivot.rotation.z = Math.sin(elapsed * 0.1 + index * 1.7) * 0.09;
-    }
-    renderer.render(scene, camera);
-    frame = window.requestAnimationFrame(render);
+  animate = (time: number) => {
+    this.frame = 0;
+    const delta = this.previousTime ? Math.min((time - this.previousTime) / 1000, 0.05) : 0;
+    this.previousTime = time;
+    this.progress = THREE.MathUtils.damp(this.progress, this.goalProgress, 9, delta);
+    if (Math.abs(this.goalProgress - this.progress) < 0.0001) this.progress = this.goalProgress;
+    this.render(delta);
+    if (this.visible && !this.paused && !document.hidden && !this.destroyed)
+      this.frame = requestAnimationFrame(this.animate);
   };
 
-  const visibilityObserver = new IntersectionObserver(([entry]) => {
-    visible = entry?.isIntersecting ?? false;
-    if (visible && !document.hidden) {
-      window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(render);
-    } else {
-      window.cancelAnimationFrame(frame);
-    }
-  });
-  visibilityObserver.observe(root);
-
-  const handleVisibilityChange = () => {
-    window.cancelAnimationFrame(frame);
-    if (visible && !document.hidden) {
-      frame = window.requestAnimationFrame(render);
-    }
-  };
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-
-  const resizeObserver = new ResizeObserver(resize);
-  resizeObserver.observe(canvas);
-
-  const suspend = () => {
-    window.cancelAnimationFrame(frame);
-  };
-
-  const resume = () => {
-    if (disposed) return;
-    lastRenderedAt = 0;
-    resize();
-    renderer.render(scene, camera);
-    window.cancelAnimationFrame(frame);
-    if (visible && !document.hidden) {
-      frame = window.requestAnimationFrame(render);
-    }
-  };
-
-  const handlePageHide = (event: PageTransitionEvent) => {
-    if (event.persisted) {
-      suspend();
-      return;
-    }
-    dispose();
-  };
-
-  const handlePageShow = (event: PageTransitionEvent) => {
-    if (event.persisted) resume();
-  };
-
-  const dispose = () => {
-    if (disposed) return;
-    disposed = true;
-    window.cancelAnimationFrame(frame);
-    visibilityObserver.disconnect();
-    resizeObserver.disconnect();
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-    window.removeEventListener("pagehide", handlePageHide);
-    window.removeEventListener("pageshow", handlePageShow);
+  disposeObject(root: THREE.Object3D) {
+    const geometries = new Set<THREE.BufferGeometry>();
+    const materials = new Set<THREE.Material>();
+    root.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        geometries.add(object.geometry);
+        for (const material of Array.isArray(object.material) ? object.material : [object.material])
+          materials.add(material);
+        if (object instanceof THREE.SkinnedMesh) object.skeleton.dispose();
+        if (object instanceof THREE.InstancedMesh) object.dispose();
+      }
+      if (object instanceof THREE.DirectionalLight) object.shadow.dispose();
+    });
     for (const geometry of geometries) geometry.dispose();
-    for (const material of materials) material.dispose();
-    renderer.dispose();
-  };
+    const textures = new Set<THREE.Texture>();
+    for (const material of materials) {
+      if (material instanceof THREE.MeshStandardMaterial && material.map) textures.add(material.map);
+      material.dispose();
+    }
+    for (const texture of textures) texture.dispose();
+  }
 
-  window.addEventListener("pagehide", handlePageHide);
-  window.addEventListener("pageshow", handlePageShow);
-  canvas.addEventListener("webglcontextlost", () => {
-    root.dataset.webglReady = "false";
-    root.classList.remove("hero-scene--ready");
-    dispose();
-  });
-
-  resize();
-  renderer.render(scene, camera);
-  root.dataset.webglReady = "true";
-  root.classList.add("hero-scene--ready");
-  root.dataset.heroInstrumented = "true";
-  root.dataset.heroOrbitAccents = "markers-only";
-  root.dataset.heroOrbitProfile = "thin-uniform-centered";
-  root.dataset.heroQuality = compact ? "mobile-lite" : "desktop";
-  root.dataset.heroFpsCap = compact ? "30" : "display";
-  frame = window.requestAnimationFrame(render);
-};
+  destroy() {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    this.stop();
+    this.detachEvent();
+    this.observer.disconnect();
+    this.mixer?.stopAllAction();
+    if (this.character) this.mixer?.uncacheRoot(this.character);
+    this.disposeObject(this.scene);
+    this.renderer.dispose();
+    this.root.classList.remove(
+      'm-hero-scene--journey',
+      'm-hero-scene--ready',
+      'm-hero-scene--offscreen',
+      'm-hero-scene--reading',
+    );
+    this.root.classList.add('m-hero-scene--fallback');
+    this.root.style.removeProperty('--intro-opacity');
+    this.root.style.removeProperty('--footer-bottom');
+    for (const chapter of this.chapters) chapter.content.style.removeProperty('--journey-clip-top');
+    const status = this.root.querySelector<HTMLElement>('.js-hero-status');
+    if (status) status.textContent = '3D表示を利用できないため、通常のページで表示しています。';
+  }
+}
