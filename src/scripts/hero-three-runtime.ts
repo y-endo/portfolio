@@ -79,6 +79,13 @@ const OPENING_SECONDS = 7;
  * Visitors arriving at a chapter, such as on the way back from a project page, have seen it already.
  */
 const LOADER_COUNT_SECONDS = { first: 1.6, chapter: 0.5 };
+/**
+ * The downloads take the loader to 90%; the rest is preparing the drawing (`warmUp()`), so the loader lifts only
+ * once every frame of the visit can be drawn without a stall.
+ */
+const DOWNLOAD_SHARE = 0.9;
+/** Stops drawn once behind the loader, between them showing every room and kind of object in the house. */
+const WARM_UP_STOPS = ['top', 'career-1', 'works-1', 'kitchen', 'contact'];
 /** How the journey follows the scroll: the spring's settling time, and its speed limit in stops per second. */
 const FOLLOW_SECONDS = 0.35;
 const FOLLOW_SPEED = { base: 1.4, perStopBehind: 1.2 };
@@ -377,23 +384,15 @@ export default class HouseJourney {
 
     const works = this.shots.filter((shot) => shot.element.dataset.screenTitle);
     works.forEach((shot, order) => {
-      const { screenTitle = '', screenLabel = '', screenImage } = shot.element.dataset;
-      const draw = (image: HTMLImageElement | null) =>
-        drawWorkScreen({
-          number: String(order + 1).padStart(2, '0'),
-          total: String(works.length).padStart(2, '0'),
-          label: screenLabel,
-          title: screenTitle,
-          image,
-        });
-      const texture = track(createCanvasTexture(draw(null)));
+      const { screenImage } = shot.element.dataset;
+      const texture = track(createCanvasTexture(drawWorkScreen(null)));
       this.tvTextures.works[order] = texture;
       if (!screenImage) return;
       const image = new Image();
       image.decoding = 'async';
       image.addEventListener('load', () => {
         if (this.isDestroyed) return;
-        texture.image = draw(image);
+        texture.image = drawWorkScreen(image);
         texture.needsUpdate = true;
         this.requestRender();
       });
@@ -453,8 +452,7 @@ export default class HouseJourney {
         .loadAsync('/assets/models/human-lowpoly-rigged.glb', this.trackDownload('figure'))
         .finally(() => draco.dispose());
       await props;
-      this.loader.loaded = 1;
-      await count;
+      this.loader.loaded = DOWNLOAD_SHARE;
       if (this.isDestroyed) {
         this.disposeObject(model.scene);
         return;
@@ -502,6 +500,10 @@ export default class HouseJourney {
         if (!this.actions.has(name)) throw new Error('必要なアニメーションがありません: ' + name);
       }
       this.isReady = true;
+      await this.warmUp();
+      this.loader.loaded = 1;
+      await count;
+      if (this.isDestroyed) return;
       if (status) status.textContent = '';
       this.root.classList.remove('m-hero-scene--loading');
       this.root.classList.add('m-hero-scene--ready');
@@ -523,6 +525,31 @@ export default class HouseJourney {
     }
   }
 
+  /**
+   * Prepares the drawing while the loader still covers the page: uploads every texture, compiles every material's
+   * shaders, and draws a few stops through the whole pipeline once, which builds what the shadows and the ambient
+   * occlusion need for each kind of object. Done later, each of these stalls the first frame that needs it.
+   */
+  async warmUp() {
+    const textures = new Set<THREE.Texture>(this.textures);
+    this.scene.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      for (const material of Array.isArray(object.material) ? object.material : [object.material])
+        for (const value of Object.values(material)) if (value instanceof THREE.Texture) textures.add(value);
+    });
+    for (const texture of textures) this.renderer.initTexture(texture);
+    await this.renderer.compileAsync(this.scene, this.camera);
+    if (this.isDestroyed) return;
+    const { progress, opening } = this;
+    this.opening = 1;
+    for (const id of WARM_UP_STOPS) {
+      this.progress = houseStops.findIndex((stop) => stop.id === id);
+      this.render(0);
+    }
+    this.progress = progress;
+    this.opening = opening;
+  }
+
   /** Closes the mouth, except while the figure sips from the glass. */
   moveMouth(action: string, actionProgress: number | null) {
     const progress = actionProgress ?? 0;
@@ -542,7 +569,7 @@ export default class HouseJourney {
       if (!event.total) return;
       this.loader.files.set(name, Math.min(1, event.loaded / event.total));
       const shares = [...this.loader.files.values()];
-      this.loader.loaded = shares.reduce((sum, share) => sum + share, 0) / shares.length;
+      this.loader.loaded = (shares.reduce((sum, share) => sum + share, 0) / shares.length) * DOWNLOAD_SHARE;
     };
   }
 

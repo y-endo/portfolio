@@ -7,14 +7,6 @@ const ACCENT = '#304df0';
 const ACCENT_LIGHT = '#8fa2ff';
 const PAPER = '#f4f1e9';
 
-export type ScreenWork = {
-  number: string;
-  total: string;
-  label: string;
-  title: string;
-  image: HTMLImageElement | null;
-};
-
 const fontFamily = () => getComputedStyle(document.body).fontFamily || 'sans-serif';
 
 function createCanvas(width: number, height: number) {
@@ -29,21 +21,6 @@ export function createCanvasTexture(canvas: HTMLCanvasElement) {
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
   return texture;
-}
-
-/** Wraps by character because the titles mix Japanese and Latin text without spaces. */
-function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number) {
-  const lines: string[] = [];
-  let line = '';
-  for (const character of text) {
-    if (context.measureText(line + character).width > maxWidth && line) {
-      lines.push(line);
-      line = character;
-      if (lines.length === maxLines) break;
-    } else line += character;
-  }
-  if (lines.length < maxLines && line) lines.push(line);
-  return lines;
 }
 
 function drawCover(
@@ -133,34 +110,21 @@ export function drawStandbyScreen() {
   return canvas;
 }
 
-export function drawWorkScreen(work: ScreenWork) {
-  const { canvas, context } = createCanvas(1280, 704);
+/**
+ * The project's cover image on the television; the panel beside it carries the words. As on a real set, the
+ * picture sits inside a black border, so the thin bezel of the model reads as a frame round a lit screen rather
+ * than the image covering the whole front.
+ */
+export function drawWorkScreen(image: HTMLImageElement | null) {
+  // 1280 x 716 matches the screen's 1.77 x 0.99 m, so the 36 px border is 5 cm wide all round.
+  const { canvas, context } = createCanvas(1280, 716);
   if (!context) return canvas;
-  context.fillStyle = INK;
+  const border = 36;
+  context.fillStyle = '#050608';
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.font = '500 26px SFMono-Regular, consolas, monospace';
-  context.fillStyle = ACCENT_LIGHT;
-  context.fillText('WORKS', 56, 62);
-  context.textAlign = 'right';
-  context.fillStyle = PAPER;
-  context.fillText(work.number + ' / ' + work.total, canvas.width - 56, 62);
-  context.textAlign = 'left';
-  if (work.image) drawCover(context, work.image, 56, 92, canvas.width - 112, 430);
-  else {
-    context.fillStyle = '#1d2a4d';
-    context.fillRect(56, 92, canvas.width - 112, 430);
-  }
-  context.fillStyle = ACCENT;
-  context.fillRect(56, 548, 8, 112);
-  context.fillStyle = '#ffffff';
-  context.font = '700 40px ' + fontFamily();
-  wrapText(context, work.title, canvas.width - 200, 2).forEach((line, index) => {
-    context.fillText(line, 88, 590 + index * 50);
-  });
-  context.fillStyle = '#9aa6bf';
-  context.font = '500 22px ' + fontFamily();
-  context.textAlign = 'right';
-  context.fillText(work.label, canvas.width - 56, 676);
+  context.fillStyle = INK;
+  context.fillRect(border, border, canvas.width - border * 2, canvas.height - border * 2);
+  if (image) drawCover(context, image, border, border, canvas.width - border * 2, canvas.height - border * 2);
   return canvas;
 }
 

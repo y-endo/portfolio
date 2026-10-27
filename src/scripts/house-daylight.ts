@@ -113,18 +113,22 @@ const KEYS = DAYLIGHT.map(([id, light]) => {
 });
 
 /**
- * Warm lamps in the living room, the kitchen and the upstairs hall, seen through the windows at dusk, and the
- * porch light beside the front door, which lights the person waving goodbye in the closing shot.
+ * Downlights set into the ceilings, each shining straight down so the light falls on the floor and furniture
+ * rather than lighting up the ceiling round a bare point. Positions are on the ceiling: the underside of the
+ * upper floor at 2.75 m over the kitchen, and the ceiling at 6.0 m over the upstairs rooms and the double-height
+ * living room and hall, where the lamps are brighter to reach the floor. They come on towards dusk.
  */
-const LAMPS: { position: THREE.Vector3Tuple; intensity: number }[] = [
-  { position: [-2.4, 2.4, 2.6], intensity: 24 },
-  { position: [0.6, 2.4, -1.6], intensity: 16 },
-  { position: [-1.2, 5.3, -1.6], intensity: 16 },
-  { position: [2.2, 5.3, 2.4], intensity: 14 },
-  { position: [2.15, 2.0, 5.8], intensity: 7 },
+const DOWNLIGHTS: { position: THREE.Vector3Tuple; intensity: number }[] = [
+  { position: [-1.8, 2.75, -2.6], intensity: 18 },
+  { position: [0.3, 2.75, -1.1], intensity: 18 },
+  { position: [-3.2, 6.0, 1.8], intensity: 80 },
+  { position: [1.4, 6.0, 3.6], intensity: 80 },
+  { position: [-2.6, 6.0, -2.1], intensity: 22 },
+  { position: [2.6, 6.0, -2.6], intensity: 22 },
 ];
-/** The porch light's fitting on the front wall, right of the door frame. */
+/** The porch light's fitting on the front wall, right of the door frame, lighting the person waving goodbye. */
 const PORCH_LIGHT: THREE.Vector3Tuple = [2.15, 2.1, 5.46];
+const PORCH_INTENSITY = 7;
 
 /** The sky, the sun and the lamps, set for each moment of the visit by `update(progress)`. */
 export function createDaylight(scene: THREE.Scene) {
@@ -161,11 +165,27 @@ export function createDaylight(scene: THREE.Scene) {
   // Soft room fill prevents the roof from turning interiors into silhouettes.
   const fill = new THREE.DirectionalLight(0xffffff);
   fill.position.set(1, 5, 3);
-  const lamps = LAMPS.map(({ position }) => {
-    const lamp = new THREE.PointLight(0xffc68f, 0, 9, 2);
-    lamp.position.set(...position);
+  // Each downlight is a white trim ring flush with the ceiling round a frosted disc, which glows when it is on.
+  const downlightTrim = new THREE.MeshStandardMaterial({ color: 0xfbfaf6, roughness: 0.5 });
+  const downlightGlow = new THREE.MeshStandardMaterial({ color: 0xfffaf0, emissive: 0xffd2a0, emissiveIntensity: 0 });
+  const ring = new THREE.CylinderGeometry(0.075, 0.075, 0.01, 20);
+  const disc = new THREE.CylinderGeometry(0.055, 0.055, 0.004, 20);
+  const downlights = DOWNLIGHTS.map(({ position: [x, y, z] }) => {
+    const fitting = new THREE.Group();
+    fitting.position.set(x, y, z);
+    const trim = new THREE.Mesh(ring, downlightTrim);
+    trim.position.y = -0.004;
+    const glow = new THREE.Mesh(disc, downlightGlow);
+    glow.position.y = -0.01;
+    fitting.add(trim, glow);
+    const lamp = new THREE.SpotLight(0xffc68f, 0, 0, THREE.MathUtils.degToRad(55), 0.7, 2);
+    lamp.position.set(x, y - 0.02, z);
+    lamp.target.position.set(x, y - 1, z);
+    scene.add(fitting, lamp, lamp.target);
     return lamp;
   });
+  const porchLamp = new THREE.PointLight(0xffc68f, 0, 9, 2);
+  porchLamp.position.set(PORCH_LIGHT[0], PORCH_LIGHT[1] - 0.1, PORCH_LIGHT[2] + 0.34);
   // A small black wall light with a frosted shade that glows as the lamps come on.
   const porch = new THREE.Group();
   porch.position.set(...PORCH_LIGHT);
@@ -177,7 +197,7 @@ export function createDaylight(scene: THREE.Scene) {
   const glow = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.17, 0.02), shade);
   glow.position.z = 0.051;
   porch.add(housing, glow);
-  scene.add(dome, ambient, sunlight, sunlight.target, fill, porch, ...lamps);
+  scene.add(dome, ambient, sunlight, sunlight.target, fill, porch, porchLamp);
 
   const colors = { zenith: new THREE.Color(), horizon: new THREE.Color(), from: new THREE.Color() };
   const mixColor = (from: number, to: number, amount: number, target: THREE.Color) =>
@@ -218,9 +238,11 @@ export function createDaylight(scene: THREE.Scene) {
     fill.intensity = THREE.MathUtils.lerp(a.fillIntensity, b.fillIntensity, amount);
     scene.environmentIntensity = THREE.MathUtils.lerp(a.environmentIntensity, b.environmentIntensity, amount);
     const lampLevel = THREE.MathUtils.lerp(a.lamps, b.lamps, amount);
-    lamps.forEach((lamp, i) => {
-      lamp.intensity = LAMPS[i].intensity * lampLevel;
+    downlights.forEach((lamp, i) => {
+      lamp.intensity = DOWNLIGHTS[i].intensity * lampLevel;
     });
+    porchLamp.intensity = PORCH_INTENSITY * lampLevel;
+    downlightGlow.emissiveIntensity = lampLevel * 3;
     shade.emissiveIntensity = lampLevel * 2.5;
   };
   update(0);

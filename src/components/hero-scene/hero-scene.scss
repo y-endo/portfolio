@@ -236,7 +236,9 @@
 }
 
 .m-hero-scene__loader {
-  position: absolute;
+  // Fixed to the screen rather than the scene: a visit that opens at a chapter is already scrolled down there
+  // while the scene still sits at the top of the page, and the loader has to cover what the visitor sees.
+  position: fixed;
   inset: 0;
   z-index: 10;
   visibility: hidden;
@@ -301,17 +303,13 @@
 }
 
 .m-hero-scene__loader-head {
-  // The count rides the head of the bar, its right edge where the bar has reached, until it meets the margin.
+  // The count stands still at the right margin while the bar runs towards it.
   position: absolute;
+  right: var(--display-shell-gutter);
   bottom: 100%;
-  left: 0;
   display: flex;
   align-items: flex-start;
-  justify-content: flex-end;
-  width: min(calc(var(--loader-progress, 0) * 100%), calc(100% - var(--display-shell-gutter)));
-  min-width: max-content;
   margin: 0;
-  padding-left: var(--display-shell-gutter);
   font-family: var(--font-sans);
   font-weight: 600;
   line-height: 0.8;

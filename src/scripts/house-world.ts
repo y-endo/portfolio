@@ -261,7 +261,7 @@ export function createHouseWorld() {
     }
   };
 
-  // Faintly tinted, reflective glass with two painted glints per pane, so it reads as glass from either side.
+  // Faintly tinted, reflective glass: the sash and the reflections of the sky and the room show it is glass.
   const glassMaterial = new THREE.MeshStandardMaterial({
     color: 0xbcd9e2,
     roughness: 0.05,
@@ -271,31 +271,12 @@ export function createHouseWorld() {
     depthWrite: false,
     side: THREE.DoubleSide,
   });
-  const glintMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.75,
-    depthWrite: false,
-    side: THREE.DoubleSide,
-  });
   const plane = new THREE.PlaneGeometry(1, 1);
   const glassPane = (target: THREE.Group, position: Triple, size: [number, number]) => {
     const glass = new THREE.Mesh(plane, glassMaterial);
     glass.position.set(...position);
     glass.scale.set(...size, 1);
     target.add(glass);
-    const length = Math.min(...size) * 0.35;
-    for (const [offset, width] of [
-      [0, 0.07],
-      [0.12, 0.03],
-    ]) {
-      const glint = new THREE.Mesh(plane, glintMaterial);
-      glint.position.set(position[0] - size[0] * 0.18 + offset, position[1] + size[1] * 0.18, position[2] + 0.003);
-      glint.rotation.z = -0.75;
-      glint.scale.set(width, length, 1);
-      glint.renderOrder = 1;
-      target.add(glint);
-    }
   };
   type WindowPlacement = {
     /** Centre of the wall opening. */
@@ -562,10 +543,11 @@ export function createHouseWorld() {
   block('paper', [-2.8, 0.44, 2.45], [0.44, 0.035, 0.3], [0, 0.18, 0]);
   // A deeper cabinet holds the television's 0.6 m stand.
   block('oak', [-4.6, 0.3, 2.1], [0.8, 0.55, 2.3]);
-  // The television stands on the cabinet at 1.5x. Its screen is 1.77 x 0.99 m, 0.0975 m in front of the
-  // model's centre and 0.15 m above it; the works are drawn on a plane laid over it.
+  // The television stands on the cabinet at 1.5x. Its screen is 1.77 x 0.99 m, 0.15 m above the model's centre
+  // and, set back almost flush with the bezel (prepare-props.py), 0.0405 m in front of it; the works are drawn on
+  // a plane laid 1.5 mm over it.
   props.push({ model: 'television', position: [-4.6, 0.575 + 0.69, 2.1], rotationY: Math.PI / 2, scale: 1.5 });
-  const tvScreen = screen([-4.5, 1.415, 2.1], [1.77, 0.99]);
+  const tvScreen = screen([-4.558, 1.415, 2.1], [1.77, 0.99]);
   plant(-4.45, 0.02, 4.55, 1.7);
 
   // Oak kitchen and island. The walk route passes around the island's east end.

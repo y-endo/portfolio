@@ -5,7 +5,8 @@ Usage (from the repository root):
 
 The downloads in output/house-journey-implementation/props-source are imported and written again,
 still Draco-compressed, to public/assets/models/props. The site decodes them with three.js's DRACOLoader.
-The coffee mug also loses its steam. Faces stay flat-shaded with their vertex colours.
+The coffee mug also loses its steam, and the television's screen is set back almost flush with its bezel.
+Faces stay flat-shaded with their vertex colours.
 """
 
 from pathlib import Path
@@ -75,6 +76,25 @@ def remove_steam(mesh):
     print("  removed %d steam parts" % len(steam))
 
 
+# The television's screen stands 40 mm proud of the bezel's front (at y = -0.025), which reads as a slab stuck
+# on the set when seen from the side. Its front is set back to 2 mm proud of the bezel, as on a flat panel.
+# Only the screen comes forward of y = -0.04 above the stand's neck (which reaches z = -0.25).
+SCREEN_FRONT = -0.027
+
+
+def flush_screen(obj):
+    """Move the television screen's front face back to SCREEN_FRONT (Blender space: the set faces -Y)."""
+    to_world = obj.matrix_world
+    moved = 0
+    for vertex in obj.data.vertices:
+        point = to_world @ vertex.co
+        if point.y < -0.04 and point.z > -0.24:
+            point.y = SCREEN_FRONT
+            vertex.co = to_world.inverted() @ point
+            moved += 1
+    print("  set back %d screen vertices" % moved)
+
+
 def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
     for name in MODELS:
@@ -82,6 +102,8 @@ def main():
         bpy.ops.import_scene.gltf(filepath=str(SOURCE / (name + ".glb")))
         if name == "coffee-mug":
             remove_steam(next(o for o in bpy.data.objects if o.type == "MESH").data)
+        if name == "tv-flatscreen":
+            flush_screen(next(o for o in bpy.data.objects if o.type == "MESH"))
         target = OUTPUT / (name + ".glb")
         bpy.ops.export_scene.gltf(
             filepath=str(target),
