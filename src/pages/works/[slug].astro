@@ -24,7 +24,7 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== portfoli
 <BaseLayout title={work.title} description={work.summary}>
   <article class="work-detail">
     <div class="work-detail__masthead">
-      <a class="work-detail__back" href={currentIndex === 0 ? '/#works' : '/#work-manga'}>Back to the gallery ↗</a><span
+      <a class="work-detail__back" href={'/#work-' + String(currentIndex + 1)}>Back to the gallery ↗</a><span
         >Case study / {work.number}</span
       >
     </div>

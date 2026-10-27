@@ -3,25 +3,43 @@ import { career } from '../../data/career';
 import './career-list.scss';
 ---
 
-<section class="p-home-panel p-home-career js-journey-content" id="career" aria-labelledby="career-title">
-  <p class="p-home-panel__eyebrow">03 / The living room</p>
-  <h2 class="p-home-panel__title js-journey-title" id="career-title">Career</h2>
-  <p class="p-home-career__intro">2014年から、設計・開発・運用、そしてチームのリードへ。</p>
-  <ol class="p-home-career__timeline" reversed>
-    {
-      career.map((entry, index) => (
-        <li class="p-home-career__entry">
-          <p class="p-home-career__period">{entry.period}</p>
-          <h3 class="p-home-career__organization">{entry.organization}</h3>
-          <p class="p-home-career__role">{entry.role}</p>
-          <details class="p-home-career__details" open={index === 0}>
-            <summary class="p-home-career__toggle">
-              この期間の取り組み <span aria-hidden="true">+</span>
-            </summary>
+<section class="p-home-career" id="career" aria-labelledby="career-title">
+  {
+    career.map((entry, index) => (
+      <div
+        class:list={['p-home-shot', 'js-journey-shot', { 'p-home-shot--short': index < career.length - 1 }]}
+        data-shot={'career-' + String(index + 1)}
+        data-sign-period={entry.period}
+        data-sign-title={entry.organization}
+        data-sign-role={entry.role}
+      >
+        <div class="p-home-panel p-home-career__panel js-journey-content">
+          {index === 0 && (
+            <>
+              <p class="p-home-panel__eyebrow">03 / Down the stairs</p>
+              <h2 class="p-home-panel__title js-journey-title" id="career-title">
+                Career
+              </h2>
+              <p class="p-home-career__intro">
+                階段を下りるほど、過去へ。2014年から、設計・開発・運用、そしてチームのリードへ。
+              </p>
+            </>
+          )}
+          <article class="p-home-career__entry" aria-labelledby={'career-' + String(index + 1) + '-title'}>
+            <p class="p-home-career__meta">
+              <span class="p-home-career__step">
+                {String(index + 1).padStart(2, '0')} / {String(career.length).padStart(2, '0')}
+              </span>
+              <span class="p-home-career__period">{entry.period}</span>
+            </p>
+            <h3 class="p-home-career__organization" id={'career-' + String(index + 1) + '-title'}>
+              {entry.organization}
+            </h3>
+            <p class="p-home-career__role">{entry.role}</p>
             <p class="p-home-career__summary">{entry.summary}</p>
-          </details>
-        </li>
-      ))
-    }
-  </ol>
+          </article>
+        </div>
+      </div>
+    ))
+  }
 </section>

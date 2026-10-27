@@ -4,6 +4,7 @@ import HeroScene from '../components/hero-scene/HeroScene.astro';
 import ProfileSection from '../components/profile-section/ProfileSection.astro';
 import CareerList from '../components/career-list/CareerList.astro';
 import WorkFeature from '../components/work-feature/WorkFeature.astro';
+import LinksSection from '../components/links-section/LinksSection.astro';
 import ContactSection from '../components/contact-section/ContactSection.astro';
 import { works } from '../data/works';
 import '../styles/pages/home.scss';
@@ -11,16 +12,46 @@ import '../styles/pages/home.scss';
 
 <BaseLayout>
   <HeroScene>
-    <div class="p-home-chapter js-journey-section" data-journey-target="profile"><ProfileSection /></div>
-    <div class="p-home-chapter js-journey-section" data-journey-target="career"><CareerList /></div>
-    <div class="p-home-chapter js-journey-section" data-journey-target="works">
-      <section class="p-home-panel p-home-works js-journey-content" id="works" aria-labelledby="works-title">
-        <p class="p-home-panel__eyebrow">04 / The kitchen</p>
-        <h2 class="p-home-panel__title" id="works-title">Works</h2>
-        <div class="p-home-works__list">{works.map((work, index) => <WorkFeature work={work} index={index} />)}</div>
-      </section>
+    <div
+      class="p-home-shot p-home-shot--right js-journey-shot"
+      data-shot="profile"
+      data-picture="/images/profile/portrait.webp"
+    >
+      <ProfileSection />
     </div>
-    <div class="p-home-chapter p-home-chapter--last js-journey-section" data-journey-target="contact">
+    <CareerList />
+    <section class="p-home-works" id="works" aria-labelledby="works-title">
+      {
+        works.map((work, index) => (
+          <div
+            class:list={['p-home-shot', 'js-journey-shot', { 'p-home-shot--short': index < works.length - 1 }]}
+            data-shot={'works-' + String(index + 1)}
+            data-screen-title={work.title}
+            data-screen-label={work.category + ' / ' + work.year}
+            data-screen-image={work.cover.src}
+          >
+            <div class="p-home-panel p-home-works__panel js-journey-content">
+              {index === 0 && (
+                <>
+                  <p class="p-home-panel__eyebrow">04 / On the TV</p>
+                  <h2 class="p-home-panel__title js-journey-title" id="works-title">
+                    Works
+                  </h2>
+                  <p class="p-home-works__lead">
+                    テレビに映しているのは、設計から運用まで担当した2つのプロジェクトです。
+                  </p>
+                </>
+              )}
+              <WorkFeature work={work} index={index} />
+            </div>
+          </div>
+        ))
+      }
+    </section>
+    <div class="p-home-shot js-journey-shot" data-shot="kitchen">
+      <LinksSection />
+    </div>
+    <div class="p-home-shot p-home-shot--last js-journey-shot" data-shot="contact">
       <ContactSection />
     </div>
   </HeroScene>

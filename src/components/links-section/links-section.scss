@@ -1,0 +1,67 @@
+@use '../../styles/tools' as *;
+
+.p-home-links__lead {
+  margin: 0 0 rem(24);
+  color: var(--color-ink-soft);
+  font-size: rem(15);
+  line-height: 1.9;
+}
+
+.p-home-links__list {
+  border-top: rem(1) solid var(--color-line);
+}
+
+.p-home-links__item {
+  border-bottom: rem(1) solid var(--color-line);
+}
+
+.p-home-links__link {
+  display: flex;
+  align-items: center;
+  gap: rem(16);
+  min-height: rem(68);
+  transition: color var(--motion-fast) var(--ease-out);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}
+
+.p-home-links__label {
+  font-size: rem(22);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+
+  @include mq(wide) {
+    font-size: rem(24);
+  }
+}
+
+.p-home-links__detail {
+  flex: 1;
+  color: var(--color-muted);
+  font-family: var(--font-meta);
+  font-size: rem(11);
+  letter-spacing: 0.04em;
+}
+
+.p-home-links__icon {
+  width: rem(22);
+  height: rem(22);
+  flex-shrink: 0;
+  transition: translate var(--motion-fast) var(--ease-out);
+
+  .p-home-links__link:hover &,
+  .p-home-links__link:focus-visible & {
+    translate: rem(3) rem(-3);
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}

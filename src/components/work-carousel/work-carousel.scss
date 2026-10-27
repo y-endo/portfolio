@@ -11,8 +11,9 @@
 .work-carousel__stage {
   position: relative;
   overflow: hidden;
-  border: rem(1) solid var(--color-line);
+  border-radius: rem(24);
   background: var(--color-field);
+  box-shadow: var(--shadow-panel);
 }
 
 .work-carousel__main {
@@ -73,6 +74,7 @@
   block-size: var(--work-carousel-control-block-size);
   padding: 0;
   border: 0;
+  border-radius: rem(14);
   background: var(--work-carousel-control-background);
   color: var(--color-ink);
   cursor: pointer;
@@ -144,6 +146,7 @@
   aspect-ratio: 16 / 10;
   padding: rem(4);
   border: rem(1) solid var(--color-line);
+  border-radius: rem(10);
   background: var(--color-sheet);
   color: var(--color-ink);
   cursor: pointer;

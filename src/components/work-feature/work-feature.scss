@@ -1,5 +1,17 @@
 @use '../../styles/tools' as *;
 
+.p-home-work {
+  // Coming back from a project page lands on the project with its whole panel in view, clear of the header; on
+  // phones the card sits low, below the subject.
+  .m-hero-scene--journey & {
+    scroll-margin-top: rem(160);
+
+    @include mq(narrow) {
+      scroll-margin-top: 50svh;
+    }
+  }
+}
+
 .p-home-work__media {
   position: relative;
   display: block;
@@ -7,6 +19,10 @@
   overflow: hidden;
   aspect-ratio: 8 / 5;
   background: transparent;
+
+  .m-hero-scene--journey & {
+    display: none;
+  }
 }
 
 .p-home-work__image {
@@ -43,50 +59,62 @@
   display: flex;
   justify-content: space-between;
   gap: rem(16);
-  padding: rem(14) 0;
+  margin: 0;
+  padding: rem(4) 0 rem(12);
   color: var(--color-muted);
   font-family: var(--font-meta);
-  font-size: rem(9);
+  font-size: rem(11);
+  letter-spacing: 0.04em;
 }
 
 .p-home-work__title {
-  margin: rem(18) 0;
+  margin: rem(4) 0 rem(14);
   font-size: rem(22);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.6;
+  line-height: 1.5;
 
   @include mq(wide) {
-    font-size: rem(25);
+    font-size: rem(24);
   }
 }
 
 .p-home-work__summary {
-  margin: 0 0 rem(24);
-  color: var(--color-muted);
+  margin: 0 0 rem(18);
+  color: var(--color-ink-soft);
   font-size: rem(14);
   line-height: 1.9;
 }
 
 .p-home-work__role {
+  display: inline-flex;
   margin: 0 0 rem(20);
-  color: var(--color-muted);
+  padding: rem(5) rem(12);
+  border: rem(1) solid var(--color-line);
+  border-radius: rem(999);
+  color: var(--color-ink-soft);
+  font-family: var(--font-meta);
   font-size: rem(11);
+  letter-spacing: 0.04em;
 }
 
 .p-home-work__details {
-  margin-top: rem(24);
+  margin-top: rem(8);
 }
 
 .p-home-work__details-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: rem(44);
-  color: var(--color-muted);
-  font-size: rem(11);
+  min-height: rem(48);
+  color: var(--color-ink-soft);
+  font-size: rem(13);
   list-style: none;
   cursor: pointer;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
 
   &:hover,
   &:focus-visible {
@@ -94,23 +122,43 @@
   }
 }
 
+.p-home-work__details-plus {
+  font-size: rem(18);
+  line-height: 1;
+  transition: rotate var(--motion-fast) var(--ease-out);
+
+  .p-home-work__details:open & {
+    rotate: 45deg;
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}
+
 .p-home-work__facts {
-  margin: rem(16) 0 0;
+  margin: rem(8) 0 0;
 }
 
 .p-home-work__fact {
-  padding: rem(16) 0;
+  display: grid;
+  grid-template-columns: rem(84) 1fr;
+  gap: rem(16);
+  padding: rem(14) 0;
   border-top: rem(1) solid var(--color-line);
 }
 
 .p-home-work__fact-label {
-  margin-bottom: rem(8);
   color: var(--color-muted);
-  font-size: rem(10);
+  font-family: var(--font-meta);
+  font-size: rem(11);
+  letter-spacing: 0.04em;
+  line-height: 1.9;
 }
 
 .p-home-work__fact-value {
   margin: 0;
+  color: var(--color-ink-soft);
   font-size: rem(13);
   line-height: 1.9;
 }

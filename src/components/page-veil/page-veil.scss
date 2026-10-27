@@ -1,0 +1,30 @@
+@use '../../styles/tools' as *;
+
+// A white veil over the whole page: it lifts as a page opens and falls before the next one, so moving between
+// the house and a project page passes through white, like the loader and the cuts between chapters.
+.l-page-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: page-veil-lift 0.6s var(--ease-out) both;
+  transition: opacity 0.35s var(--ease-out);
+
+  &--leaving {
+    opacity: 1;
+    animation: none;
+  }
+
+  @include mq(reduced-motion) {
+    animation: none;
+    transition: none;
+  }
+}
+
+@keyframes page-veil-lift {
+  from {
+    opacity: 1;
+  }
+}

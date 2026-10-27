@@ -1,5 +1,14 @@
 ---
 import './hero-scene.scss';
+
+const chapters = [
+  { id: 'top', label: 'Top' },
+  { id: 'profile', label: 'Profile' },
+  { id: 'career', label: 'Career' },
+  { id: 'works', label: 'Works' },
+  { id: 'links', label: 'Links' },
+  { id: 'contact', label: 'Contact' },
+];
 ---
 
 <section class="m-hero-scene js-hero-scene" id="top" aria-labelledby="hero-title">
@@ -14,15 +23,30 @@ import './hero-scene.scss';
         decoding="async"
       />
       <canvas class="m-hero-scene__canvas js-hero-canvas" aria-hidden="true"></canvas>
+      <span class="m-hero-scene__grade" aria-hidden="true"></span>
+      <span class="m-hero-scene__veil" aria-hidden="true"></span>
     </div>
     <div class="m-hero-scene__introduction">
       <p class="m-hero-scene__edition">Welcome to my place.</p>
-      <h1 class="m-hero-scene__title" id="hero-title">
+      <h1 class="m-hero-scene__title js-journey-title" id="hero-title">
         <span class="m-hero-scene__name">Yuki Endo</span>
         <span class="m-hero-scene__portfolio">Portfolio</span>
       </h1>
       <p class="m-hero-scene__discipline">Frontend Engineer</p>
       <p class="m-hero-scene__statement">設計から、その先の運用まで。</p>
+    </div>
+    <div class="m-hero-scene__loader" aria-hidden="true">
+      <div class="m-hero-scene__loader-meter">
+        <p class="m-hero-scene__loader-head">
+          <span class="m-hero-scene__loader-count js-hero-loader-percent">0</span>
+          <span class="m-hero-scene__loader-unit">%</span>
+        </p>
+        <span class="m-hero-scene__loader-track"><span class="m-hero-scene__loader-bar"></span></span>
+        <p class="m-hero-scene__loader-caption">
+          <span>Opening the house</span>
+          <span>Yuki Endo / Portfolio</span>
+        </p>
+      </div>
     </div>
     <p class="m-hero-scene__status js-hero-status" role="status"></p>
     <div class="m-hero-scene__footer">
@@ -31,11 +55,25 @@ import './hero-scene.scss';
         <span class="js-journey-next-icon" aria-hidden="true">↓</span></a
       >
       <p class="m-hero-scene__room js-journey-label">The study</p>
-      <div class="m-hero-scene__controls">
-        <button class="m-hero-scene__motion js-hero-motion" type="button" aria-pressed="false">動きを止める</button>
-        <p class="m-hero-scene__count"><span class="m-hero-scene__current js-journey-count">01</span> / 05</p>
-      </div>
     </div>
+    <span class="m-hero-scene__progress" aria-hidden="true"></span>
+    <nav class="m-hero-scene__rail" aria-label="章の進み具合">
+      <span class="m-hero-scene__rail-line" aria-hidden="true"><span class="m-hero-scene__rail-fill"></span></span>
+      <ol class="m-hero-scene__rail-list">
+        {
+          chapters.map((chapter, index) => (
+            <li class="m-hero-scene__rail-item">
+              <a class="m-hero-scene__rail-link js-house-nav-link js-journey-rail-link" href={'#' + chapter.id}>
+                <span class="m-hero-scene__rail-index">{String(index + 1).padStart(2, '0')}</span>
+                <span class="m-hero-scene__rail-label">
+                  <span class="m-hero-scene__rail-label-text">{chapter.label}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
   </div>
   <div class="m-hero-scene__travel" aria-hidden="true"></div>
   <div class="m-hero-scene__destination js-hero-destination"><slot /></div>

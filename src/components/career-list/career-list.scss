@@ -1,78 +1,98 @@
 @use '../../styles/tools' as *;
 
 .p-home-career__intro {
-  margin: 0 0 rem(40);
-  color: var(--color-muted);
-  font-size: rem(14);
-}
-
-.p-home-career__timeline {
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: rem(1) solid var(--color-line);
+  margin: 0 0 rem(28);
+  color: var(--color-ink-soft);
+  font-size: rem(15);
+  line-height: 1.9;
 }
 
 .p-home-career__entry {
   position: relative;
-  padding: rem(30) 0 rem(30) rem(24);
-  border-bottom: rem(1) solid var(--color-line);
+  padding: rem(22) rem(20) rem(24) rem(24);
+  border-radius: rem(16);
+  background: var(--color-card);
+  overflow: hidden;
 
   &::before {
     position: absolute;
-    top: rem(36);
+    top: 0;
+    bottom: 0;
     left: 0;
-    width: rem(5);
-    height: rem(5);
+    width: rem(3);
     background: var(--color-accent);
     content: '';
   }
 }
 
-.p-home-career__period {
-  margin: 0 0 rem(16);
+.p-home-career__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: rem(12);
+  margin: 0 0 rem(14);
   color: var(--color-accent);
   font-family: var(--font-meta);
-  font-size: rem(10);
+  font-size: rem(12);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+// While the 3D journey runs, the sign on the stair wall shows the period, the company and the role, so the panel
+// keeps only the order and the story. They stay in the page for screen readers and the plain layout.
+.p-home-career__period {
+  .m-hero-scene--journey & {
+    @include visually-hidden;
+  }
+}
+
+.p-home-career__step {
+  padding: rem(4) rem(10);
+  border-radius: rem(999);
+  color: var(--color-ink-soft);
+  background: var(--color-accent-tint);
+  font-size: rem(11);
+  font-weight: 400;
 }
 
 .p-home-career__organization {
-  margin: 0 0 rem(8);
+  margin: 0 0 rem(6);
+
+  .m-hero-scene--journey & {
+    @include visually-hidden;
+  }
+
   font-size: rem(20);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+
+  @include mq(wide) {
+    font-size: rem(24);
+  }
 }
 
 .p-home-career__role {
   margin: 0;
-  color: var(--color-muted);
-  font-size: rem(11);
-}
 
-.p-home-career__details {
-  margin-top: rem(20);
-}
-
-.p-home-career__toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: rem(40);
-  color: var(--color-muted);
-  font-size: rem(11);
-  cursor: pointer;
-  list-style: none;
-
-  &:hover,
-  &:focus-visible {
-    color: var(--color-accent);
+  .m-hero-scene--journey & {
+    @include visually-hidden;
   }
+
+  color: var(--color-muted);
+  font-family: var(--font-meta);
+  font-size: rem(11);
+  letter-spacing: 0.04em;
 }
 
 .p-home-career__summary {
-  margin: rem(12) 0 0;
-  color: var(--color-muted);
-  font-size: rem(13);
+  margin: rem(18) 0 0;
+
+  .m-hero-scene--journey & {
+    margin-top: 0;
+  }
+
+  color: var(--color-ink-soft);
+  font-size: rem(14);
   line-height: 1.9;
 }

@@ -8,7 +8,7 @@ const isHome = currentPath === '/';
 
 <header class:list={['site-header', 'js-site-header', { 'site-header--home': isHome }]} data-site-header>
   <a class="site-header__identity" href="/" aria-label="ホーム">
-    <img class="site-header__logo" src="/images/logo.svg" alt="" width="959" height="189" />
+    <img class="site-header__logo" src="/assets/img/logo_yuki_endo.png" alt="" width="356" height="68" />
   </a>
   <button
     class="site-header__toggle"
@@ -35,15 +35,24 @@ const isHome = currentPath === '/';
       <li class="site-header__item">
         <a class="site-header__link js-house-nav-link" href={isHome ? '#works' : '/#works'}>Works</a>
       </li>
+      <li class="site-header__item">
+        <a class="site-header__link js-house-nav-link" href={isHome ? '#links' : '/#links'}>Links</a>
+      </li>
       <li class="site-header__item site-header__item--last">
         <a class="site-header__link js-house-nav-link" href={isHome ? '#contact' : '/#contact'}>Contact</a>
       </li>
     </ul>
   </nav>
-  <dialog class="site-header__menu" id="site-header-menu" aria-label="主要ナビゲーション" data-site-menu>
+  <dialog
+    class="site-header__menu"
+    id="site-header-menu"
+    aria-label="主要ナビゲーション"
+    data-site-menu
+    data-lenis-prevent
+  >
     <div class="site-header__menu-header">
       <a class="site-header__menu-identity" href="/" aria-label="ホーム">
-        <img class="site-header__menu-logo" src="/images/logo.svg" alt="" width="959" height="189" />
+        <img class="site-header__menu-logo" src="/assets/img/logo_yuki_endo.png" alt="" width="356" height="68" />
       </a>
       <form class="site-header__menu-close-form" method="dialog">
         <button class="site-header__menu-close" type="submit" aria-label="メニューを閉じる">
@@ -57,26 +66,38 @@ const isHome = currentPath === '/';
     <nav class="site-header__menu-nav" aria-label="スマートフォンナビゲーション">
       <ul class="site-header__menu-list">
         <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#profile' : '/#profile'}>
+          <a class="site-header__menu-link" href={isHome ? '#top' : '/#top'}>
             <span class="site-header__menu-index" aria-hidden="true">01</span>
+            <span class="site-header__menu-link-label">Top</span>
+          </a>
+        </li>
+        <li class="site-header__menu-item">
+          <a class="site-header__menu-link" href={isHome ? '#profile' : '/#profile'}>
+            <span class="site-header__menu-index" aria-hidden="true">02</span>
             <span class="site-header__menu-link-label">Profile</span>
           </a>
         </li>
         <li class="site-header__menu-item">
           <a class="site-header__menu-link" href={isHome ? '#career' : '/#career'}>
-            <span class="site-header__menu-index" aria-hidden="true">02</span>
+            <span class="site-header__menu-index" aria-hidden="true">03</span>
             <span class="site-header__menu-link-label">Career</span>
           </a>
         </li>
         <li class="site-header__menu-item">
           <a class="site-header__menu-link" href={isHome ? '#works' : '/#works'}>
-            <span class="site-header__menu-index" aria-hidden="true">03</span>
+            <span class="site-header__menu-index" aria-hidden="true">04</span>
             <span class="site-header__menu-link-label">Works</span>
+          </a>
+        </li>
+        <li class="site-header__menu-item">
+          <a class="site-header__menu-link" href={isHome ? '#links' : '/#links'}>
+            <span class="site-header__menu-index" aria-hidden="true">05</span>
+            <span class="site-header__menu-link-label">Links</span>
           </a>
         </li>
         <li class="site-header__menu-item site-header__menu-item--last">
           <a class="site-header__menu-link" href={isHome ? '#contact' : '/#contact'}>
-            <span class="site-header__menu-index" aria-hidden="true">04</span>
+            <span class="site-header__menu-index" aria-hidden="true">06</span>
             <span class="site-header__menu-link-label">Contact</span>
           </a>
         </li>

@@ -1,28 +1,60 @@
 @use '../../styles/tools' as *;
 
 .p-home-contact__status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: rem(10);
-  margin: rem(32) 0;
-  color: var(--color-muted);
+  margin: rem(4) 0 rem(28);
+  padding: rem(6) rem(14) rem(6) rem(12);
+  border-radius: rem(999);
+  color: var(--color-ink-soft);
+  background: var(--color-accent-tint);
   font-family: var(--font-meta);
-  font-size: rem(9);
+  font-size: rem(11);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .p-home-contact__status-mark {
-  width: rem(5);
-  height: rem(5);
+  position: relative;
+  width: rem(7);
+  height: rem(7);
+  border-radius: 50%;
   background: var(--color-accent);
+
+  // A slow ring around the dot says the status is current.
+  &::after {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--color-accent);
+    content: '';
+    animation: p-home-contact-pulse 2.4s var(--ease-out) infinite;
+
+    @include mq(reduced-motion) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes p-home-contact-pulse {
+  from {
+    opacity: 0.5;
+    scale: 1;
+  }
+
+  to {
+    opacity: 0;
+    scale: 2.8;
+  }
 }
 
 .p-home-contact__title {
-  margin: 0 0 rem(24);
-  font-size: rem(27);
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 1.6;
+  margin: 0 0 rem(18);
+  font-size: rem(24);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.5;
 
   @include mq(wide) {
     font-size: rem(26);
@@ -30,8 +62,8 @@
 }
 
 .p-home-contact__description {
-  margin: 0 0 rem(16);
-  color: var(--color-muted);
+  margin: 0 0 rem(14);
+  color: var(--color-ink-soft);
   font-size: rem(14);
   line-height: 1.9;
 }
@@ -41,22 +73,37 @@
   align-items: center;
   justify-content: space-between;
   gap: rem(24);
-  margin-top: rem(48);
-  padding: rem(20) 0;
+  margin-top: rem(36);
+  padding: rem(18) 0;
   border-top: rem(1) solid var(--color-line);
   border-bottom: rem(1) solid var(--color-line);
   font-family: var(--font-sans);
-  font-size: rem(32);
-  font-size-adjust: none;
-  letter-spacing: -0.02em;
+  font-size: rem(36);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  transition: color var(--motion-fast) var(--ease-out);
 
   &:hover,
   &:focus-visible {
     color: var(--color-accent);
   }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
 }
 
 .p-home-contact__email-icon {
-  width: rem(40);
-  height: rem(40);
+  width: rem(36);
+  height: rem(36);
+  transition: translate var(--motion-fast) var(--ease-out);
+
+  .p-home-contact__email:hover &,
+  .p-home-contact__email:focus-visible & {
+    translate: rem(4) rem(-4);
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
 }

@@ -1,5 +1,6 @@
 ---
 import SiteHeader from '../components/site-header/SiteHeader.astro';
+import PageVeil from '../components/page-veil/PageVeil.astro';
 import '../styles/main.scss';
 
 type Props = {
@@ -60,15 +61,9 @@ const ogImage = new URL('/images/og.png', Astro.url.origin);
     <main id="main">
       <slot />
     </main>
-    <footer class="site-footer">
-      <p class="site-footer__identity">YUKI ENDO / FRONTEND ENGINEER</p>
-      <nav class="site-footer__nav" aria-label="フッターナビゲーション">
-        <a class="site-footer__link" href="/#profile">Profile</a>
-        <a class="site-footer__link" href="/#career">Career</a>
-        <a class="site-footer__link" href="/#works">Works</a>
-        <a class="site-footer__link" href="/#contact">Contact</a>
-      </nav>
-      <p class="site-footer__copyright">© {new Date().getFullYear()}</p>
-    </footer>
+    <PageVeil />
+    <script>
+      import '../scripts/main';
+    </script>
   </body>
 </html>

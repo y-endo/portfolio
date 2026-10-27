@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@lucide/astro": "1.28.0",
+    "lenis": "1.3.27",
     "swiper": "14.0.7",
     "three": "0.185.1"
   }

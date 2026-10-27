@@ -41,6 +41,17 @@ body {
   overflow-wrap: anywhere;
 }
 
+// Japanese headings break between phrases rather than inside a word, and lines are balanced. Body text avoids a
+// last line of a single character.
+:where(h1, h2, h3) {
+  text-wrap: balance;
+  word-break: auto-phrase;
+}
+
+:where(p, dd) {
+  text-wrap: pretty;
+}
+
 :where(h1, h2, h3, p, ul, ol, dl, dd, figure) {
   margin-block: 0;
 }
@@ -126,39 +137,6 @@ select {
   &:focus {
     translate: 0;
   }
-}
-
-.site-footer {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: rem(32);
-  inline-size: min(100%, var(--display-shell-max));
-  margin-inline: auto;
-  padding-block: rem(32) rem(48);
-  padding-inline: var(--display-shell-gutter);
-  border-block-start: rem(1) solid var(--color-line);
-  color: var(--color-muted);
-  font-size: rem(11);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-
-  @include mq(narrow) {
-    grid-template-columns: 1fr;
-    gap: rem(16);
-  }
-}
-
-.site-footer__nav {
-  display: flex;
-  gap: rem(16);
-
-  @include mq(narrow) {
-    flex-wrap: wrap;
-  }
-}
-
-.site-footer__link {
-  min-block-size: rem(24);
 }
 
 .eyebrow,

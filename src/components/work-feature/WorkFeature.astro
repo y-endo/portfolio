@@ -7,7 +7,7 @@ const { work, index } = Astro.props;
 const target = 'work-' + String(index + 1);
 ---
 
-<article class="p-home-work" aria-labelledby={target + '-title'}>
+<article class="p-home-work" id={target} aria-labelledby={target + '-title'}>
   <p class="p-home-work__caption">{work.number} / {work.category} / {work.year}</p>
   <a class="p-home-work__media" href={'/works/' + work.slug + '/'} aria-label={work.title + 'の詳細を見る'}>
     <img
@@ -28,7 +28,9 @@ const target = 'work-' + String(index + 1);
     ><span>プロジェクトを見る</span><ArrowUpRight class="p-home-link__icon" /></a
   >
   <details class="p-home-work__details">
-    <summary class="p-home-work__details-toggle">担当範囲・取り組みを読む <span aria-hidden="true">+</span></summary>
+    <summary class="p-home-work__details-toggle">
+      担当範囲・取り組みを読む <span class="p-home-work__details-plus" aria-hidden="true">+</span>
+    </summary>
     <dl class="p-home-work__facts">
       {
         [

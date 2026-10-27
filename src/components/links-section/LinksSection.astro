@@ -1,0 +1,24 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { links } from '../../data/links';
+import './links-section.scss';
+---
+
+<section class="p-home-panel p-home-links js-journey-content" id="links" aria-labelledby="links-title">
+  <p class="p-home-panel__eyebrow">05 / A break in the kitchen</p>
+  <h2 class="p-home-panel__title js-journey-title" id="links-title">Links</h2>
+  <p class="p-home-links__lead">ひと息ついたら、外へ。</p>
+  <ul class="p-home-links__list">
+    {
+      links.map((link) => (
+        <li class="p-home-links__item">
+          <a class="p-home-links__link" href={link.href} target="_blank" rel="noreferrer">
+            <span class="p-home-links__label">{link.label}</span>
+            <span class="p-home-links__detail">{link.detail}</span>
+            <ArrowUpRight class="p-home-links__icon" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>

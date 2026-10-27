@@ -1,0 +1,17 @@
+@use 'functions' as *;
+@use 'media' as *;
+
+/// A frosted glass panel over the 3D scene. The scene shows through, blurred, so the text reads clearly while the
+/// rest of the screen stays a living background. Forced colours get a plain opaque panel instead.
+@mixin glass-panel($radius: 20) {
+  border: 1px solid var(--color-glass-edge);
+  border-radius: rem($radius);
+  background: var(--color-glass);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(18px) saturate(140%);
+
+  @include mq(forced-colors) {
+    background: Canvas;
+    backdrop-filter: none;
+  }
+}
