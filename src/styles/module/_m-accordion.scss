@@ -1,0 +1,74 @@
+@use '../tools' as *;
+
+.m-accordion {
+  border-bottom: rem(1) solid var(--color-line);
+}
+
+.m-accordion__summary {
+  font-size: rem(15);
+  font-weight: 500;
+  line-height: 1.6;
+  list-style: none;
+  cursor: pointer;
+  transition: color var(--motion-fast) var(--ease-out);
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-accent);
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}
+
+.m-accordion__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: rem(16);
+  min-height: rem(68);
+  margin: 0;
+  font: inherit;
+}
+
+.m-accordion__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: rem(28);
+  height: rem(28);
+  border: rem(1) solid var(--color-line);
+  border-radius: 50%;
+  transition: border-color var(--motion-fast) var(--ease-out);
+
+  .m-accordion__summary:hover &,
+  .m-accordion__summary:focus-visible & {
+    border-color: var(--color-accent);
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}
+
+.m-accordion__plus {
+  display: block;
+  width: rem(14);
+  height: rem(14);
+  transition: rotate var(--motion-fast) var(--ease-out);
+
+  .m-accordion:open & {
+    rotate: 45deg;
+  }
+
+  @include mq(reduced-motion) {
+    transition: none;
+  }
+}

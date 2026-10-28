@@ -5,8 +5,7 @@
   padding-top: rem(72);
   padding-bottom: rem(80);
 
-  // The gap between chapters is the scroll that drives each move. A longer gap makes the camera travel less per
-  // flick of the wheel, so moves through several rooms stay smooth. Each panel is read in place before it.
+  // Keep the established camera and card timing while travelling between stops.
   .m-hero-scene--journey & {
     min-height: 100svh;
     margin-bottom: 140svh;
@@ -15,6 +14,14 @@
   @include mq(narrow) {
     padding-top: rem(24);
     padding-bottom: rem(24);
+  }
+
+  &--spatial-heading {
+    padding-top: calc(#{rem(72)} + var(--heading-space, 0));
+
+    @include mq(narrow) {
+      padding-top: calc(#{rem(24)} + var(--heading-space, 0));
+    }
   }
 }
 
@@ -26,7 +33,20 @@
 
 .p-home-shot--last {
   .m-hero-scene--journey & {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: rem(24) 0;
     margin-bottom: 0;
+  }
+}
+
+.p-home-shot--work {
+  .m-hero-scene--journey & {
+    @include mq(narrow) {
+      min-height: 100svh;
+      margin-bottom: 80svh;
+    }
   }
 }
 
@@ -71,27 +91,6 @@
   }
 }
 
-.p-home-panel__eyebrow {
-  display: flex;
-  align-items: center;
-  gap: rem(12);
-  margin: 0 0 rem(18);
-  color: var(--color-ink-soft);
-  font-family: var(--font-meta);
-  font-size: rem(11);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-
-  &::before {
-    width: rem(32);
-    height: rem(1);
-    background: var(--color-accent);
-    content: '';
-    transform-origin: left;
-    scale: var(--shot-focus, 1) 1;
-  }
-}
-
 .p-home-panel__title {
   margin: 0 0 rem(28);
   color: var(--color-ink);
@@ -100,6 +99,13 @@
   font-weight: 600;
   letter-spacing: -0.065em;
   line-height: 1.06;
+
+  &--spatial {
+    @include visually-hidden;
+
+    margin: 0;
+    padding: 0;
+  }
 
   @include mq(wide) {
     font-size: rem(56);
@@ -111,6 +117,12 @@
 
   &--contact {
     color: var(--color-accent);
+
+    @include mq(narrow) {
+      margin-bottom: rem(18);
+      font-size: rem(32);
+      white-space: nowrap;
+    }
   }
 
   // The letters rise in as the panel comes into view (`m-hero-scene__title-letter`).
@@ -124,6 +136,26 @@
   color: var(--color-ink-soft);
   font-size: rem(15);
   line-height: 1.9;
+
+  @include mq(narrow) {
+    margin-bottom: rem(20);
+    font-size: rem(13);
+  }
+}
+
+.p-home-works__panel {
+  .m-hero-scene--journey & {
+    @include mq(narrow) {
+      padding: rem(22) rem(20);
+    }
+  }
+}
+
+.p-home-works__title {
+  @include mq(narrow) {
+    margin-bottom: rem(18);
+    font-size: rem(34);
+  }
 }
 
 .p-home-link {
@@ -177,7 +209,7 @@
 
   .p-home-link:hover &,
   .p-home-link:focus-visible & {
-    translate: rem(3) rem(-3);
+    translate: rem(3) 0;
   }
 
   @include mq(reduced-motion) {

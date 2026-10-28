@@ -1,45 +1,42 @@
 ---
 import { profile } from '../../data/profile';
+import Accordion from '../module/m-accordion.astro';
 import './profile-section.scss';
 ---
 
 <section class="p-home-panel p-home-profile js-journey-content" id="profile" aria-labelledby="profile-title">
-  <p class="p-home-panel__eyebrow">02 / The landing</p>
   <h2 class="p-home-panel__title js-journey-title" id="profile-title">Profile</h2>
   <p class="p-home-profile__lead">{profile.lead}</p>
   <div class="p-home-profile__signature">
-    <img
-      class="p-home-profile__portrait"
-      src="/images/profile/portrait.webp"
-      width="1122"
-      height="1402"
-      alt="Yuki Endoのイメージ"
-      loading="lazy"
-      decoding="async"
-    />
-    <div>
-      <p class="p-home-profile__name">遠藤 勇気 / Yuki Endo</p><p class="p-home-profile__role">
-        Frontend Engineer / Since 2014
-      </p>
-    </div>
+    <p class="p-home-profile__name">{profile.name}</p>
+    <dl class="p-home-profile__facts">
+      <div class="p-home-profile__fact">
+        <dt class="p-home-profile__fact-label">生年月日</dt>
+        <dd class="p-home-profile__fact-value">
+          <time datetime={profile.birthDate}>{profile.birthDate.replaceAll('-', '/')}</time>
+        </dd>
+      </div>
+      <div class="p-home-profile__fact">
+        <dt class="p-home-profile__fact-label">エンジニア歴</dt>
+        <dd class="p-home-profile__fact-value">{profile.engineeringSince}年〜</dd>
+      </div>
+    </dl>
+    <p class="p-home-profile__introduction">{profile.introduction}</p>
   </div>
   <div class="p-home-profile__strengths">
     {
       profile.strengths.map((strength, index) => (
-        <details class="p-home-profile__strength">
-          <summary class="p-home-profile__summary">
+        <Accordion headingTag="h3">
+          <Fragment slot="summary">
             <span class="p-home-profile__number">{String(index + 1).padStart(2, '0')}</span>
-            <h3 class="p-home-profile__strength-title">{strength.title}</h3>
-            <span class="p-home-profile__plus" aria-hidden="true">
-              +
-            </span>
-          </summary>
+            <span class="p-home-profile__strength-title">{strength.title}</span>
+          </Fragment>
           <div class="p-home-profile__body">
             {strength.paragraphs.map((paragraph) => (
               <p class="p-home-profile__paragraph">{paragraph}</p>
             ))}
           </div>
-        </details>
+        </Accordion>
       ))
     }
   </div>

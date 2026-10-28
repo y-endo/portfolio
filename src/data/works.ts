@@ -1,3 +1,5 @@
+export type WorkImage = { src: string; width: number; height: number; alt: string };
+
 export type Work = {
   slug: string;
   number: string;
@@ -10,16 +12,11 @@ export type Work = {
   scope: string;
   outcome: string;
   url?: string;
-  scale: string;
+  scale?: string;
   team: string;
   technologyGroups: Array<{ label: string; items: string[] }>;
-  cover: { src: string; width: number; height: number; alt: string };
-  detailImages: Array<{
-    src: string;
-    width: number;
-    height: number;
-    alt: string;
-  }>;
+  cover: WorkImage;
+  detailImages: WorkImage[];
   sections: Array<{
     title: string;
     lead: string;
@@ -30,128 +27,170 @@ export type Work = {
 
 export const works: Work[] = [
   {
-    slug: 'large-scale-cms-renewal',
+    slug: 'endo-journal',
     number: '01',
-    year: '2025 - 2026',
-    category: '大規模Webサイト',
-    title: '大規模WebサイトのCMS移行・リニューアル',
+    year: '2026',
+    category: '個人開発の技術ブログ',
+    title: 'ENDO JOURNAL',
     summary:
-      '数万ページ規模の既存Webサイトを運用しながら、Astroを用いた静的サイトの構築、ヘッドレスCMSへの移行、デザイン刷新を進めたリニューアルプロジェクト。',
-    challenge:
-      '新旧CMSの仕様や運用方法の違いを整理し、既存サイトの更新要件を維持しながら、CMS移行とフロントエンド開発を並行して進めること。',
-    role: 'フロントエンド開発リード',
-    scope: 'テンプレート基盤、CMS連携、自動テスト、レビュー、オンボーディング、進捗管理',
+      'Web開発やAIの活用、個人で作ったサービスについて書いている技術ブログです。デザインの検討から実装までCodexと進め、私は方針の決定や修正指示、動作確認を担当しました。',
+    challenge: 'コードや画像を含む技術記事を読みやすく表示し、原稿を追加するだけで記事を増やせるようにすること。',
+    role: '企画、設計、AIへの実装指示、動作確認、運用',
+    scope: '画面設計、記事テンプレート、記事管理、サイト内検索、公開作業の自動化、アクセス解析',
     outcome:
-      '横展開できるテンプレート基盤と自動テスト環境を整備しました。新規参画者4名の立ち上がりを支援し、新旧CMSの仕様差分に伴う移行リスクを事前に検知・対応しました。',
-    scale: '数万ページ規模',
-    team: '20人以上の複数チーム',
+      'ブログを公開し、開発の記録を更新しています。記事はMDXで管理し、GitHub Actionsから公開できるようにしました。',
+    url: 'https://blog.endoyuki.jp/',
+    team: '個人開発',
     technologyGroups: [
-      {
-        label: 'Frontend',
-        items: ['Astro', 'TypeScript', 'SCSS'],
-      },
-      {
-        label: 'CMS',
-        items: ['Headless CMS'],
-      },
-      {
-        label: 'Quality',
-        items: ['Vitest', 'Playwright', 'axe-core'],
-      },
-      {
-        label: 'AI',
-        items: ['GitHub Copilot'],
-      },
+      { label: 'Frontend', items: ['Next.js', 'React', 'TypeScript', 'SCSS'] },
+      { label: 'Content', items: ['MDX', 'Shiki'] },
+      { label: 'Platform', items: ['Amazon S3', 'Amazon CloudFront', 'GitHub Actions'] },
+      { label: 'Analytics', items: ['Google Analytics 4', 'GA4 Data API'] },
+      { label: 'AI', items: ['Codex'] },
     ],
     cover: {
-      src: '/images/works/large-site/large-site.png',
-      width: 2400,
-      height: 1500,
-      alt: '大規模WebサイトのCMS移行・リニューアルを表すイメージ。',
+      src: '/assets/img/img_work_endo_journal_top.webp',
+      width: 1600,
+      height: 1000,
+      alt: 'ENDO JOURNALのトップページ。注目記事のカルーセルとカテゴリ、新着記事を表示。',
     },
     detailImages: [
       {
-        src: '/images/works/large-site/large-site.png',
-        width: 2400,
-        height: 1500,
-        alt: '大規模WebサイトのCMS移行・リニューアルを表すイメージ。',
+        src: '/assets/img/img_work_endo_journal_top.webp',
+        width: 1600,
+        height: 1000,
+        alt: 'ENDO JOURNALのトップページ。注目記事のカルーセルとカテゴリ、新着記事を表示。',
+      },
+      {
+        src: '/assets/img/img_work_endo_journal_article.webp',
+        width: 1600,
+        height: 1000,
+        alt: 'ENDO JOURNALの記事ページ。ブログをAIエージェントと制作した過程を紹介。',
       },
     ],
     sections: [
       {
-        title: '背景・課題',
-        lead: '既存サイトの運用と並行して、新しいCMSへの移行とフロントエンド基盤の刷新を進めました。',
+        title: 'ブログの画面構成',
+        lead: '記事を探すトップページと、本文を読む記事ページを分けてデザインしました。',
         paragraphs: [
-          '対象は数万ページに及ぶWebサイトです。既存サイトの運用と次期サイトの開発を並行して進めるため、新旧CMSの仕様差分や既存の運用ルール、長期運用を見据えた更新方法まで整理する必要がありました。',
-          '現行システムの運用経験を生かし、既存仕様を開発チームへ共有しながら、Astroを用いたフロントエンド開発を推進しました。',
+          'トップページには注目記事のカルーセルと記事一覧を配置しました。白い背景をベースに、日本語の本文が読みやすい文字サイズや余白を調整しています。',
+          'デザイン案はHTMLで作成し、ブラウザーで見比べながら選びました。配色やカードの形など、気になる箇所をCodexに伝え、修正を重ねています。',
         ],
       },
       {
-        title: '自分の担当範囲',
-        lead: 'Astroのテンプレート基盤の設計・実装に加え、メンバー支援、レビュー、進捗管理を担当しました。',
+        title: 'Codexとの役割分担',
+        lead: 'コードはCodexに書いてもらい、実装後の画面を自分で操作して確認しました。',
         paragraphs: [
-          '公式ドキュメントを参照し、実装を重ねながらAstroへの理解を深め、テンプレート基盤の設計とベース実装を進めました。',
-          '開発体制の拡張時には、新規参画者4名の開発環境構築と実装を支援し、タスクの割り振り、進捗確認、コードレビューも行いました。',
-        ],
-        points: [
-          'Astroテンプレートの基盤設計とベース実装',
-          'ヘッドレスCMSとのAPI連携',
-          '新規参画者4名のオンボーディングと開発支援',
-          'タスクの割り振りと進捗管理',
-          '一次コードレビュー',
-          '現行運用チームと次期開発チーム間の仕様調整',
+          '開発を始める前に、ファイルの配置や命名、Next.js、React、SCSSの書き方を決めました。Codexにはその規約に沿って実装を依頼しています。',
+          '動作確認では、ボタンを連打すると、操作をやめた後もカルーセルが動き続ける不具合などを見つけました。再現手順を伝えて修正を依頼し、Playwrightでも同じ操作を確認させています。',
         ],
       },
       {
-        title: '技術的な判断',
-        lead: '複数の開発者が一貫した設計方針で実装できるよう、再利用可能なテンプレート基盤を構築しました。',
+        title: '記事の管理と検索',
+        lead: '記事はMDXで管理し、本文と一緒にタイトルや公開日、カテゴリを記録しています。',
         paragraphs: [
-          '複数メンバーで開発するため、画面ごとに個別の実装を繰り返すと、担当者によって構造や品質にばらつきが生じるため、共通化できるレイアウトやコンポーネントをテンプレートとして整備しました。',
-          'また、新旧CMSのエディターでHTMLの自動補正の挙動が異なることを確認し、既存コンテンツの意図しない変更を防ぐために設定を見直しました。チーム内で解決できないCMSの仕様や不具合はベンダーへ問い合わせ、確認結果をもとに対応方針を検討しました。',
-        ],
-        points: [
-          '共通テンプレートを起点としたページ実装',
-          '新旧CMSのデータ構造を比較',
-          'CMS固有の問題に対するベンダーへの確認',
+          '記事ごとにページを実装する必要はなく、原稿と画像を追加すれば一覧にも反映されます。コードの色分けや画像表示には共通のコンポーネントを使っています。',
+          'カテゴリやタグ、サイト内検索から記事を探せます。人気記事の一覧には、Google Analytics 4の閲覧データを使っています。',
         ],
       },
       {
-        title: '主な実装',
-        lead: 'Astroによるテンプレート開発と、ヘッドレスCMSとのデータ連携を実装しました。',
+        title: '記事を公開する仕組み',
+        lead: 'Next.jsで生成したHTMLを、Amazon S3とCloudFrontで配信しています。',
         paragraphs: [
-          'HTMLモックを基にAstroテンプレートを作成し、ヘッドレスCMSから取得したデータを表示するフロントエンドを実装しました。',
-          'GitHub Copilotは、HTMLモックからAstroコンポーネントを作成する際のドラフト生成や、リファクタリング、テストケース作成の補助に活用しました。生成内容を確認し、必要な修正を加えたうえで実装に反映しました。',
+          '公開時にはGitHub Actionsで記事情報を検証し、ビルドとアップロードを行います。下書きの記事は公開対象から除外します。',
+          'あらかじめ生成したファイルを配信するため、閲覧のたびにNext.jsのサーバーでページを生成する必要はありません。',
         ],
-        points: [
-          'Astroによる共通テンプレート実装',
-          'ヘッドレスCMSのAPIと連携したデータ表示',
-          'GitHub Copilotを活用した実装とリファクタリング',
+      },
+    ],
+  },
+  {
+    slug: 'mononoyorimichi',
+    number: '02',
+    year: '2026',
+    category: '個人開発の雑貨メディア',
+    title: 'もののよりみち',
+    summary:
+      '文房具やミニチュア、暮らしの小物などを紹介する雑貨メディアです。企画からデザイン、開発、運用まで個人で担当しています。コアリクイのキャラクターやイラストを使い、親しみやすい雰囲気にしました。',
+    challenge: '写真やイラストを多く使いながら画像の容量を抑え、記事と商品情報を更新しやすくすること。',
+    role: '企画、デザイン、開発、運用',
+    scope: '画面設計、記事管理、画像の最適化、サイト内検索、商品情報の取得、公開作業の自動化、アクセス解析',
+    outcome:
+      'サイトを公開し、雑貨の紹介記事を更新しています。画像の変換や記事情報のチェックは、公開時に自動で行うようにしました。',
+    url: 'https://mononoyorimichi.jp/',
+    team: '個人開発',
+    technologyGroups: [
+      { label: 'Frontend', items: ['Next.js', 'React', 'TypeScript', 'SCSS'] },
+      { label: 'Content', items: ['MDX', 'Sharp'] },
+      { label: 'Platform', items: ['Amazon S3', 'Amazon CloudFront', 'GitHub Actions'] },
+      { label: 'Data', items: ['楽天API', 'Google Analytics 4', 'GA4 Data API'] },
+    ],
+    cover: {
+      src: '/assets/img/img_work_mononoyorimichi_top.webp',
+      width: 1600,
+      height: 1000,
+      alt: 'もののよりみちのトップページ。コアリクイのキャラクターと、カテゴリやテーマごとの記事一覧。',
+    },
+    detailImages: [
+      {
+        src: '/assets/img/img_work_mononoyorimichi_top.webp',
+        width: 1600,
+        height: 1000,
+        alt: 'もののよりみちのトップページ。コアリクイのキャラクターと、カテゴリやテーマごとの記事一覧。',
+      },
+      {
+        src: '/assets/img/img_work_mononoyorimichi_list.webp',
+        width: 1600,
+        height: 1000,
+        alt: 'もののよりみちの記事一覧。雑貨の写真とカテゴリ、テーマを並べたカード。',
+      },
+      {
+        src: '/assets/img/img_work_mononoyorimichi_article.webp',
+        width: 1600,
+        height: 1000,
+        alt: 'もののよりみちの記事詳細。Drumstick Pencilsの紹介記事のタイトル、導入文、商品写真。',
+      },
+    ],
+    sections: [
+      {
+        title: '雑貨を探す画面のデザイン',
+        lead: '商品の種類に加えて、見た目や特徴からも記事を探せるようにしました。',
+        paragraphs: [
+          '文房具などの商品カテゴリとは別に、「食べ物そっくり」「小さいのに細かい」といったテーマで記事を分類しています。商品名を知らなくても、気になるテーマから雑貨を探せます。',
+          '配色はクリーム色と淡い黄色を中心に、丸みのある書体を合わせました。カテゴリのイラストや案内役のコアリクイも、サイトの雰囲気に合わせて制作しています。',
         ],
       },
       {
-        title: '品質への取り組み',
-        lead: '自動テストで品質を確認できる基盤を整えました。',
+        title: '記事と商品情報の管理',
+        lead: 'ENDO JOURNALの仕組みをもとに、雑貨の紹介に必要な機能を追加しました。',
         paragraphs: [
-          'ビジネスロジックを対象としたVitestの単体テストと、axe-coreを利用したアクセシビリティ自動テストを導入し、担当者の目視確認だけに依存しない検証基盤を整えました。',
+          '記事はMDXで管理し、商品情報やキャラクターのコメントを本文に挿入できるようにしました。公開した記事をもとに、カテゴリ別の一覧やサイト内検索のデータも生成します。',
+          '商品の情報は記事本文とは別に管理しています。楽天APIから取得した情報を使い、商品画像や購入先へのリンクを表示します。',
         ],
-        points: ['Vitestによるビジネスロジックの検証', 'axe-coreとPlaywrightによるアクセシビリティ検証'],
       },
       {
-        title: '実現したこと',
-        lead: '体制拡張後も開発を進められる基盤を整え、仕様差分に伴うCMS移行のリスクを事前に検知しました。',
+        title: '表示サイズに合わせた画像の生成',
+        lead: 'サイトで使う写真やイラストは、表示する大きさに合わせて変換しています。',
         paragraphs: [
-          '共通テンプレートのベース実装と開発方法を共有し、複数メンバーが個別ページへ展開できる状態を整えました。また、新規参画者4名の環境構築と実装を支援し、タスク管理とコードレビューを担当しました。',
-          '現行運用で得た知識を基に、新旧CMSの仕様差分や更新手順を確認しました。特に、HTMLの自動補正など移行後の表示に影響する差分を事前に検知し、関係者と対策を進めました。',
+          '元画像は残したまま、Sharpで複数サイズのWebP画像を生成します。画面幅に合う画像をブラウザーが選ぶため、小さな画像の表示に必要以上に大きなファイルを読み込まずに済みます。',
+          '元画像や変換の設定が変わっていなければ、生成済みの画像を再利用します。楽天APIの商品画像は変換せず、提供されたURLから表示しています。',
+        ],
+      },
+      {
+        title: '記事の公開とアクセス解析',
+        lead: '公開前のチェックからアップロードまで、GitHub Actionsで実行しています。',
+        paragraphs: [
+          '記事情報や画像の参照先をチェックしてから、画像とHTMLを生成します。アップロード先はAmazon S3で、画像などを先に配置してからHTMLを更新します。配信にはCloudFrontを使っています。',
+          'Google Analytics 4で閲覧数を計測し、そのデータをもとに人気記事を表示しています。集計結果は、サイトの公開処理を実行するたびに反映されます。',
         ],
       },
     ],
   },
   {
     slug: 'manga-recommendation',
-    number: '02',
+    number: '03',
     year: '2026',
     category: '個人開発のWebアプリケーション',
-    title: 'マンガPick',
+    title: 'マンガPick（停止中）',
     summary:
       '漫画を探し、読書状況を記録し、作品を評価した履歴をもとに、次に読む一冊を提案するレコメンデーションサービス。AIバイブコーディングを取り入れ、企画から本番運用までを個人で担っています。',
     challenge:
@@ -160,7 +199,6 @@ export const works: Work[] = [
     scope: 'UI/UX設計、フルスタック開発、AI推薦、認証、データ運用、アクセス解析、インフラ運用',
     outcome:
       '漫画の検索、評価、読書記録、パーソナライズ推薦を備えたサービスを公開しました。コード作成の大部分をAIエージェントに任せ、私は要件整理、判断、検証に集中しました。',
-    url: 'https://www.mangapick.jp',
     scale: '漫画800作品以上',
     team: '個人開発',
     technologyGroups: [
@@ -186,38 +224,38 @@ export const works: Work[] = [
       },
     ],
     cover: {
-      src: '/images/works/manga-pick/mangapick.png',
+      src: '/assets/img/img_work_mangapick_top.webp',
       width: 2400,
       height: 1500,
       alt: 'マンガPickのトップページ。サービス紹介と漫画作品を並べたメインビジュアル。',
     },
     detailImages: [
       {
-        src: '/images/works/manga-pick/mangapick.png',
+        src: '/assets/img/img_work_mangapick_top.webp',
         width: 2400,
         height: 1500,
         alt: 'マンガPickのトップページ。サービス紹介と漫画作品を並べたメインビジュアル。',
       },
       {
-        src: '/images/works/manga-pick/gallery1.png',
+        src: '/assets/img/img_work_mangapick_gallery_01.webp',
         width: 1800,
         height: 1200,
         alt: 'マンガPickの漫画一覧ページ。検索条件と作品カードが並んでいる。',
       },
       {
-        src: '/images/works/manga-pick/gallery2.png',
+        src: '/assets/img/img_work_mangapick_gallery_02.webp',
         width: 1800,
         height: 1200,
         alt: 'マンガPickの漫画詳細ページ。作品情報、読書ステータス、評価、レビューを表示している。',
       },
       {
-        src: '/images/works/manga-pick/gallery3.png',
+        src: '/assets/img/img_work_mangapick_gallery_03.webp',
         width: 1800,
         height: 1200,
         alt: 'マンガPickのマイページ。おすすめ作品と利用状況を確認できるダッシュボード。',
       },
       {
-        src: '/images/works/manga-pick/gallery4.png',
+        src: '/assets/img/img_work_mangapick_gallery_04.webp',
         width: 1800,
         height: 1200,
         alt: 'マンガPickのレビュー一覧ページ。作品への評価と投稿されたレビューを表示している。',
@@ -327,5 +365,3 @@ export const works: Work[] = [
     ],
   },
 ];
-
-export const getWork = (slug: string) => works.find((work) => work.slug === slug);

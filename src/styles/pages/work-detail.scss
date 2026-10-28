@@ -57,24 +57,6 @@
   }
 }
 
-.work-detail__display {
-  margin: 0 0 rem(48);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-size: rem(56);
-  font-weight: 600;
-  letter-spacing: -0.065em;
-  line-height: 0.95;
-
-  @include mq(wide) {
-    font-size: rem(96);
-  }
-
-  @include mq(gallery-wide) {
-    font-size: rem(132);
-  }
-}
-
 .work-detail__header {
   display: flex;
   flex-direction: column;

@@ -58,7 +58,7 @@ const DAYLIGHT: [string, Daylight][] = [
     },
   ],
   [
-    'works-2',
+    'works-3',
     {
       zenith: 0x4185e0,
       horizon: 0xd9e3ee,

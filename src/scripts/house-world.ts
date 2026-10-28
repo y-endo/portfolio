@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createLandscape } from './house-landscape';
+import { createLandscape } from './house-landscape.ts';
 
 type Triple = [number, number, number];
 

@@ -1,5 +1,6 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import { ArrowRight } from '@lucide/astro';
+import Accordion from '../module/m-accordion.astro';
 import type { Work } from '../../data/works';
 import './work-feature.scss';
 type Props = { work: Work; index: number };
@@ -19,18 +20,15 @@ const target = 'work-' + String(index + 1);
       loading="lazy"
       decoding="async"
     />
-    <span class="p-home-work__image-label">VIEW PROJECT <ArrowUpRight class="p-home-work__image-arrow" /></span>
+    <span class="p-home-work__image-label">VIEW PROJECT <ArrowRight class="p-home-work__image-arrow" /></span>
   </a>
   <h3 class="p-home-work__title" id={target + '-title'}>{work.title}</h3>
   <p class="p-home-work__summary">{work.summary}</p>
-  <p class="p-home-work__role">{work.role}</p>
   <a class="p-home-link" href={'/works/' + work.slug + '/'}
-    ><span>プロジェクトを見る</span><ArrowUpRight class="p-home-link__icon" /></a
+    ><span>プロジェクトを見る</span><ArrowRight class="p-home-link__icon" /></a
   >
-  <details class="p-home-work__details">
-    <summary class="p-home-work__details-toggle">
-      担当範囲・取り組みを読む <span class="p-home-work__details-plus" aria-hidden="true">+</span>
-    </summary>
+  <Accordion className="p-home-work__details">
+    <span slot="summary">担当範囲・取り組みを読む</span>
     <dl class="p-home-work__facts">
       {
         [
@@ -40,27 +38,23 @@ const target = 'work-' + String(index + 1);
           ['実現したこと', work.outcome],
         ].map(([label, value]) => (
           <div class="p-home-work__fact">
-            <>
-              <dt class="p-home-work__fact-label">{label}</dt>
-              <dd class="p-home-work__fact-value">{value}</dd>
-            </>
+            <dt class="p-home-work__fact-label">{label}</dt>
+            <dd class="p-home-work__fact-value">{value}</dd>
           </div>
         ))
       }
       {
         work.url && (
           <div class="p-home-work__fact">
-            <>
-              <dt class="p-home-work__fact-label">公開URL</dt>
-              <dd class="p-home-work__fact-value">
-                <a class="text-link" href={work.url} target="_blank" rel="noreferrer">
-                  {work.url}
-                </a>
-              </dd>
-            </>
+            <dt class="p-home-work__fact-label">公開URL</dt>
+            <dd class="p-home-work__fact-value">
+              <a class="text-link" href={work.url} target="_blank" rel="noreferrer">
+                {work.url}
+              </a>
+            </dd>
           </div>
         )
       }
     </dl>
-  </details>
+  </Accordion>
 </article>

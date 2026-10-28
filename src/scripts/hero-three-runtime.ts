@@ -1,20 +1,23 @@
 import * as THREE from 'three';
+import { chapters } from '../data/chapters';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader, DRACO_GLTF_CONFIG } from 'three/addons/loaders/DRACOLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { createHouseHeadings } from './house-headings';
 import { createHouseWorld, createGlass, PROP_MODELS } from './house-world';
 import { createBirds } from './house-birds';
 import { createDaylight } from './house-daylight';
 import { leavePage } from './feature/page-veil';
-import { houseStops, sampleHouseTour, sampleOpening } from './house-tour';
+import { houseStops, sampleHouseTour, sampleOpening, WORKS_SEATED_PROGRESS } from './house-tour';
 import type { HouseStop } from './house-tour';
 import {
   createCanvasTexture,
+  createTelevisionPower,
   drawMonitorScreen,
   drawStandbyScreen,
   drawWorkScreen,
@@ -28,9 +31,11 @@ type Shot = {
   index: number;
   arrival: number;
   departure: number;
+  heading: HTMLElement | null;
+  headingSpace: number;
 };
 
-const CHAPTERS = ['top', 'profile', 'career', 'works', 'links', 'contact'] as const;
+const CHAPTERS = chapters.map((chapter) => chapter.id);
 /** The first stop of each chapter, where its dot sits on the chapter rail. */
 const CHAPTER_STOPS = CHAPTERS.map((chapter) => houseStops.findIndex((stop) => stop.chapter === chapter));
 
@@ -85,7 +90,7 @@ const LOADER_COUNT_SECONDS = { first: 1.6, chapter: 0.5 };
  */
 const DOWNLOAD_SHARE = 0.9;
 /** Stops drawn once behind the loader, between them showing every room and kind of object in the house. */
-const WARM_UP_STOPS = ['top', 'career-1', 'works-1', 'kitchen', 'contact'];
+const WARM_UP_STOPS = ['top', 'profile', 'career-1', 'works-1', 'kitchen', 'contact'];
 /** How the journey follows the scroll: the spring's settling time, and its speed limit in stops per second. */
 const FOLLOW_SECONDS = 0.35;
 const FOLLOW_SPEED = { base: 1.4, perStopBehind: 1.2 };
@@ -122,13 +127,16 @@ export default class HouseJourney {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(48, 1, 0.05, 90);
   world = createHouseWorld();
+  television = createTelevisionPower(this.world.tvScreen.material);
   actor = new THREE.Group();
   glass = createGlass();
   birds = createBirds();
   daylight: ReturnType<typeof createDaylight>;
   glassRest = new THREE.Group();
   composer: EffectComposer | null = null;
+  environment: THREE.WebGLRenderTarget | null = null;
   character: THREE.Group | null = null;
+  headings: ReturnType<typeof createHouseHeadings> | null = null;
   rightHand: THREE.Bone | null = null;
   /** The figure's meshes with the "MouthClosed" shape, and where it sits in their morph targets. */
   mouths: { mesh: THREE.Mesh; index: number }[] = [];
@@ -178,6 +186,7 @@ export default class HouseJourney {
   isVisible = true;
   /** 0 is the garden shot, 1 the hero shot of the study. */
   opening = 0;
+  introductionElapsed = 0;
   elapsed = 0;
   /**
    * The share of the house loaded, and the share the loader's count shows, trailing it at a readable pace.
@@ -200,7 +209,19 @@ export default class HouseJourney {
       if (!stop || element.dataset.shot !== stop.id)
         throw new Error('場面の並びが3Dの順路と一致しません: ' + (element.dataset.shot ?? ''));
       const content = element.querySelector<HTMLElement>('.js-journey-content') ?? element;
-      this.shots.push({ element, content, stop, index, arrival: 0, departure: 0 });
+      const heading = ['profile', 'career', 'works', 'links'].includes(stop.chapter)
+        ? content.querySelector<HTMLElement>('.js-journey-title')
+        : null;
+      this.shots.push({
+        element,
+        content,
+        stop,
+        index,
+        arrival: 0,
+        departure: 0,
+        heading,
+        headingSpace: 0,
+      });
     });
     if (this.shots.length !== houseStops.length - 1) throw new Error('場面の数が3Dの順路と一致しません。');
     this.renderer = new THREE.WebGLRenderer({
@@ -217,8 +238,10 @@ export default class HouseJourney {
     // A soft studio environment gives the flat-shaded faces gentle variation instead of one grey. The daylight
     // sets how strongly, lower towards dusk.
     const environment = new THREE.PMREMGenerator(this.renderer);
-    this.scene.environment = environment.fromScene(new RoomEnvironment(), 0.04).texture;
-    this.textures.push(this.scene.environment);
+    const room = new RoomEnvironment();
+    this.environment = environment.fromScene(room, 0.04);
+    this.scene.environment = this.environment.texture;
+    room.dispose();
     environment.dispose();
     const kitchen = houseStops.find((item) => item.id === 'kitchen');
     if (kitchen) this.glassRest.position.set(...kitchen.position);
@@ -226,24 +249,24 @@ export default class HouseJourney {
     this.attachProp(this.glass, this.glassRest, GLASS_REST_POSITION, new THREE.Quaternion());
     this.scene.add(this.world.group, this.actor, this.birds.group, this.glassRest);
     this.daylight = createDaylight(this.scene);
-    this.createComposer();
     this.observer = new ResizeObserver(this.handleViewportResize);
     this.initialize();
   }
 
-  /** Ambient occlusion grounds furniture and the figure. Phones skip it and render directly. */
+  /** Smooth the desktop scene's edges. Phones render directly. */
   createComposer() {
     const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
     this.composer = new EffectComposer(this.renderer, target);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    const occlusion = new GTAOPass(this.scene, this.camera, 1, 1);
-    occlusion.updateGtaoMaterial({ radius: 0.35, distanceFallOff: 1, thickness: 1, scale: 1 });
-    occlusion.blendIntensity = 0.9;
-    this.composer.addPass(occlusion);
     this.composer.addPass(new OutputPass());
-    // The occlusion is worked out from depth and normals without multisampling, so its shading has stair-stepped
-    // edges, most visible along the steps and paving outside. SMAA smooths those edges after the final colours.
     this.composer.addPass(new SMAAPass());
+  }
+
+  disposeComposer() {
+    if (!this.composer) return;
+    for (const pass of this.composer.passes) pass.dispose();
+    this.composer.dispose();
+    this.composer = null;
   }
 
   attachProp(prop: THREE.Object3D, parent: THREE.Object3D, position: THREE.Vector3, rotation: THREE.Quaternion) {
@@ -257,7 +280,6 @@ export default class HouseJourney {
     this.observer.observe(this.viewport);
     for (const shot of this.shots) this.observer.observe(shot.content);
     this.attachEvent();
-    this.createScreens();
     this.splitTitles();
     this.handleViewportResize();
     void this.loadCharacter();
@@ -270,6 +292,7 @@ export default class HouseJourney {
    */
   splitTitles() {
     for (const title of this.root.querySelectorAll<HTMLElement>('.js-journey-title')) {
+      if (this.shots.some((shot) => shot.heading === title)) continue;
       // The rendered text, so lines set as separate blocks (the name and "Portfolio") keep a space between them.
       const words = title.innerText.replace(/\s+/g, ' ').trim();
       if (!title.querySelector('[aria-label]')) title.setAttribute('aria-label', words);
@@ -339,7 +362,8 @@ export default class HouseJourney {
   }
 
   /** The monitor, the framed portrait, the stair signs and the television show the page's own content. */
-  createScreens() {
+  async createScreens() {
+    const pending: Promise<void>[] = [];
     const useTexture = (mesh: THREE.Mesh, texture: THREE.Texture) => {
       if (!(mesh.material instanceof THREE.MeshBasicMaterial)) return;
       mesh.material.map = texture;
@@ -356,13 +380,16 @@ export default class HouseJourney {
 
     const profile = this.shots.find((shot) => shot.stop.id === 'profile');
     const portrait = profile?.element.dataset.picture;
-    if (portrait)
-      new THREE.TextureLoader().load(portrait, (texture) => {
-        if (this.isDestroyed) return texture.dispose();
-        texture.colorSpace = THREE.SRGBColorSpace;
-        useTexture(this.world.picture, track(texture));
-        this.requestRender();
-      });
+    if (portrait) {
+      pending.push(
+        new THREE.TextureLoader().loadAsync(portrait).then((texture) => {
+          if (this.isDestroyed) return texture.dispose();
+          texture.colorSpace = THREE.SRGBColorSpace;
+          useTexture(this.world.picture, track(texture));
+          this.requestRender();
+        }),
+      );
+    }
 
     for (const shot of this.shots) {
       const { signPeriod, signTitle, signRole } = shot.element.dataset;
@@ -390,52 +417,61 @@ export default class HouseJourney {
       if (!screenImage) return;
       const image = new Image();
       image.decoding = 'async';
-      image.addEventListener('load', () => {
-        if (this.isDestroyed) return;
-        texture.image = drawWorkScreen(image);
-        texture.needsUpdate = true;
-        this.requestRender();
-      });
       image.src = screenImage;
+      pending.push(
+        image.decode().then(() => {
+          if (this.isDestroyed) return;
+          texture.image = drawWorkScreen(image);
+          texture.needsUpdate = true;
+          this.requestRender();
+        }),
+      );
     });
+    await Promise.all(pending);
   }
 
   /** Places copies of the furniture models where house-world lists them. Copies share geometry and materials. */
-  async loadProps() {
-    // The furniture models are Draco-compressed; three.js serves the decoder for glTF alongside its loader.
-    const draco = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG);
-    const loader = new GLTFLoader().setDRACOLoader(draco);
+  loadProps(loader: GLTFLoader) {
     const names = [...new Set(this.world.props.map((prop) => prop.model))];
     for (const name of names) this.loader.files.set(name, 0);
-    const loaded = await Promise.all(
-      names.map(
-        async (name) => [name, (await loader.loadAsync(PROP_MODELS[name], this.trackDownload(name))).scene] as const,
-      ),
-    ).finally(() => draco.dispose());
-    const models = new Map(loaded);
+    const pending = names.map(async (name) => {
+      const { scene: model } = await loader.loadAsync(PROP_MODELS[name], this.trackDownload(name));
+      if (this.isDestroyed) {
+        this.disposeObject(model);
+        return;
+      }
+      // Attach completed models immediately so destroy() also owns partially loaded furniture.
+      for (const prop of this.world.props.filter((item) => item.model === name)) {
+        const copy = model.clone();
+        copy.position.set(...prop.position);
+        copy.rotation.y = prop.rotationY ?? 0;
+        if (Array.isArray(prop.scale)) copy.scale.set(...prop.scale);
+        else copy.scale.setScalar(prop.scale ?? 1);
+        copy.traverse((object) => {
+          if (!(object instanceof THREE.Mesh)) return;
+          object.castShadow = !prop.isSky;
+          object.receiveShadow = !prop.isSky;
+          // Clouds must remain visible beyond the fog's far distance.
+          if (prop.isSky)
+            for (const material of Array.isArray(object.material) ? object.material : [object.material])
+              material.fog = false;
+        });
+        this.world.group.add(copy);
+      }
+    });
+    return pending;
+  }
+
+  async loadFigure(loader: GLTFLoader) {
+    this.loader.files.set('figure', 0);
+    const model = await loader.loadAsync('/assets/models/human-lowpoly-rigged.glb', this.trackDownload('figure'));
     if (this.isDestroyed) {
-      for (const model of models.values()) this.disposeObject(model);
-      return;
+      this.disposeObject(model.scene);
+      return null;
     }
-    for (const prop of this.world.props) {
-      const model = models.get(prop.model);
-      if (!model) continue;
-      const copy = model.clone();
-      copy.position.set(...prop.position);
-      copy.rotation.y = prop.rotationY ?? 0;
-      if (Array.isArray(prop.scale)) copy.scale.set(...prop.scale);
-      else copy.scale.setScalar(prop.scale ?? 1);
-      copy.traverse((object) => {
-        if (!(object instanceof THREE.Mesh)) return;
-        object.castShadow = !prop.isSky;
-        object.receiveShadow = !prop.isSky;
-        // Clouds sit beyond the fog's far distance; without this they would fade into flat white.
-        if (prop.isSky)
-          for (const material of Array.isArray(object.material) ? object.material : [object.material])
-            material.fog = false;
-      });
-      this.world.group.add(copy);
-    }
+    this.character = model.scene;
+    this.actor.add(model.scene);
+    return model;
   }
 
   async loadCharacter() {
@@ -443,28 +479,20 @@ export default class HouseJourney {
       const status = this.root.querySelector<HTMLElement>('.js-hero-status');
       if (status) status.textContent = '3Dの家を読み込んでいます。';
       const count = this.countLoader();
-      this.loader.files.set('figure', 0);
-      const props = this.loadProps();
-      // The figure's mesh is Draco-compressed, like the furniture.
       const draco = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG);
-      const model = await new GLTFLoader()
-        .setDRACOLoader(draco)
-        .loadAsync('/assets/models/human-lowpoly-rigged.glb', this.trackDownload('figure'))
-        .finally(() => draco.dispose());
-      await props;
+      const loader = new GLTFLoader().setDRACOLoader(draco);
+      const models = [this.loadFigure(loader), ...this.loadProps(loader)] as const;
+      // Wait for every model before releasing the shared decoder, even if one request fails.
+      void Promise.allSettled(models).then(() => draco.dispose());
+      const [model] = await Promise.all([...models, this.loadHeadings(), this.createScreens()]);
       this.loader.loaded = DOWNLOAD_SHARE;
-      if (this.isDestroyed) {
-        this.disposeObject(model.scene);
-        return;
-      }
-      this.character = model.scene;
-      this.actor.add(model.scene);
+      if (this.isDestroyed || !model) return;
       model.scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.castShadow = true;
           object.receiveShadow = true;
           // The file carries no normals; each face has its own corners, so these come out flat, as drawn. The
-          // shadows' normal bias and the ambient occlusion read them.
+          // shadows' normal bias reads them.
           object.geometry.computeVertexNormals();
           const originals = Array.isArray(object.material) ? object.material : [object.material];
           // The figure stays one plain grey; only the eyebrows and beard (material BrowBeard) are black.
@@ -505,19 +533,22 @@ export default class HouseJourney {
       await count;
       if (this.isDestroyed) return;
       if (status) status.textContent = '';
-      this.root.classList.remove('m-hero-scene--loading');
-      this.root.classList.add('m-hero-scene--ready');
+      const hashTarget = this.hashTarget(window.location.hash);
+      if (hashTarget || this.motionPreference.matches) this.opening = 1;
       this.handleMotionPreferenceChange();
-      const hash = decodeURIComponent(window.location.hash.slice(1));
-      const hashTarget = hash ? document.getElementById(hash) : null;
-      if (hashTarget && this.root.contains(hashTarget))
-        hashTarget.scrollIntoView({ behavior: 'instant', block: 'start' });
-      // Visitors arriving at a chapter, or asking for less motion, skip the opening flight.
-      if (hashTarget || window.scrollY > 0 || this.motionPreference.matches) this.opening = 1;
+      // Enabling the journey changes the document height. Let layout and its scroll events settle under the
+      // loader before placing a chapter, so a direct project URL opens on its television rather than flying in.
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      if (hashTarget && this.root.contains(hashTarget)) this.scrollToTarget(hashTarget);
+      else window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      if (this.isDestroyed) return;
       this.handleWindowScroll();
       this.progress = this.goalProgress;
       this.progressVelocity = 0;
       this.render(0);
+      this.root.classList.remove('m-hero-scene--loading');
+      this.root.classList.add('m-hero-scene--ready');
       this.start();
     } catch (error) {
       console.warn('家の3D表示を初期化できませんでした。', error);
@@ -525,13 +556,26 @@ export default class HouseJourney {
     }
   }
 
+  async loadHeadings() {
+    try {
+      const font = await new FontLoader().loadAsync('/assets/font/noto-sans-jp/journey.typeface.json');
+      if (this.isDestroyed) return;
+      this.headings = createHouseHeadings(font);
+      this.scene.add(this.headings.group);
+      this.handleViewportResize();
+    } catch (error) {
+      // Keep the original HTML headings if the optional display font cannot be loaded.
+      console.warn('立体見出しを読み込めないため、カード内の見出しを表示します。', error);
+    }
+  }
+
   /**
    * Prepares the drawing while the loader still covers the page: uploads every texture, compiles every material's
-   * shaders, and draws a few stops through the whole pipeline once, which builds what the shadows and the ambient
-   * occlusion need for each kind of object. Done later, each of these stalls the first frame that needs it.
+   * shaders, and draws a few stops through the whole pipeline once, preparing shadows for each kind of object.
+   * Done later, each of these stalls the first frame that needs it.
    */
   async warmUp() {
-    const textures = new Set<THREE.Texture>(this.textures);
+    const textures = new Set<THREE.Texture>();
     this.scene.traverse((object) => {
       if (!(object instanceof THREE.Mesh)) return;
       for (const material of Array.isArray(object.material) ? object.material : [object.material])
@@ -540,14 +584,16 @@ export default class HouseJourney {
     for (const texture of textures) this.renderer.initTexture(texture);
     await this.renderer.compileAsync(this.scene, this.camera);
     if (this.isDestroyed) return;
-    const { progress, opening } = this;
+    const { progress, opening, introductionElapsed } = this;
     this.opening = 1;
+    this.introductionElapsed = 2;
     for (const id of WARM_UP_STOPS) {
       this.progress = houseStops.findIndex((stop) => stop.id === id);
       this.render(0);
     }
     this.progress = progress;
     this.opening = opening;
+    this.introductionElapsed = introductionElapsed;
   }
 
   /** Closes the mouth, except while the figure sips from the glass. */
@@ -576,14 +622,15 @@ export default class HouseJourney {
   /** Climbs the loader's count after the download, and resolves once it shows 100. */
   countLoader() {
     const percent = this.root.querySelector<HTMLElement>('.js-hero-loader-percent');
-    let last = performance.now();
+    let last: number | null = null;
     return new Promise<void>((resolve) => {
       const step = (now: number) => {
-        const delta = Math.min(0.1, (now - last) / 1000);
+        const delta = last === null ? 0 : THREE.MathUtils.clamp((now - last) / 1000, 0, 0.1);
         last = now;
         const seconds = window.location.hash ? LOADER_COUNT_SECONDS.chapter : LOADER_COUNT_SECONDS.first;
-        const speed = this.motionPreference.matches ? Infinity : 1 / seconds;
-        this.loader.shown = Math.min(this.loader.loaded, this.loader.shown + delta * speed);
+        this.loader.shown = this.motionPreference.matches
+          ? this.loader.loaded
+          : Math.min(this.loader.loaded, this.loader.shown + delta / seconds);
         this.root.style.setProperty('--loader-progress', this.loader.shown.toFixed(4));
         if (percent) percent.textContent = String(Math.floor(this.loader.shown * 100));
         if (this.loader.shown >= 1 || this.isDestroyed) resolve();
@@ -596,6 +643,7 @@ export default class HouseJourney {
   handleMotionPreferenceChange = () => {
     const isJourney = !this.motionPreference.matches && this.isReady;
     this.root.classList.toggle('m-hero-scene--journey', isJourney);
+    this.root.classList.toggle('m-hero-scene--spatial-introduction', isJourney && this.headings !== null);
     // The journey shows its own chapter rail, so the header's links step aside.
     document.querySelector('.js-site-header')?.classList.toggle('site-header--with-rail', isJourney);
     this.handleViewportResize();
@@ -611,22 +659,58 @@ export default class HouseJourney {
   handleViewportResize = () => {
     this.width = this.viewport.clientWidth;
     this.height = this.viewport.clientHeight;
+    if (!this.width || !this.height) return;
     this.renderer.setSize(this.width, this.height, false);
+    if (this.width > 768 && !this.composer) this.createComposer();
+    else if (this.width <= 768) this.disposeComposer();
     this.composer?.setPixelRatio(this.renderer.getPixelRatio());
     this.composer?.setSize(this.width, this.height);
+    const careerCard = this.shots.find((shot) => shot.stop.id === 'career-1')?.content;
+    const introduction = this.root.querySelector<HTMLElement>('.js-hero-introduction');
+    this.headings?.layout(
+      this.width,
+      this.height,
+      careerCard?.getBoundingClientRect().right ?? 0,
+      introduction?.getBoundingClientRect().left ?? 0,
+    );
     // The camera arrives as a panel rises into the lower part of the screen, and leaves only once the panel's last
     // lines have scrolled up near the top, so the text is read while the view holds still. A tall panel never
     // pushes a stop's arrival before the previous one has left.
     let previousDeparture = -Infinity;
     for (const shot of this.shots) {
+      this.layoutHeading(shot);
       const { top, bottom } = this.panelBounds(shot);
-      shot.arrival = Math.max(top + window.scrollY - this.height * 0.7, previousDeparture + this.height * 0.3);
+      // On phones, show the television briefly before the next work card enters the screen.
+      const arrivalOffset = this.width <= 768 && shot.stop.chapter === 'works' ? 1.35 : 0.7;
+      shot.arrival = Math.max(
+        top + window.scrollY - this.height * arrivalOffset,
+        previousDeparture + this.height * 0.3,
+      );
       shot.departure = Math.max(shot.arrival + this.height * 0.25, bottom + window.scrollY - this.height * 0.3);
       previousDeparture = shot.departure;
     }
     this.handleWindowScroll();
     if (this.isReady) this.render(0);
   };
+
+  layoutHeading(shot: Shot) {
+    if (!shot.heading) return;
+    shot.heading.classList.remove('p-home-panel__title--spatial');
+    shot.element.classList.remove('p-home-shot--spatial-heading');
+    shot.element.style.removeProperty('--heading-space');
+    shot.headingSpace = 0;
+    if (!this.headings || !this.root.classList.contains('m-hero-scene--journey')) return;
+    const style = getComputedStyle(shot.heading);
+    const space =
+      shot.heading.getBoundingClientRect().height +
+      Number.parseFloat(style.marginTop) +
+      Number.parseFloat(style.marginBottom);
+    shot.heading.classList.add('p-home-panel__title--spatial');
+    // Move the title's footprint outside the card, preserving the original scroll and career stop timings.
+    shot.headingSpace = space;
+    shot.element.classList.add('p-home-shot--spatial-heading');
+    shot.element.style.setProperty('--heading-space', space + 'px');
+  }
 
   handleWindowScroll = () => {
     if (!this.isReady) return;
@@ -659,17 +743,56 @@ export default class HouseJourney {
     this.root.classList.toggle('m-hero-scene--offscreen', !this.isVisible);
   }
 
+  hashTarget(hash: string) {
+    try {
+      return document.getElementById(decodeURIComponent(hash.slice(1)));
+    } catch {
+      return null;
+    }
+  }
+
   handleDocumentClick = (event: MouseEvent) => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey) return;
-    if (!this.isReady || this.opening < 1 || this.motionPreference.matches || this.veil.goal > 0) return;
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    if (
+      !this.isReady ||
+      this.root.classList.contains('m-hero-scene--loading') ||
+      this.motionPreference.matches ||
+      this.veil.goal > 0
+    )
+      return;
     const link = event.target instanceof Element ? event.target.closest('a') : null;
-    if (!link || !link.hash || link.pathname !== window.location.pathname) return;
-    const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+    if (
+      !link ||
+      !link.hash ||
+      link.origin !== window.location.origin ||
+      link.pathname !== window.location.pathname ||
+      link.search !== window.location.search ||
+      (link.target && link.target !== '_self') ||
+      link.hasAttribute('download')
+    )
+      return;
+    const target = this.hashTarget(link.hash);
     if (!target || !this.root.contains(target)) return;
-    const shot = this.shots.find((item) => item.element.contains(target));
-    if (Math.abs((shot?.index ?? 0) - this.progress) < VEIL.minStops) return;
+    this.opening = 1;
+    const shot = this.findShot(target);
+    const isNearby = Math.abs((shot?.index ?? 0) - this.progress) < VEIL.minStops;
+    const isPanelAnchor = this.width <= 768 && shot && ['career', 'works'].includes(shot.stop.chapter);
+    if (isNearby && !isPanelAnchor) return;
     event.preventDefault();
     window.history.pushState(null, '', link.hash);
+    if (isNearby) {
+      this.scrollToTarget(target);
+      this.handleWindowScroll();
+      return;
+    }
     this.veil.target = target;
     this.veil.goal = 1;
     this.start();
@@ -716,7 +839,8 @@ export default class HouseJourney {
 
   /** Clicking or tapping the television at a project's stop opens that project's page. */
   handleViewportClick = (event: MouseEvent) => {
-    if (this.drag.travel > 6) return;
+    if (this.drag.travel > 6 || event.defaultPrevented) return;
+    if (event.target instanceof Element && event.target.closest('a, button, summary')) return;
     const url = this.workOnScreen(event);
     if (url) leavePage(url);
   };
@@ -726,7 +850,14 @@ export default class HouseJourney {
    * screen; otherwise null.
    */
   workOnScreen(event: MouseEvent) {
-    if (!this.isReady || this.opening < 1 || this.veil.goal > 0) return null;
+    if (
+      !this.isReady ||
+      this.opening < 1 ||
+      this.veil.goal > 0 ||
+      this.television.power.value < 1 ||
+      this.television.switching.value > 0.001
+    )
+      return null;
     const index = Math.round(this.progress);
     if (Math.abs(this.progress - index) > 0.15) return null;
     const shot = this.shots.find((item) => item.index === index && item.element.dataset.screenTitle);
@@ -782,22 +913,28 @@ export default class HouseJourney {
     else this.attachProp(this.glass, this.glassRest, GLASS_REST_POSITION, new THREE.Quaternion());
   }
 
-  /** The television stays on standby until the sofa, then flickers between projects like a channel change. */
-  updateTelevision() {
+  /** Stay black until the seat is reached, then open the first picture and keep later channel changes. */
+  updateTelevision(delta: number) {
     const material = this.world.tvScreen.material;
     if (!(material instanceof THREE.MeshBasicMaterial)) return;
     const firstWork = houseStops.findIndex((stop) => stop.id === 'works-1');
     const total = this.tvTextures.works.length;
-    // Power on during the dive into the screen, change channel halfway between projects, then back to standby.
-    const switches = [firstWork - 0.15, ...Array.from({ length: total }, (_, order) => firstWork + order + 0.5)];
+    const isOn = this.progress > WORKS_SEATED_PROGRESS && this.progress < firstWork + total - 0.5;
+    const switches = Array.from({ length: Math.max(0, total - 1) }, (_, order) => firstWork + order + 0.5);
     const channel = switches.filter((point) => this.progress >= point).length;
-    const texture = this.tvTextures.works[channel - 1] ?? this.tvTextures.standby;
+    const texture = (isOn ? this.tvTextures.works[channel] : null) ?? this.tvTextures.standby;
     if (texture && material.map !== texture) {
+      if (isOn && this.television.power.value >= 1 && material.map !== this.tvTextures.standby)
+        this.television.switching.value = 1;
       material.map = texture;
       material.needsUpdate = true;
     }
-    const nearest = Math.min(...switches.map((point) => Math.abs(this.progress - point)));
-    material.color.setScalar(0.15 + 0.85 * THREE.MathUtils.smoothstep(nearest, 0.01, 0.06));
+    this.television.time.value += delta;
+    this.television.switching.value = isOn ? Math.max(0, this.television.switching.value - delta / 0.42) : 0;
+    this.television.channel.value = 1 - 0.65 * this.television.switching.value;
+    if (!isOn) this.television.power.value = 0;
+    else if (this.root.classList.contains('m-hero-scene--ready') && this.veil.amount < 0.2)
+      this.television.power.value = Math.min(1, this.television.power.value + delta / 0.95);
   }
 
   requestRender() {
@@ -835,7 +972,7 @@ export default class HouseJourney {
     this.birds.update(this.elapsed);
     this.world.fanBlades.rotation.y = this.elapsed * 1.4;
     this.daylight.update(this.progress);
-    this.updateTelevision();
+    this.updateTelevision(delta);
     this.world.door.rotation.y = -tour.door * 1.35;
 
     // A small drift with the pointer keeps resting shots alive without moving the composition.
@@ -874,15 +1011,20 @@ export default class HouseJourney {
     this.camera.fov = Math.min(80, THREE.MathUtils.radToDeg(Math.atan(halfHeight)) * 2);
     // The subject moves away from the panel: sideways on wide screens, and on phones up into the top half of the
     // screen, above the card that rises from the bottom. Between stops the view returns to the centre.
+    const isWork = houseStops[tour.stopIndex].chapter === 'works';
     this.camera.setViewOffset(
       this.width,
       this.height,
       isNarrow ? 0 : this.width * shift * 0.18,
-      isNarrow ? this.height * 0.2 * tour.focus * settled : 0,
+      isNarrow ? this.height * (isWork ? 0.24 : 0.2) * tour.focus * settled : 0,
       this.width,
       this.height,
     );
     this.camera.updateProjectionMatrix();
+    const isShowing = this.root.classList.contains('m-hero-scene--ready');
+    if (isShowing && this.opening >= 0.94 && (this.progress < 0.4 || this.introductionElapsed > 0))
+      this.introductionElapsed += delta;
+    this.headings?.update(this.progress, !this.motionPreference.matches, this.introductionElapsed, isShowing);
     if (this.composer && !isNarrow) {
       this.renderer.setViewport(0, 0, this.width, this.height);
       this.composer.render(delta);
@@ -891,7 +1033,7 @@ export default class HouseJourney {
       this.renderer.render(this.scene, this.camera);
     }
 
-    // The name comes in just after the loader parts, rather than waiting for the flight to land in the study.
+    // Only the HTML fallback fades with the scroll. Spatial headings remain in the house after appearing.
     const introduction =
       (1 - THREE.MathUtils.smoothstep(this.progress, 0.02, 0.4)) * THREE.MathUtils.smoothstep(this.opening, 0.08, 0.3);
     this.root.style.setProperty('--intro-opacity', introduction.toFixed(3));
@@ -936,8 +1078,27 @@ export default class HouseJourney {
 
   /** A panel's place in the viewport, without the small slide it makes while fading in. */
   panelBounds(shot: Shot) {
-    const top = shot.element.getBoundingClientRect().top + shot.content.offsetTop;
-    return { top, bottom: top + shot.content.offsetHeight };
+    const top = shot.element.getBoundingClientRect().top + shot.content.offsetTop - shot.headingSpace;
+    return { top, bottom: top + shot.content.offsetHeight + shot.headingSpace };
+  }
+
+  findShot(target: HTMLElement) {
+    if (target === this.root) return undefined;
+    return this.shots.find((shot) => shot.element.contains(target) || target.contains(shot.element));
+  }
+
+  scrollToTarget(target: HTMLElement) {
+    const shot = this.findShot(target);
+    if (
+      this.width <= 768 &&
+      shot &&
+      ['career', 'works'].includes(shot.stop.chapter) &&
+      !this.motionPreference.matches
+    ) {
+      shot.content.scrollIntoView({ behavior: 'instant', block: 'start' });
+      return;
+    }
+    target.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
 
   updateLabels(stopIndex: number) {
@@ -949,11 +1110,12 @@ export default class HouseJourney {
     const label = this.root.querySelector<HTMLElement>('.js-journey-label');
     if (label) label.textContent = stop.label;
     const next = this.root.querySelector<HTMLAnchorElement>('.js-journey-next');
-    if (next) next.href = '#' + (nextChapter ?? 'top');
+    if (next) {
+      next.href = '#' + (nextChapter ?? 'top');
+      next.classList.toggle('m-hero-scene__scroll--back', !nextChapter);
+    }
     const nextLabel = this.root.querySelector<HTMLElement>('.js-journey-next-label');
     if (nextLabel) nextLabel.textContent = nextChapter ? 'Scroll to explore' : 'Back to top';
-    const nextIcon = this.root.querySelector<HTMLElement>('.js-journey-next-icon');
-    if (nextIcon) nextIcon.textContent = nextChapter ? '↓' : '↑';
     for (const link of document.querySelectorAll<HTMLAnchorElement>('.js-house-nav-link')) {
       if (link.hash === '#' + stop.chapter) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
@@ -975,7 +1137,7 @@ export default class HouseJourney {
       Math.max(veil.amount, veil.goal),
     );
     if (veil.target && veil.amount >= 1) {
-      veil.target.scrollIntoView({ behavior: 'instant', block: 'start' });
+      this.scrollToTarget(veil.target);
       veil.target = null;
       veil.settlingFrames = 4;
       this.updateGoal();
@@ -1046,13 +1208,9 @@ export default class HouseJourney {
       if (object instanceof THREE.DirectionalLight) object.shadow.dispose();
     });
     for (const geometry of geometries) geometry.dispose();
-    const textures = new Set<THREE.Texture>(this.textures);
+    const textures = new Set<THREE.Texture>();
     for (const material of materials) {
-      if (
-        (material instanceof THREE.MeshStandardMaterial || material instanceof THREE.MeshBasicMaterial) &&
-        material.map
-      )
-        textures.add(material.map);
+      for (const value of Object.values(material)) if (value instanceof THREE.Texture) textures.add(value);
       material.dispose();
     }
     for (const texture of textures) texture.dispose();
@@ -1067,15 +1225,20 @@ export default class HouseJourney {
     this.mixer?.stopAllAction();
     if (this.character) this.mixer?.uncacheRoot(this.character);
     this.disposeObject(this.scene);
-    this.composer?.dispose();
+    for (const texture of this.textures) texture.dispose();
+    this.textures.length = 0;
+    this.environment?.dispose();
+    this.disposeComposer();
     this.renderer.dispose();
     this.root.classList.remove(
       'm-hero-scene--journey',
+      'm-hero-scene--spatial-introduction',
       'm-hero-scene--ready',
       'm-hero-scene--offscreen',
       'm-hero-scene--reading',
       'm-hero-scene--loading',
       'm-hero-scene--pointing',
+      'm-hero-scene--dragging',
     );
     this.root.classList.add('m-hero-scene--fallback');
     document.querySelector('.js-site-header')?.classList.remove('site-header--with-rail');
@@ -1083,6 +1246,7 @@ export default class HouseJourney {
       this.root.style.removeProperty(property);
     for (const shot of this.shots) {
       shot.content.style.removeProperty('--shot-focus');
+      this.layoutHeading(shot);
     }
     const status = this.root.querySelector<HTMLElement>('.js-hero-status');
     if (status) status.textContent = '3D表示を利用できないため、通常のページで表示しています。';

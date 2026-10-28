@@ -15,3 +15,13 @@ build/
 .env
 .env.*
 !.env.example
+
+# Regenerable design previews and Blender references
+output/
+
+# Private working notes and editable source assets
+/.local/
+/tools/blender/source/
+/docs/house-journey.md
+/docs/release-review.md
+/docs/asset-sources.md

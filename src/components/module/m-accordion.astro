@@ -1,0 +1,18 @@
+---
+import { Plus } from '@lucide/astro';
+
+type Props = { className?: string; headingTag?: 'h3' | 'span' };
+const { className, headingTag: Heading = 'span' } = Astro.props;
+---
+
+<details class:list={['m-accordion', className]}>
+  <summary class="m-accordion__summary">
+    <Heading class="m-accordion__heading">
+      <slot name="summary" />
+      <span class="m-accordion__icon" aria-hidden="true">
+        <Plus class="m-accordion__plus" />
+      </span>
+    </Heading>
+  </summary>
+  <slot />
+</details>

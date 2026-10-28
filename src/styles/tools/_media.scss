@@ -6,6 +6,7 @@ $media-queries: (
   wide: '(width > #{rem(768)})',
   gallery-wide: '(width > #{rem(1100)})',
   reduced-motion: '(prefers-reduced-motion: reduce)',
+  no-scripting: '(scripting: none)',
   forced-colors: '(forced-colors: active)',
   coarse-or-reduced-motion: '(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)',
 ) !default;

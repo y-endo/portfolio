@@ -31,13 +31,18 @@ src/
    └─ utility/             u- のスタイル
 public/
 └─ assets/
-   ├─ img/                 加工せず配信する画像
-   └─ font/                自前で配信する場合のフォントとライセンス
+   ├─ img/                 画像、SVGアイコン、favicon、OGP画像
+   ├─ font/                自前で配信するフォントとライセンス
+   └─ models/              3Dモデル
 docs/                      コーディング規約と配置方針
 ```
 
 必要になったディレクトリから作り、空のディレクトリや未使用の共通処理を先に用意しない。
 生成物の `dist/` は Git 管理せず、直接編集しない。
+配信アセットは `assets/` 配下に揃える。
+Astroが生成するJS・CSS・デコーダーなどは、`build.assets` により `dist/assets/bundle/` に出力する。
+`public/assets/` のファイルは同じ相対パスで `dist/assets/` にコピーされる。
+HTML、`robots.txt`、`sitemap.xml` は、それぞれの公開URLに対応する場所へ出力する。
 
 ## 追加先
 
@@ -62,7 +67,8 @@ docs/                      コーディング規約と配置方針
 文書に登場する未実装の mixin、トークン、共通部品を、そのまま既存コードから呼び出さない。
 
 - `src/data/works.ts` と `src/data/career.ts`、ページと部品にある掲載文、関連画像を引き継ぐ。
-- 現行の `src/components/{部品名}/`、`src/styles/pages/`、`src/styles/tools/` と `public/images/` は、移行対象として確認するまで維持する。
+- 現行の `src/components/{部品名}/`、`src/styles/pages/`、`src/styles/tools/` は、移行対象として確認するまで維持する。
+- `public/images/` と `public/icons/` は `public/assets/img/` へ移行済み。
 - 現行の `BaseLayout.astro` など、命名規則と異なるファイルも、参照箇所と一緒に移行する。
 - `rem()` と `mq()` は、配置を変える際に定義と参照を揃える。
   ブレークポイントとデザイン値は別途確認する。

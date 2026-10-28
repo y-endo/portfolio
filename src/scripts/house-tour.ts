@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { ChapterId } from '../data/chapters';
 
 type Triple = [number, number, number];
 
@@ -7,7 +8,7 @@ export type PanelSide = 'left' | 'right' | 'none';
 
 export type HouseStop = {
   id: string;
-  chapter: 'top' | 'profile' | 'career' | 'works' | 'links' | 'contact';
+  chapter: ChapterId;
   label: string;
   side: PanelSide;
   position: Triple;
@@ -116,7 +117,17 @@ export const houseStops: HouseStop[] = [
     position: [-1.55, 0.02, 2.3],
     yaw: -Math.PI / 2,
     action: 'SitIdle',
-    camera: { position: [-2.1, 1.415, 2.02], target: [-4.5, 1.415, 2.1], fov: 48 },
+    camera: { position: [-2.0, 1.415, 2.1], target: [-4.5, 1.415, 2.1], fov: 48 },
+  },
+  {
+    id: 'works-3',
+    chapter: 'works',
+    label: 'Works / On the TV',
+    side: 'left',
+    position: [-1.55, 0.02, 2.3],
+    yaw: -Math.PI / 2,
+    action: 'SitIdle',
+    camera: { position: [-2.0, 1.415, 2.1], target: [-4.5, 1.415, 2.1], fov: 48 },
   },
   {
     id: 'kitchen',
@@ -222,9 +233,16 @@ const transitions: Transition[] = [
     ],
   },
   {
-    // The same seat. The camera breathes out and in while the channel changes.
+    // Keep the same shot while the television changes channels.
     legs: [],
-    camera: [{ at: 0.5, position: [-2.1, 1.36, 2.2], look: [-4.5, 1.415, 2.1], fov: 42 }],
+    camera: [],
+    pullBack: 0,
+  },
+  {
+    // Keep watching the television for the third project as well.
+    legs: [],
+    camera: [],
+    pullBack: 0,
   },
   {
     // Stand up from the sofa and walk round its front end to the island.
@@ -287,6 +305,11 @@ const transitions: Transition[] = [
   },
 ];
 
+const firstWork = houseStops.findIndex((stop) => stop.id === 'works-1');
+/** The television and Works title start together after the person has finished sitting down. */
+export const WORKS_SEATED_PROGRESS =
+  firstWork - 1 + Math.max(0, ...(transitions[firstWork - 1].arrive ?? []).map((scrub) => scrub.until));
+
 const v = (point: Triple) => new THREE.Vector3(...point);
 
 /** Each leg keeps its own length so walking and stair speeds stay even along a transition. */
@@ -300,7 +323,30 @@ const routes = transitions.map((transition) =>
   }),
 );
 
-const routeLength = (index: number) => routes[index].reduce((sum, item) => sum + item.length, 0);
+const routeLengths = routes.map((legs) => legs.reduce((sum, item) => sum + item.length, 0));
+
+const cameraPaths = transitions.map((transition, index) => {
+  const start = houseStops[index];
+  const end = houseStops[index + 1];
+  const keys: CameraKey[] = [
+    { at: 0, position: start.camera.position, look: start.camera.target, fov: start.camera.fov },
+    ...transition.camera,
+    { at: 1, position: end.camera.position, look: end.camera.target, fov: end.camera.fov },
+  ];
+  return {
+    keys,
+    positions: new THREE.CatmullRomCurve3(
+      keys.map((key) => v(key.position)),
+      false,
+      'centripetal',
+    ),
+    targets: new THREE.CatmullRomCurve3(
+      keys.map((key) => v(key.look ?? [0, 0, 0])),
+      false,
+      'centripetal',
+    ),
+  };
+});
 
 /** How far ahead along the route a following camera looks, so the person has space to walk into. */
 const LEAD_ROOM = 0.8;
@@ -309,7 +355,7 @@ const headHeight = (action: string) => (['Typing', 'SitIdle', 'SitDown'].include
 
 function sampleRoute(index: number, walking: number) {
   const legs = routes[index];
-  const total = legs.reduce((sum, item) => sum + item.length, 0);
+  const total = routeLengths[index];
   let distance = walking * total;
   for (const [legIndex, item] of legs.entries()) {
     const isLast = legIndex === legs.length - 1;
@@ -338,27 +384,17 @@ function sampleRoute(index: number, walking: number) {
 function sampleCamera(index: number, fraction: number, actorTarget: THREE.Vector3) {
   const start = houseStops[index];
   const end = houseStops[index + 1];
-  const keys: CameraKey[] = [
-    { at: 0, position: start.camera.position, look: start.camera.target, fov: start.camera.fov },
-    ...transitions[index].camera,
-    { at: 1, position: end.camera.position, look: end.camera.target, fov: end.camera.fov },
-  ];
+  const { keys, positions, targets } = cameraPaths[index];
+  // Only the points that follow the person change; the camera paths remain shared.
+  keys.forEach((key, pointIndex) => {
+    if (!key.look) targets.points[pointIndex].copy(actorTarget);
+  });
   // Ease the whole move so the camera settles into each stop instead of stopping at every key.
   const eased = THREE.MathUtils.smootherstep(fraction, 0, 1);
   let segment = 0;
   while (segment < keys.length - 2 && eased > keys[segment + 1].at) segment++;
   const local = (eased - keys[segment].at) / Math.max(0.0001, keys[segment + 1].at - keys[segment].at);
   const curveProgress = (segment + THREE.MathUtils.clamp(local, 0, 1)) / (keys.length - 1);
-  const positions = new THREE.CatmullRomCurve3(
-    keys.map((key) => v(key.position)),
-    false,
-    'centripetal',
-  );
-  const targets = new THREE.CatmullRomCurve3(
-    keys.map((key) => (key.look ? v(key.look) : actorTarget.clone())),
-    false,
-    'centripetal',
-  );
   const fovAt = (key: CameraKey) =>
     key.fov ?? THREE.MathUtils.lerp(start.camera.fov, end.camera.fov, THREE.MathUtils.smoothstep(key.at, 0, 1));
   return {
@@ -497,7 +533,7 @@ export function sampleHouseTour(progress: number) {
   const head = position.clone().add(new THREE.Vector3(0, headHeight(action), 0));
   let actorTarget = head;
   if (routed && walking > 0 && walking < 1) {
-    const total = routeLength(index);
+    const total = routeLengths[index];
     const lead = LEAD_ROOM * THREE.MathUtils.smoothstep(walking * total, 0, 1.2);
     const ahead = sampleRoute(index, Math.min(1, walking + lead / total))?.position ?? position;
     const viewing = head
@@ -516,8 +552,11 @@ export function sampleHouseTour(progress: number) {
   // Panels and shading belong to the stops. While travelling, the house fills the screen.
   const leaving = 1 - THREE.MathUtils.smoothstep(fraction, 0, 0.32);
   const arriving = THREE.MathUtils.smoothstep(fraction, 0.68, 1);
-  const shift = sideShift(start.side) * leaving + sideShift(end.side) * arriving;
-  const focus = Math.max(leaving, arriving);
+  const isChannelChange = start.chapter === 'works' && end.chapter === 'works';
+  const shift = isChannelChange
+    ? sideShift(start.side)
+    : sideShift(start.side) * leaving + sideShift(end.side) * arriving;
+  const focus = isChannelChange ? 1 : Math.max(leaving, arriving);
   const stopIndex = Math.round(index + fraction);
   const door = index === transitions.length - 1 ? THREE.MathUtils.smoothstep(fraction, 0.5, 0.72) : 0;
   // The desk chair stays pushed back once the person has left the study.

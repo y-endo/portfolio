@@ -3,7 +3,7 @@
 Usage (from the repository root):
     blender -b --factory-startup --python tools/blender/prepare-props.py
 
-The downloads in output/house-journey-implementation/props-source are imported and written again,
+The downloads in tools/blender/source/props-source are imported and written again,
 still Draco-compressed, to public/assets/models/props. The site decodes them with three.js's DRACOLoader.
 The coffee mug also loses its steam, and the television's screen is set back almost flush with its bezel.
 Faces stay flat-shaded with their vertex colours.
@@ -15,7 +15,7 @@ import bmesh
 import bpy
 
 REPO = Path(__file__).resolve().parents[2]
-SOURCE = REPO / "output/house-journey-implementation/props-source"
+SOURCE = REPO / "tools/blender/source/props-source"
 OUTPUT = REPO / "public/assets/models/props"
 MODELS = (
     "bench-01",

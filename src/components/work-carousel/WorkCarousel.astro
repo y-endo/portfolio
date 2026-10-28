@@ -1,17 +1,11 @@
 ---
 import { ChevronLeft, ChevronRight } from '@lucide/astro';
+import type { WorkImage } from '../../data/works';
 import 'swiper/css';
 import 'swiper/css/a11y';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import './work-carousel.scss';
-
-type WorkImage = {
-  src: string;
-  width: number;
-  height: number;
-  alt: string;
-};
 
 type Props = {
   images: WorkImage[];

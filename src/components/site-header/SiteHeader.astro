@@ -1,4 +1,5 @@
 ---
+import { chapters } from '../../data/chapters';
 import './site-header.scss';
 
 type Props = { currentPath: string };
@@ -8,7 +9,7 @@ const isHome = currentPath === '/';
 
 <header class:list={['site-header', 'js-site-header', { 'site-header--home': isHome }]} data-site-header>
   <a class="site-header__identity" href="/" aria-label="ホーム">
-    <img class="site-header__logo" src="/assets/img/logo_yuki_endo.png" alt="" width="356" height="68" />
+    <img class="site-header__logo" src="/assets/img/logo_yuki_endo.webp" alt="" width="356" height="68" />
   </a>
   <button
     class="site-header__toggle"
@@ -26,21 +27,17 @@ const isHome = currentPath === '/';
   </button>
   <nav class="site-header__nav" aria-label="主要ナビゲーション">
     <ul class="site-header__list">
-      <li class="site-header__item">
-        <a class="site-header__link js-house-nav-link" href={isHome ? '#profile' : '/#profile'}>Profile</a>
-      </li>
-      <li class="site-header__item">
-        <a class="site-header__link js-house-nav-link" href={isHome ? '#career' : '/#career'}>Career</a>
-      </li>
-      <li class="site-header__item">
-        <a class="site-header__link js-house-nav-link" href={isHome ? '#works' : '/#works'}>Works</a>
-      </li>
-      <li class="site-header__item">
-        <a class="site-header__link js-house-nav-link" href={isHome ? '#links' : '/#links'}>Links</a>
-      </li>
-      <li class="site-header__item site-header__item--last">
-        <a class="site-header__link js-house-nav-link" href={isHome ? '#contact' : '/#contact'}>Contact</a>
-      </li>
+      {
+        chapters
+          .filter((chapter) => chapter.id !== 'top')
+          .map((chapter) => (
+            <li class:list={['site-header__item', { 'site-header__item--last': chapter.id === 'contact' }]}>
+              <a class="site-header__link js-house-nav-link" href={(isHome ? '#' : '/#') + chapter.id}>
+                {chapter.label}
+              </a>
+            </li>
+          ))
+      }
     </ul>
   </nav>
   <dialog
@@ -52,7 +49,7 @@ const isHome = currentPath === '/';
   >
     <div class="site-header__menu-header">
       <a class="site-header__menu-identity" href="/" aria-label="ホーム">
-        <img class="site-header__menu-logo" src="/assets/img/logo_yuki_endo.png" alt="" width="356" height="68" />
+        <img class="site-header__menu-logo" src="/assets/img/logo_yuki_endo.webp" alt="" width="356" height="68" />
       </a>
       <form class="site-header__menu-close-form" method="dialog">
         <button class="site-header__menu-close" type="submit" aria-label="メニューを閉じる">
@@ -65,42 +62,20 @@ const isHome = currentPath === '/';
     </div>
     <nav class="site-header__menu-nav" aria-label="スマートフォンナビゲーション">
       <ul class="site-header__menu-list">
-        <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#top' : '/#top'}>
-            <span class="site-header__menu-index" aria-hidden="true">01</span>
-            <span class="site-header__menu-link-label">Top</span>
-          </a>
-        </li>
-        <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#profile' : '/#profile'}>
-            <span class="site-header__menu-index" aria-hidden="true">02</span>
-            <span class="site-header__menu-link-label">Profile</span>
-          </a>
-        </li>
-        <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#career' : '/#career'}>
-            <span class="site-header__menu-index" aria-hidden="true">03</span>
-            <span class="site-header__menu-link-label">Career</span>
-          </a>
-        </li>
-        <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#works' : '/#works'}>
-            <span class="site-header__menu-index" aria-hidden="true">04</span>
-            <span class="site-header__menu-link-label">Works</span>
-          </a>
-        </li>
-        <li class="site-header__menu-item">
-          <a class="site-header__menu-link" href={isHome ? '#links' : '/#links'}>
-            <span class="site-header__menu-index" aria-hidden="true">05</span>
-            <span class="site-header__menu-link-label">Links</span>
-          </a>
-        </li>
-        <li class="site-header__menu-item site-header__menu-item--last">
-          <a class="site-header__menu-link" href={isHome ? '#contact' : '/#contact'}>
-            <span class="site-header__menu-index" aria-hidden="true">06</span>
-            <span class="site-header__menu-link-label">Contact</span>
-          </a>
-        </li>
+        {
+          chapters.map((chapter, index) => (
+            <li
+              class:list={['site-header__menu-item', { 'site-header__menu-item--last': index === chapters.length - 1 }]}
+            >
+              <a class="site-header__menu-link" href={(isHome ? '#' : '/#') + chapter.id}>
+                <span class="site-header__menu-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <span class="site-header__menu-link-label">{chapter.label}</span>
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
     <p class="site-header__menu-footer">YUKI ENDO / FRONTEND ENGINEER</p>

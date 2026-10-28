@@ -19,7 +19,6 @@
 - SCSSとBEMを使用し、コンポーネント単位でスタイルを管理しています。
 - Three.jsで生成したローポリの家を、書斎・踊り場・階段・リビング・キッチン・玄関の順に巡ります。
 - 停留点ではカメラがモニター、額縁、階段の年号、テレビに寄り、そこに経歴や作品を映して見せます。
-- 人物の動きとBlender用の参照モデルについては [家を巡るポートフォリオ](docs/house-journey.md) を参照してください。
 - Swiperを使用し、プロジェクト詳細の画像をカルーセルで表示します。
 - ESLint、Stylelint、markdownlint、Prettierでコードと文書の品質を確認します。
 
@@ -75,7 +74,7 @@ Prettier は120文字幅とシングルクォートを基本にし、Astro の�
 
 ```text
 .
-├── public/          # 画像、favicon、OG画像
+├── public/assets/   # 画像、アイコン、favicon、OG画像、フォント、3Dモデル
 ├── src/
 │   ├── components/  # Astroコンポーネント
 │   ├── data/        # 経歴とプロジェクトの掲載データ
@@ -87,6 +86,21 @@ Prettier は120文字幅とシングルクォートを基本にし、Astro の�
 └── package.json
 ```
 
+## 共通部品とサイト設定
+
+ヘッダー、スマートフォンメニュー、3D画面の章ナビゲーションは `src/data/chapters.ts` の項目を使います。
+ProfileとWorksのアコーディオンは `src/components/module/m-accordion.astro` にまとめています。
+Profileでは見出しを含むため、`headingTag="h3"` を指定します。
+
+title、description、OGP、Xのカード情報は `src/layouts/BaseLayout.astro` で出力します。
+canonicalと共有用のURLは、開発サーバーのURLではなく `astro.config.mjs` の `site` を基準にします。
+404ページには `noindex, follow` を指定しています。
+
+GA4の測定IDは `G-V8C2P15644` です。
+本番ビルドを `site` と同じホスト名で開いたときだけGoogleタグを読み込み、開発サーバーとローカルプレビューでは計測しません。
+ページビューは[Googleタグの標準動作](https://developers.google.com/analytics/devguides/collection/ga4/views)に任せ、手動送信による重複を避けています。
+GA管理画面での受信状況は、公開後に対象プロパティのリアルタイムレポートで確認します。
+
 ## ビルド
 
 次のコマンドで静的ファイルを生成します。
@@ -96,3 +110,25 @@ pnpm build
 ```
 
 生成物は `dist/` に出力され、静的ファイルを配信できるホスティング環境へデプロイできます。
+画像などは `dist/assets/`、ビルドで生成するJS・CSSなどは `dist/assets/bundle/` にまとまります。
+
+## アニメーション無効時と代替表示の確認
+
+ChromeのDevToolsでコマンドメニュー（macOSでは `Command + Shift + P`）を開き、`Show Rendering` を選びます。
+`Emulate CSS media feature prefers-reduced-motion` を `prefers-reduced-motion: reduce` にして再読み込みすると、3Dが静止し、本文が通常の縦並びになります。
+元に戻すときは `No emulation` を選び、再読み込みします。
+[Chrome公式の説明](https://developer.chrome.com/docs/devtools/rendering/emulate-css)も参照してください。
+
+画像を使う代替表示は別の状態です。
+DevToolsのコマンドメニューで `Disable JavaScript` を選び、再読み込みすると確認できます。
+確認後は `Enable JavaScript` で戻します。
+TOPの `assets/img/img_hero_avatar.webp` は、この状態と3D初期化失敗時に使う静止画像です。
+
+## 制作ツールと素材
+
+`tools/` には、3Dモデルの加工やフォントの字形変換に使用するツールがあります。
+通常の開発・ビルドでは、`public/assets/` にある加工済みのファイルを使用します。
+ツールで再生成する場合は、利用許諾のある入力素材を別途用意してください。
+Blenderの編集原本と家具の元データを置く `tools/blender/source/`、作業用の出力先 `output/` は公開対象に含めません。
+
+`/sitemap.xml` と `/robots.txt` は、掲載作品と本番 URL からビルド時に生成します。

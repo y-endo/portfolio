@@ -6,5 +6,6 @@ export default defineConfig({
   trailingSlash: 'always',
   build: {
     format: 'directory',
+    assets: 'assets/bundle',
   },
 });

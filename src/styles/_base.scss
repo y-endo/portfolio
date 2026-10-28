@@ -1,18 +1,19 @@
 @use 'tools' as *;
 
-@font-face {
-  font-family: Anton;
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/assets/font/anton/Anton-Regular.ttf') format('truetype');
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-block-start: rem(80);
   overflow-x: clip;
   background: var(--color-paper);
+
+  &:has(.m-hero-scene--loading) {
+    overflow-y: hidden;
+    overscroll-behavior: none;
+
+    @include mq(no-scripting) {
+      overflow-y: auto;
+    }
+  }
 
   @include mq(reduced-motion) {
     scroll-behavior: auto;
@@ -41,10 +42,8 @@ body {
   overflow-wrap: anywhere;
 }
 
-// Japanese headings break between phrases rather than inside a word, and lines are balanced. Body text avoids a
-// last line of a single character.
+// Japanese headings break between phrases rather than inside a word.
 :where(h1, h2, h3) {
-  text-wrap: balance;
   word-break: auto-phrase;
 }
 
@@ -83,7 +82,7 @@ a {
       background-color: currentcolor;
       content: '';
       vertical-align: middle;
-      mask: url('/icons/lucide/external-link.svg') center / contain no-repeat;
+      mask: url('/assets/img/icon_external_link.svg') center / contain no-repeat;
     }
   }
 }

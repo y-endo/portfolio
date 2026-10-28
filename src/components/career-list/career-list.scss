@@ -8,21 +8,9 @@
 }
 
 .p-home-career__entry {
-  position: relative;
-  padding: rem(22) rem(20) rem(24) rem(24);
+  padding: rem(22) rem(20) rem(24);
   border-radius: rem(16);
   background: var(--color-card);
-  overflow: hidden;
-
-  &::before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: rem(3);
-    background: var(--color-accent);
-    content: '';
-  }
 }
 
 .p-home-career__meta {
@@ -36,39 +24,22 @@
   font-size: rem(12);
   font-weight: 600;
   letter-spacing: 0.04em;
-}
 
-// While the 3D journey runs, the sign on the stair wall shows the period, the company and the role, so the panel
-// keeps only the order and the story. They stay in the page for screen readers and the plain layout.
-.p-home-career__period {
   .m-hero-scene--journey & {
     @include visually-hidden;
   }
 }
 
-.p-home-career__step {
-  padding: rem(4) rem(10);
-  border-radius: rem(999);
-  color: var(--color-ink-soft);
-  background: var(--color-accent-tint);
-  font-size: rem(11);
-  font-weight: 400;
-}
-
-.p-home-career__organization {
+.p-home-career__title {
   margin: 0 0 rem(6);
-
-  .m-hero-scene--journey & {
-    @include visually-hidden;
-  }
-
-  font-size: rem(20);
+  color: var(--color-accent);
+  font-size: rem(16);
   font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.4;
+  line-height: 1.7;
 
   @include mq(wide) {
-    font-size: rem(24);
+    font-size: rem(18);
   }
 }
 
@@ -87,11 +58,6 @@
 
 .p-home-career__summary {
   margin: rem(18) 0 0;
-
-  .m-hero-scene--journey & {
-    margin-top: 0;
-  }
-
   color: var(--color-ink-soft);
   font-size: rem(14);
   line-height: 1.9;

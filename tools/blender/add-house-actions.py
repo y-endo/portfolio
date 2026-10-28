@@ -32,11 +32,11 @@ from mathutils import Matrix, Quaternion, Vector
 # ---------------------------------------------------------------------------
 
 REPO = Path(__file__).resolve().parents[2]
-DEFAULT_INPUT = REPO / "output/house-journey-implementation/backup/human-lowpoly-rigged-original.glb"
+DEFAULT_INPUT = REPO / "tools/blender/source/backup/human-lowpoly-rigged-original.glb"
 DEFAULT_OUTPUT = REPO / "public/assets/models/human-lowpoly-rigged.glb"
 # The figure to open in Blender. Its Body mesh (eyebrows and beard painted, any faces cut with the knife)
 # is read back on every run, so edits saved in this file reach the GLB. Everything else is rebuilt.
-DEFAULT_BLEND = REPO / "output/house-journey-implementation/human-lowpoly-rigged.blend"
+DEFAULT_BLEND = REPO / "tools/blender/source/human-lowpoly-rigged.blend"
 
 
 def read_args():

@@ -15,66 +15,56 @@
 
 .p-home-profile__signature {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: rem(16);
   margin-bottom: rem(32);
-  padding: rem(12) rem(16) rem(12) rem(12);
+  padding: rem(20);
   border-radius: rem(16);
   background: var(--color-card);
 }
 
-.p-home-profile__portrait {
-  width: rem(52);
-  height: rem(64);
-  border-radius: rem(10);
-  object-fit: cover;
-  background: var(--color-field);
-}
-
 .p-home-profile__name {
-  margin: 0 0 rem(6);
-  font-size: rem(15);
+  margin: 0;
+  font-size: rem(20);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
-.p-home-profile__role {
+.p-home-profile__facts {
+  display: flex;
+  flex-direction: column;
+  gap: rem(8);
   margin: 0;
+}
+
+.p-home-profile__fact {
+  display: flex;
+  align-items: baseline;
+  gap: rem(16);
+  font-size: rem(12);
+  line-height: 1.8;
+}
+
+.p-home-profile__fact-label {
+  width: rem(84);
+  flex-shrink: 0;
   color: var(--color-muted);
+}
+
+.p-home-profile__fact-value {
+  margin: 0;
   font-family: var(--font-meta);
-  font-size: rem(11);
-  letter-spacing: 0.04em;
+}
+
+.p-home-profile__introduction {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font-size: rem(13);
+  line-height: 1.9;
 }
 
 .p-home-profile__strengths {
   border-top: rem(1) solid var(--color-line);
-}
-
-.p-home-profile__strength {
-  border-bottom: rem(1) solid var(--color-line);
-}
-
-.p-home-profile__summary {
-  display: flex;
-  align-items: center;
-  gap: rem(16);
-  min-height: rem(68);
-  list-style: none;
-  cursor: pointer;
-  transition: color var(--motion-fast) var(--ease-out);
-
-  &::-webkit-details-marker {
-    display: none;
-  }
-
-  &:hover,
-  &:focus-visible {
-    color: var(--color-accent);
-  }
-
-  @include mq(reduced-motion) {
-    transition: none;
-  }
 }
 
 .p-home-profile__number {
@@ -90,35 +80,6 @@
   font-size: rem(15);
   font-weight: 500;
   line-height: 1.6;
-}
-
-.p-home-profile__plus {
-  display: grid;
-  flex-shrink: 0;
-  place-items: center;
-  width: rem(28);
-  height: rem(28);
-  border: rem(1) solid var(--color-line);
-  border-radius: 50%;
-  font-size: rem(16);
-  font-weight: 400;
-  line-height: 1;
-  transition:
-    rotate var(--motion-fast) var(--ease-out),
-    border-color var(--motion-fast) var(--ease-out);
-
-  .p-home-profile__summary:hover &,
-  .p-home-profile__summary:focus-visible & {
-    border-color: var(--color-accent);
-  }
-
-  .p-home-profile__strength:open & {
-    rotate: 45deg;
-  }
-
-  @include mq(reduced-motion) {
-    transition: none;
-  }
 }
 
 .p-home-profile__body {

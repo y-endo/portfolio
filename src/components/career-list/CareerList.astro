@@ -16,24 +16,20 @@ import './career-list.scss';
         <div class="p-home-panel p-home-career__panel js-journey-content">
           {index === 0 && (
             <>
-              <p class="p-home-panel__eyebrow">03 / Down the stairs</p>
               <h2 class="p-home-panel__title js-journey-title" id="career-title">
                 Career
               </h2>
               <p class="p-home-career__intro">
-                階段を下りるほど、過去へ。2014年から、設計・開発・運用、そしてチームのリードへ。
+                2014年から、Webのフロントエンドエンジニアとしてキャリアをスタート。設計・開発・運用、そしてチームのリードへ。
               </p>
             </>
           )}
           <article class="p-home-career__entry" aria-labelledby={'career-' + String(index + 1) + '-title'}>
             <p class="p-home-career__meta">
-              <span class="p-home-career__step">
-                {String(index + 1).padStart(2, '0')} / {String(career.length).padStart(2, '0')}
-              </span>
               <span class="p-home-career__period">{entry.period}</span>
             </p>
-            <h3 class="p-home-career__organization" id={'career-' + String(index + 1) + '-title'}>
-              {entry.organization}
+            <h3 class="p-home-career__title" id={'career-' + String(index + 1) + '-title'}>
+              {entry.title}
             </h3>
             <p class="p-home-career__role">{entry.role}</p>
             <p class="p-home-career__summary">{entry.summary}</p>

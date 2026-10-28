@@ -5,6 +5,14 @@
   isolation: isolate;
   background: #fff;
   color: var(--color-ink);
+
+  &--loading {
+    z-index: 60;
+
+    @include mq(no-scripting) {
+      z-index: auto;
+    }
+  }
 }
 
 .m-hero-scene__viewport {
@@ -71,30 +79,16 @@
 .m-hero-scene__introduction {
   position: absolute;
   left: var(--display-shell-gutter);
-  top: 30%;
+  top: 50%;
   z-index: 2;
-  padding: rem(36) rem(44) rem(40);
+  width: calc(100% - var(--display-shell-gutter) * 2);
+  translate: 0 -50%;
   opacity: var(--intro-opacity, 1);
   pointer-events: none;
 
-  .m-hero-scene--ready & {
-    @include glass-panel(24);
+  .m-hero-scene--spatial-introduction & {
+    @include visually-hidden;
   }
-
-  @include mq(narrow) {
-    top: auto;
-    right: var(--display-shell-gutter);
-    bottom: 12%;
-    padding: rem(24) rem(24) rem(28);
-  }
-}
-
-.m-hero-scene__edition {
-  margin: 0 0 rem(24);
-  font-family: var(--font-meta);
-  font-size: rem(11);
-  letter-spacing: 0.06em;
-  color: var(--color-muted);
 }
 
 .m-hero-scene__title {
@@ -106,8 +100,8 @@
   font-family: var(--font-sans);
   font-size: rem(80);
   font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.065em;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
 
   @include mq(narrow) {
     font-size: rem(54);
@@ -152,13 +146,7 @@
 .m-hero-scene__discipline {
   margin: rem(24) 0 0;
   font-size: rem(24);
-  letter-spacing: -0.035em;
-}
-
-.m-hero-scene__statement {
-  margin: rem(18) 0 0;
-  font-size: rem(12);
-  color: var(--color-muted);
+  letter-spacing: 0.01em;
 }
 
 .m-hero-scene__status {
@@ -177,7 +165,7 @@
   z-index: 5;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: rem(24);
 
   .m-hero-scene--offscreen & {
@@ -197,10 +185,12 @@
   }
 
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: rem(16);
+  gap: rem(10);
   font-size: rem(12);
-  color: var(--color-muted);
+  font-weight: 500;
+  color: var(--color-ink);
 
   &:hover,
   &:focus-visible {
@@ -208,7 +198,47 @@
   }
 }
 
+.m-hero-scene__scroll-icon {
+  display: flex;
+  justify-content: center;
+  width: rem(24);
+  height: rem(24);
+  color: var(--color-accent);
+
+  &::before {
+    width: rem(10);
+    height: rem(10);
+    border-right: 2px solid currentcolor;
+    border-bottom: 2px solid currentcolor;
+    transform: rotate(45deg);
+    animation: hero-scroll-chevron 1.8s ease-in-out infinite;
+    content: '';
+
+    @include mq(reduced-motion) {
+      animation: none;
+    }
+  }
+
+  .m-hero-scene__scroll--back & {
+    rotate: 180deg;
+  }
+}
+
+@keyframes hero-scroll-chevron {
+  0%,
+  100% {
+    transform: translateY(0) rotate(45deg);
+  }
+
+  50% {
+    transform: translateY(#{rem(6)}) rotate(45deg);
+  }
+}
+
 .m-hero-scene__room {
+  position: absolute;
+  right: 0;
+  bottom: 0;
   margin: 0;
   color: var(--color-muted);
   font-family: var(--font-meta);
@@ -242,7 +272,12 @@
   inset: 0;
   z-index: 10;
   visibility: hidden;
+  touch-action: none;
   transition: visibility 0s linear 1.1s;
+
+  @include mq(no-scripting) {
+    display: none;
+  }
 
   // The two halves of the white screen part along the bar like doors, opening onto the house.
   &::before,
@@ -355,21 +390,6 @@
   background: var(--color-accent);
   transform-origin: left;
   scale: var(--loader-progress, 0) 1;
-}
-
-.m-hero-scene__loader-caption {
-  display: flex;
-  justify-content: space-between;
-  gap: rem(16);
-  margin: rem(14) var(--display-shell-gutter) 0;
-  color: var(--color-muted);
-  font-family: var(--font-meta);
-  font-size: rem(10);
-  letter-spacing: 0.06em;
-
-  @include mq(wide) {
-    font-size: rem(11);
-  }
 }
 
 .m-hero-scene__grade {

@@ -1,51 +1,15 @@
 @use '../../styles/tools' as *;
 
-.p-home-contact__status {
-  display: inline-flex;
-  align-items: center;
-  gap: rem(10);
-  margin: rem(4) 0 rem(28);
-  padding: rem(6) rem(14) rem(6) rem(12);
-  border-radius: rem(999);
-  color: var(--color-ink-soft);
-  background: var(--color-accent-tint);
-  font-family: var(--font-meta);
-  font-size: rem(11);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+.p-home-contact {
+  .m-hero-scene--journey & {
+    max-height: calc(100svh - #{rem(160)});
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-accent) transparent;
 
-.p-home-contact__status-mark {
-  position: relative;
-  width: rem(7);
-  height: rem(7);
-  border-radius: 50%;
-  background: var(--color-accent);
-
-  // A slow ring around the dot says the status is current.
-  &::after {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: var(--color-accent);
-    content: '';
-    animation: p-home-contact-pulse 2.4s var(--ease-out) infinite;
-
-    @include mq(reduced-motion) {
-      animation: none;
+    @include mq(narrow) {
+      padding: rem(22) rem(20);
     }
-  }
-}
-
-@keyframes p-home-contact-pulse {
-  from {
-    opacity: 0.5;
-    scale: 1;
-  }
-
-  to {
-    opacity: 0;
-    scale: 2.8;
   }
 }
 
@@ -78,9 +42,9 @@
   border-top: rem(1) solid var(--color-line);
   border-bottom: rem(1) solid var(--color-line);
   font-family: var(--font-sans);
-  font-size: rem(36);
+  font-size: rem(20);
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   transition: color var(--motion-fast) var(--ease-out);
 
   &:hover,
@@ -94,16 +58,7 @@
 }
 
 .p-home-contact__email-icon {
-  width: rem(36);
-  height: rem(36);
-  transition: translate var(--motion-fast) var(--ease-out);
-
-  .p-home-contact__email:hover &,
-  .p-home-contact__email:focus-visible & {
-    translate: rem(4) rem(-4);
-  }
-
-  @include mq(reduced-motion) {
-    transition: none;
-  }
+  width: rem(24);
+  height: rem(24);
+  flex-shrink: 0;
 }

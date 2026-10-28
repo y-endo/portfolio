@@ -16,9 +16,8 @@ const { work } = Astro.props;
 const currentIndex = works.findIndex((item) => item.slug === work.slug);
 const nextWork = works[(currentIndex + 1) % works.length];
 const overviewTitleId = `${work.slug}-overview-title`;
-const portfolioUrl = new URL('https://endoyuki.jp');
-const workUrl = work.url ? new URL(work.url, portfolioUrl) : undefined;
-const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== portfolioUrl.hostname;
+const workUrl = work.url ? new URL(work.url, Astro.site) : undefined;
+const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.site?.hostname;
 ---
 
 <BaseLayout title={work.title} description={work.summary}>
@@ -28,7 +27,6 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== portfoli
         >Case study / {work.number}</span
       >
     </div>
-    <p class="work-detail__display" aria-hidden="true">{currentIndex === 0 ? 'CMS RENEWAL.' : 'MANGA PICK.'}</p>
     <header class="work-detail__header">
       <div class="work-detail__rail" aria-hidden="true">
         <span>PROJECT {work.number} / {work.year}</span>
@@ -63,10 +61,14 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== portfoli
               <dt class="meta-label">時期</dt>
               <dd class="work-detail__overview-value">{work.year}</dd>
             </div>
-            <div class="work-detail__overview-item">
-              <dt class="meta-label">規模</dt>
-              <dd class="work-detail__overview-value">{work.scale}</dd>
-            </div>
+            {
+              work.scale && (
+                <div class="work-detail__overview-item">
+                  <dt class="meta-label">規模</dt>
+                  <dd class="work-detail__overview-value">{work.scale}</dd>
+                </div>
+              )
+            }
             <div class="work-detail__overview-item">
               <dt class="meta-label">体制</dt>
               <dd class="work-detail__overview-value">{work.team}</dd>

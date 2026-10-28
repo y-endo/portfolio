@@ -1,22 +1,18 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import { Mail } from '@lucide/astro';
 import './contact-section.scss';
 ---
 
 <section class="p-home-panel p-home-contact js-journey-content" id="contact" aria-labelledby="contact-title">
-  <p class="p-home-panel__eyebrow">06 / A new beginning</p>
   <h2 class="p-home-panel__title p-home-panel__title--contact js-journey-title" id="contact-title">
-    <a href="mailto:yuki.endo.1993@gmail.com" aria-label="メールで連絡する">LET'S<br /> BUILD.</a>
+    <a href="mailto:yuki.endo.1993@gmail.com" aria-label="メールで連絡する">Contact</a>
   </h2>
-  <p class="p-home-contact__status">
-    <span class="p-home-contact__status-mark" aria-hidden="true"></span>Open to frontend opportunities
-  </p>
   <h3 class="p-home-contact__title">一緒に働ける機会を探しています。</h3>
   <p class="p-home-contact__description">
     AIを活用した生産性の向上、フロントエンドの設計・実装に加えて、品質保証、コードレビューや開発ルールの整備まで担えます。
   </p>
   <p class="p-home-contact__description">個人の実装に閉じず、複数人で継続して改善できる開発体制づくりに貢献します。</p>
   <a class="p-home-contact__email" href="mailto:yuki.endo.1993@gmail.com"
-    ><span>Say hello.</span><ArrowUpRight class="p-home-contact__email-icon" /></a
+    ><span>メールを送る</span><Mail class="p-home-contact__email-icon" aria-hidden="true" /></a
   >
 </section>

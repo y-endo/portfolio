@@ -15,7 +15,7 @@ import '../styles/pages/home.scss';
     <div
       class="p-home-shot p-home-shot--right js-journey-shot"
       data-shot="profile"
-      data-picture="/images/profile/portrait.webp"
+      data-picture="/assets/img/img_profile_portrait.webp"
     >
       <ProfileSection />
     </div>
@@ -24,7 +24,12 @@ import '../styles/pages/home.scss';
       {
         works.map((work, index) => (
           <div
-            class:list={['p-home-shot', 'js-journey-shot', { 'p-home-shot--short': index < works.length - 1 }]}
+            class:list={[
+              'p-home-shot',
+              'p-home-shot--work',
+              'js-journey-shot',
+              { 'p-home-shot--short': index < works.length - 1 },
+            ]}
             data-shot={'works-' + String(index + 1)}
             data-screen-title={work.title}
             data-screen-image={work.cover.src}
@@ -32,13 +37,10 @@ import '../styles/pages/home.scss';
             <div class="p-home-panel p-home-works__panel js-journey-content">
               {index === 0 && (
                 <>
-                  <p class="p-home-panel__eyebrow">04 / On the TV</p>
-                  <h2 class="p-home-panel__title js-journey-title" id="works-title">
+                  <h2 class="p-home-panel__title p-home-works__title js-journey-title" id="works-title">
                     Works
                   </h2>
-                  <p class="p-home-works__lead">
-                    テレビに映しているのは、設計から運用まで担当した2つのプロジェクトです。
-                  </p>
+                  <p class="p-home-works__lead">※個人開発の制作物のみを掲載しております。</p>
                 </>
               )}
               <WorkFeature work={work} index={index} />

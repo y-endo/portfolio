@@ -1,5 +1,9 @@
 export const profile = {
-  lead: '12年以上の経験 + AIの活用で、運用まで見据えた品質の高いフロントエンドを設計します。',
+  name: '遠藤 勇気',
+  birthDate: '1993-10-05',
+  engineeringSince: 2014,
+  introduction: '現在はアクセンチュア株式会社にて、アソシエイトマネージャーとして従事しています。',
+  lead: 'AI駆動開発で、フロントエンドの生産性を追求する。',
   strengths: [
     {
       title: '大規模Webサイトの設計・開発',

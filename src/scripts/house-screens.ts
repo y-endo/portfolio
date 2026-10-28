@@ -68,11 +68,9 @@ export function drawMonitorScreen() {
       [PAPER, ','],
     ],
     [
-      [PAPER, '  focus: ['],
-      ['#c3e88d', "'design'"],
-      [PAPER, ', '],
-      ['#c3e88d', "'quality'"],
-      [PAPER, '],'],
+      [PAPER, '  focus: '],
+      ['#c3e88d', "'AI'"],
+      [PAPER, ','],
     ],
     [[PAPER, '};']],
   ];
@@ -90,24 +88,62 @@ export function drawMonitorScreen() {
 }
 
 export function drawStandbyScreen() {
-  const { canvas, context } = createCanvas(1280, 704);
+  const { canvas, context } = createCanvas(1280, 716);
   if (!context) return canvas;
-  const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-  gradient.addColorStop(0, '#16224a');
-  gradient.addColorStop(1, INK);
-  context.fillStyle = gradient;
+  context.fillStyle = '#000000';
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.textAlign = 'center';
-  context.fillStyle = '#ffffff';
-  context.font = '700 150px ' + fontFamily();
-  context.fillText('WORKS', canvas.width / 2, 360);
-  context.fillStyle = ACCENT_LIGHT;
-  context.font = '500 40px ' + fontFamily();
-  context.fillText('Selected projects', canvas.width / 2, 440);
-  context.fillStyle = PAPER;
-  context.font = '500 28px SFMono-Regular, consolas, monospace';
-  context.fillText('▶  PRESS START', canvas.width / 2, 590);
   return canvas;
+}
+
+/** Open the picture from a luminous centre line without changing the television's physical screen or bezel. */
+export function createTelevisionPower(material: THREE.MeshBasicMaterial) {
+  const uniforms = { power: { value: 0 }, channel: { value: 1 }, switching: { value: 0 }, time: { value: 0 } };
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.screenPower = uniforms.power;
+    shader.uniforms.screenChannel = uniforms.channel;
+    shader.uniforms.screenSwitch = uniforms.switching;
+    shader.uniforms.screenTime = uniforms.time;
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+        uniform float screenPower;
+        uniform float screenChannel;
+        uniform float screenSwitch;
+        uniform float screenTime;`,
+      )
+      .replace(
+        '#include <map_fragment>',
+        `vec2 screenUv = vMapUv;
+        float band = floor(screenUv.y * 18.0);
+        screenUv.x = clamp(screenUv.x + sin(band * 31.7 + floor(screenTime * 60.0)) * 0.025 * screenSwitch, 0.001, 0.999);
+        ${THREE.ShaderChunk.map_fragment.replaceAll('vMapUv', 'screenUv')}
+        if (screenSwitch > 0.001) {
+          float split = 0.008 * screenSwitch;
+          vec3 colour = vec3(texture2D(map, screenUv + vec2(split, 0.0)).r, diffuseColor.g, texture2D(map, screenUv - vec2(split, 0.0)).b);
+          float noise = fract(sin(dot(floor(vMapUv * vec2(640.0, 360.0)), vec2(12.9898, 78.233)) + floor(screenTime * 48.0)) * 43758.5453);
+          float tear = step(0.82, fract(vMapUv.y * 11.0 - screenTime * 6.0));
+          diffuseColor.rgb = mix(colour, vec3(noise), screenSwitch * 0.65) * (1.0 - screenSwitch * tear * 0.55);
+        }
+        vec2 centre = abs(vMapUv - 0.5);
+        float awake = smoothstep(0.0, 0.035, screenPower);
+        float width = 0.5 * smoothstep(0.0, 0.2, screenPower);
+        float height = mix(0.002, 0.52, smoothstep(0.2, 0.78, screenPower));
+        float aperture = (1.0 - smoothstep(width, width + 0.008, centre.x))
+          * (1.0 - smoothstep(height, height + 0.012, centre.y));
+        float fade = smoothstep(0.32, 0.92, screenPower);
+        float flash = 1.0 - smoothstep(0.55, 0.82, screenPower);
+        float line = exp(-centre.y * 220.0) * (1.0 - smoothstep(width, width + 0.03, centre.x));
+        float glow = exp(-centre.y * 35.0) * (1.0 - smoothstep(width, width + 0.12, centre.x));
+        vec3 picture = mix(vec3(0.72, 0.84, 1.0), diffuseColor.rgb, fade);
+        float scan = 1.0 - 0.04 * sin(vMapUv.y * 700.0 + screenPower * 80.0) * (1.0 - fade);
+        diffuseColor.rgb = awake * screenChannel * (
+          picture * aperture * scan + vec3(0.55, 0.72, 1.0) * (line + glow * 0.45) * flash
+        );`,
+      );
+  };
+  material.customProgramCacheKey = () => 'portfolio-television-power-and-channel';
+  return uniforms;
 }
 
 /**
