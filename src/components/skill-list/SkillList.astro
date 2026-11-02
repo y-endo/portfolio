@@ -1,0 +1,25 @@
+---
+import { skillTiers } from '../../data/skills';
+import './skill-list.scss';
+---
+
+<div class="p-home-skills">
+  <h3 class="p-home-skills__title">Skills</h3>
+  <div class="p-home-skills__tiers">
+    {
+      skillTiers.map((tier, index) => (
+        <div class:list={['p-home-skills__tier', { 'p-home-skills__tier--featured': index === 0 }]}>
+          <h4 class="p-home-skills__heading">
+            <span class="p-home-skills__number">{String(index + 1).padStart(2, '0')}</span>
+            <span class="p-home-skills__label">{tier.label}</span>
+          </h4>
+          <ul class="p-home-skills__items">
+            {tier.items.map((item) => (
+              <li class="p-home-skills__item">{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</div>
