@@ -53,7 +53,7 @@ function railProgress(progress: number) {
   return 1;
 }
 const REQUIRED_CLIPS = ['Typing', 'Idle', 'Walk', 'StandUp', 'SitDown', 'SitIdle'];
-/** Clips added in Blender later. Older models fall back to the nearest original clip. */
+/** Missing actions fall back to the nearest available clip. */
 const CLIP_FALLBACKS: Record<string, string> = {
   StairsDown: 'Walk',
   LeanRail: 'Idle',
@@ -706,7 +706,7 @@ export default class HouseJourney {
       Number.parseFloat(style.marginTop) +
       Number.parseFloat(style.marginBottom);
     shot.heading.classList.add('p-home-panel__title--spatial');
-    // Move the title's footprint outside the card, preserving the original scroll and career stop timings.
+    // Reserve space for the title outside the card so it does not shift scroll and career stop timings.
     shot.headingSpace = space;
     shot.element.classList.add('p-home-shot--spatial-heading');
     shot.element.style.setProperty('--heading-space', space + 'px');

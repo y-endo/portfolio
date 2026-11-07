@@ -228,7 +228,7 @@ export function createHouseWorld() {
     );
   };
   const props: PropPlacement[] = [];
-  /** The plant model is 1.43 m tall; size 1 gives the 0.95 m of the earlier hand-made plant. */
+  /** The plant model is 1.43 m tall; size 1 scales it to 0.95 m. */
   const plant = (x: number, y: number, z: number, size = 1) => {
     const scale = 0.666 * size;
     props.push({ model: 'plant', position: [x, y + 0.7133 * scale, z], rotationY: x * 2.3 + z * 1.7, scale });
@@ -390,7 +390,6 @@ export function createHouseWorld() {
     block('plaster', [-5.1, level + 0.28, 0.65], [0.2, 0.56, 9.5]);
     block('plaster', [-5.1, level + 2.88, 0.65], [0.2, 0.24, 9.5]);
     for (const z of [-3.92, -0.35]) block('plaster', [-5.1, level + 1.65, z], [0.2, 2.3, 0.22]);
-    // Solid wall between the front window and the moved-forward facade.
     block('plaster', [-5.1, level + 1.65, 4.44], [0.2, 2.3, 1.93]);
   }
   for (const [z, width] of [
@@ -474,7 +473,7 @@ export function createHouseWorld() {
   block('oakDark', [0.885, 4.25, -0.93], [0.04, 0.74, 0.6]);
   const picture = screen([0.907, 4.25, -0.93], [0.5, 0.625]);
 
-  // Study workstation: its dimensions match the supplied Typing clip. The person faces -X at the desk.
+  // Desk dimensions match the Typing clip, with the person facing -X.
   const deskTop = 3.6885;
   block('oakLight', [-3.515, 3.671, -2.1], [0.72, 0.035, 1.6]);
   for (const x of [-3.8, -3.25]) for (const z of [-2.77, -1.43]) block('oak', [x, 3.33, z], [0.055, 0.65, 0.055]);

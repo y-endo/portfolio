@@ -1,7 +1,5 @@
 @use '../../styles/tools' as *;
 
-// A white veil over the whole page: it lifts as a page opens and falls before the next one, so moving between
-// the house and a project page passes through white, like the loader and the cuts between chapters.
 .l-page-veil {
   position: fixed;
   inset: 0;

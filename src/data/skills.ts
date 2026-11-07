@@ -1,5 +1,4 @@
 export type SkillTier = {
-  /** Shown as the tier heading under its number. */
   label: string;
   items: string[];
 };

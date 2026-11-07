@@ -1,13 +1,5 @@
 """Add the house-journey actions to the rigged low-poly human.
 
-Usage (from the repository root):
-    blender -b --factory-startup --python tools/blender/add-house-actions.py
-
-Optional arguments after "--":
-    --input <glb>        source GLB (default: the untouched backup)
-    --output <glb>       exported GLB (default: public/assets/models/human-lowpoly-rigged.glb)
-    --props-json <path>  also write the glass transforms for checks
-
 The script imports the untouched backup, keeps the six original actions as they
 are, builds four in-place actions with procedural keys and exports every action
 as its own glTF animation. Limbs are posed with an analytic two-bone IK and the

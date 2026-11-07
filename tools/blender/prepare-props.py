@@ -1,12 +1,6 @@
 """Prepare the furniture models the site loads.
 
-Usage (from the repository root):
-    blender -b --factory-startup --python tools/blender/prepare-props.py
-
-The downloads in tools/blender/source/props-source are imported and written again,
-still Draco-compressed, to public/assets/models/props. The site decodes them with three.js's DRACOLoader.
-The coffee mug also loses its steam, and the television's screen is set back almost flush with its bezel.
-Faces stay flat-shaded with their vertex colours.
+Draco compression, flat shading and vertex colours are preserved for the site's DRACOLoader.
 """
 
 from pathlib import Path

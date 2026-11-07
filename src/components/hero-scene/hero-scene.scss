@@ -279,7 +279,6 @@
     display: none;
   }
 
-  // The two halves of the white screen part along the bar like doors, opening onto the house.
   &::before,
   &::after {
     position: absolute;
@@ -338,7 +337,6 @@
 }
 
 .m-hero-scene__loader-head {
-  // The count stands still at the right margin while the bar runs towards it.
   position: absolute;
   right: var(--display-shell-gutter);
   bottom: 100%;

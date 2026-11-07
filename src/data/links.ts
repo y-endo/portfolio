@@ -1,6 +1,5 @@
 export type ExternalLink = {
   label: string;
-  /** What the visitor finds there, shown beside the name. */
   detail: string;
   href: string;
 };

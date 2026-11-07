@@ -1,7 +1,5 @@
 @use '../tools' as *;
 
-// A project page reads as a room of the same house: the morning sky of the opening behind the page, the frosted
-// glass panels of the journey for the overview, the index and the next project, and the same type and blue.
 // The page is its own stacking layer, so the sky stays behind its content but above the white of the body.
 .work-detail {
   position: relative;
