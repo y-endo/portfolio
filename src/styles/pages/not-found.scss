@@ -31,7 +31,14 @@
 }
 
 .not-found__link {
+  gap: rem(12);
   width: fit-content;
+}
+
+.not-found__link-icon {
+  width: rem(18);
+  height: rem(18);
+  flex-shrink: 0;
 }
 
 .not-found__field {

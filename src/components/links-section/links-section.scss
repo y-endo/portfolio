@@ -58,7 +58,7 @@
 
   .p-home-links__link:hover &,
   .p-home-links__link:focus-visible & {
-    translate: rem(3) rem(-3);
+    translate: rem(3) 0;
   }
 
   @include mq(reduced-motion) {

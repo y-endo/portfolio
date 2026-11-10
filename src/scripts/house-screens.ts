@@ -3,7 +3,7 @@ import * as THREE from 'three';
 /** Canvas drawings shown on the study monitor, the television and the stair wall. */
 
 const INK = '#0d1424';
-const ACCENT = '#304df0';
+const ACCENT = '#2a44e0';
 const ACCENT_LIGHT = '#8fa2ff';
 const PAPER = '#f4f1e9';
 
@@ -170,14 +170,15 @@ export function drawYearSign(period: string, organization: string, role: string)
   if (!context) return canvas;
   context.fillStyle = PAPER;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  const [from] = period.split(' ');
+  // The period is written as '2020–Present'; the large figure shows only the starting year.
+  const [from] = period.split('–');
   context.fillStyle = ACCENT;
   context.font = '700 210px ' + fontFamily();
   context.fillText(from, 40, 222);
   context.fillStyle = '#121620';
   context.font = '600 64px ' + fontFamily();
   context.fillText(organization, 48, 322);
-  context.fillStyle = '#626d80';
+  context.fillStyle = '#4f5a6c';
   context.font = '500 36px ' + fontFamily();
   context.fillText(period, 48, 402);
   context.fillText(role, 48, 456);

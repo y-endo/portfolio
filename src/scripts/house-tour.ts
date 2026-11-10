@@ -9,7 +9,6 @@ export type PanelSide = 'left' | 'right' | 'none';
 export type HouseStop = {
   id: string;
   chapter: ChapterId;
-  label: string;
   side: PanelSide;
   position: Triple;
   yaw: number;
@@ -64,7 +63,6 @@ const careerStop = (index: number): HouseStop => {
   return {
     id: 'career-' + String(index + 1),
     chapter: 'career',
-    label: 'Career / Down the stairs',
     side: 'left',
     position: [x, y, z],
     yaw: 0,
@@ -79,7 +77,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'top',
     chapter: 'top',
-    label: 'The study',
     side: 'left',
     position: [-3.3, 3.02, -2.1],
     yaw: -Math.PI / 2,
@@ -89,7 +86,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'profile',
     chapter: 'profile',
-    label: 'Profile / The landing',
     side: 'right',
     position: [2.2, 3.02, -0.64],
     yaw: 0,
@@ -102,7 +98,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'works-1',
     chapter: 'works',
-    label: 'Works / On the TV',
     side: 'left',
     position: [-1.55, 0.02, 2.3],
     yaw: -Math.PI / 2,
@@ -112,7 +107,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'works-2',
     chapter: 'works',
-    label: 'Works / On the TV',
     side: 'left',
     position: [-1.55, 0.02, 2.3],
     yaw: -Math.PI / 2,
@@ -122,7 +116,24 @@ export const houseStops: HouseStop[] = [
   {
     id: 'works-3',
     chapter: 'works',
-    label: 'Works / On the TV',
+    side: 'left',
+    position: [-1.55, 0.02, 2.3],
+    yaw: -Math.PI / 2,
+    action: 'SitIdle',
+    camera: { position: [-2.0, 1.415, 2.1], target: [-4.5, 1.415, 2.1], fov: 48 },
+  },
+  {
+    id: 'works-4',
+    chapter: 'works',
+    side: 'left',
+    position: [-1.55, 0.02, 2.3],
+    yaw: -Math.PI / 2,
+    action: 'SitIdle',
+    camera: { position: [-2.0, 1.415, 2.1], target: [-4.5, 1.415, 2.1], fov: 48 },
+  },
+  {
+    id: 'works-5',
+    chapter: 'works',
     side: 'left',
     position: [-1.55, 0.02, 2.3],
     yaw: -Math.PI / 2,
@@ -132,7 +143,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'kitchen',
     chapter: 'links',
-    label: 'Links / A break in the kitchen',
     side: 'left',
     // A step back from the island (0.33 m from its edge): the glass is reached with a nearly straight arm.
     position: [0.755, 0.02, -0.95],
@@ -145,7 +155,6 @@ export const houseStops: HouseStop[] = [
   {
     id: 'contact',
     chapter: 'contact',
-    label: 'Contact / Outside',
     side: 'left',
     position: [1.25, 0.02, 6.6],
     // Waving to the camera, which has stepped back past the garden's edge to eye level on the road: the closing shot
@@ -244,6 +253,8 @@ const transitions: Transition[] = [
     camera: [],
     pullBack: 0,
   },
+  { legs: [], camera: [], pullBack: 0 },
+  { legs: [], camera: [], pullBack: 0 },
   {
     // Stand up from the sofa and walk round its front end to the island.
     depart: [{ action: 'StandUp', from: 0, until: 0.16 }],

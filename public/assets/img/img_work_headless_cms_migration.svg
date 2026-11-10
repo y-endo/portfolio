@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title description">
+  <title id="title">CMS移行での担当範囲</title>
+  <desc id="description">現行仕様の確認、Astroのテンプレート基盤の開発、移行・リリース後1か月の運用支援を担当した実務事例の説明図です。</desc>
+  <rect width="1600" height="1000" fill="#eef1fa"/>
+  <g font-family="Noto Sans JP, Yu Gothic, sans-serif" fill="#263555">
+    <text x="120" y="142" font-size="24" letter-spacing="4">CLIENT WORK / HEADLESS CMS MIGRATION</text>
+    <text x="120" y="245" font-size="64" font-weight="700">数万ページ規模のCMS移行をリード</text>
+    <text x="120" y="310" font-size="30">既存の仕様を確認し、移行先の開発につなげる。</text>
+    <g fill="#fff" stroke="#c2cbe0" stroke-width="2">
+      <rect x="120" y="398" width="400" height="260" rx="24"/>
+      <rect x="600" y="398" width="400" height="260" rx="24"/>
+      <rect x="1080" y="398" width="400" height="260" rx="24"/>
+    </g>
+    <g fill="#5e719b" font-size="24">
+      <text x="160" y="457">01 / REQUIREMENTS</text>
+      <text x="640" y="457">02 / DEVELOPMENT</text>
+      <text x="1120" y="457">03 / RELEASE</text>
+    </g>
+    <g font-size="40" font-weight="700">
+      <text x="160" y="530">現行仕様の確認</text>
+      <text x="640" y="530">Astro基盤の開発</text>
+      <text x="1120" y="530">移行・リリース</text>
+    </g>
+    <g font-size="26">
+      <text x="160" y="599">CMSの挙動差に対処</text>
+      <text x="640" y="599">設計・実装・レビュー</text>
+      <text x="1120" y="599">移行直後1か月の支援</text>
+    </g>
+    <g stroke="#5e719b" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M540 528h40m-14-12 14 12-14 12"/>
+      <path d="M1020 528h40m-14-12 14 12-14 12"/>
+    </g>
+    <text x="120" y="755" font-size="28">フロントエンド5名のチームでリード / 関係チームとの課題共有</text>
+    <text x="120" y="906" font-size="24" fill="#677692">担当範囲の説明図 / 顧客情報・実画面は非掲載</text>
+  </g>
+</svg>

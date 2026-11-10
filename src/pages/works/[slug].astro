@@ -1,5 +1,5 @@
 ---
-import { ArrowRight } from '@lucide/astro';
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import WorkCarousel from '../../components/work-carousel/WorkCarousel.astro';
 import { works, type Work } from '../../data/works';
@@ -23,14 +23,11 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
 <BaseLayout title={work.title} description={work.summary}>
   <article class="work-detail">
     <div class="work-detail__masthead">
-      <a class="work-detail__back" href={'/#work-' + String(currentIndex + 1)}>Back to the gallery ↗</a><span
-        >Case study / {work.number}</span
+      <a class="work-detail__back" href={'/#work-' + String(currentIndex + 1)}
+        ><ArrowLeft class="work-detail__back-icon" /><span>作品一覧へ戻る</span></a
       >
     </div>
     <header class="work-detail__header">
-      <div class="work-detail__rail" aria-hidden="true">
-        <span>PROJECT {work.number} / {work.year}</span>
-      </div>
       <div class="work-detail__header-body">
         <div class="work-detail__identity">
           <p class="work-detail__category meta-label">{work.category}</p>
@@ -57,9 +54,17 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
         <section class="work-detail__overview" aria-labelledby={overviewTitleId}>
           <h2 class="work-detail__overview-title" id={overviewTitleId}>プロジェクト概要</h2>
           <dl class="work-detail__overview-list">
+            {
+              work.year && (
+                <div class="work-detail__overview-item">
+                  <dt class="meta-label">時期</dt>
+                  <dd class="work-detail__overview-value">{work.year}</dd>
+                </div>
+              )
+            }
             <div class="work-detail__overview-item">
-              <dt class="meta-label">時期</dt>
-              <dd class="work-detail__overview-value">{work.year}</dd>
+              <dt class="meta-label">状況</dt>
+              <dd class="work-detail__overview-value">{work.status}</dd>
             </div>
             {
               work.scale && (
@@ -91,16 +96,13 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
     <div class="work-detail__content">
       <aside class="work-detail__sidebar" aria-label={`${work.title}のケース情報`}>
         <nav class="work-detail__index" aria-label="ケーススタディの目次">
-          <p class="meta-label">Index</p>
+          <p class="meta-label">目次</p>
           <ol class="work-detail__index-list">
             {
               work.sections.map((section, index) => (
                 <li class="work-detail__index-item">
                   <a class="work-detail__index-link" href={`#${work.slug}-section-${index}`}>
-                    <span class="work-detail__index-number" aria-hidden="true">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span>{section.title}</span>
+                    {section.title}
                   </a>
                 </li>
               ))
@@ -121,6 +123,13 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
             }
           </dl>
         </div>
+        {
+          work.articleUrl && (
+            <a class="text-link" href={work.articleUrl} target="_blank" rel="noopener noreferrer">
+              制作記事を読む
+            </a>
+          )
+        }
       </aside>
 
       <div class="work-detail__narrative">
@@ -132,7 +141,6 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
               id={`${work.slug}-section-${index}`}
             >
               <header class="work-detail__section-header">
-                <p class="work-detail__section-index meta-label">{String(index + 1).padStart(2, '0')}</p>
                 <h2 class="work-detail__section-title" id={`${work.slug}-section-${index}-title`}>
                   {section.title}
                 </h2>
@@ -144,13 +152,8 @@ const isExternalWorkUrl = workUrl !== undefined && workUrl.hostname !== Astro.si
                 ))}
                 {section.points && (
                   <ul class="work-detail__point-list">
-                    {section.points.map((point, pointIndex) => (
-                      <li class="work-detail__point-item">
-                        <span class="work-detail__point-index" aria-hidden="true">
-                          {String(pointIndex + 1).padStart(2, '0')}
-                        </span>
-                        <span class="work-detail__point-text">{point}</span>
-                      </li>
+                    {section.points.map((point) => (
+                      <li class="work-detail__point-item">{point}</li>
                     ))}
                   </ul>
                 )}

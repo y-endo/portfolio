@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title description">
+  <title id="title">採用サイトのAPI連携と実装の流れ</title>
+  <desc id="description">デザインとAPI仕様書を突き合わせ、不足するデータをAPIの修正またはJavaScriptで補い、Vue 2で実装した実務事例の説明図です。</desc>
+  <rect width="1600" height="1000" fill="#eef1fa"/>
+  <g font-family="Noto Sans JP, Yu Gothic, sans-serif" fill="#263555">
+    <text x="120" y="142" font-size="24" letter-spacing="4">CLIENT WORK / RECRUITING SITE</text>
+    <text x="120" y="245" font-size="64" font-weight="700">採用サイトのAPI連携とVue実装</text>
+    <text x="120" y="310" font-size="30">画面に必要なデータとAPI仕様の差を埋めて実装する。</text>
+    <g fill="#fff" stroke="#c2cbe0" stroke-width="2">
+      <rect x="120" y="398" width="290" height="130" rx="24"/>
+      <rect x="120" y="552" width="290" height="130" rx="24"/>
+      <rect x="480" y="398" width="330" height="284" rx="24"/>
+      <rect x="880" y="398" width="330" height="130" rx="24"/>
+      <rect x="880" y="552" width="330" height="130" rx="24"/>
+    </g>
+    <rect x="1270" y="398" width="210" height="284" rx="24" fill="#263555"/>
+    <g font-size="34" font-weight="700">
+      <text x="152" y="456">デザイン</text>
+      <text x="152" y="610">API仕様書</text>
+    </g>
+    <g font-size="24" fill="#5e719b">
+      <text x="152" y="498">別の会社が制作</text>
+      <text x="152" y="652">顧客側が用意</text>
+    </g>
+    <text x="516" y="478" font-size="44" font-weight="700">突き合わせ</text>
+    <g font-size="26">
+      <text x="516" y="548">画面に必要なデータと</text>
+      <text x="516" y="590">API仕様を照合し、</text>
+      <text x="516" y="632">不足を洗い出す</text>
+    </g>
+    <g font-size="30" font-weight="700">
+      <text x="912" y="456">APIの修正を依頼</text>
+      <text x="912" y="610">JavaScriptで対応</text>
+    </g>
+    <g font-size="22" fill="#5e719b">
+      <text x="912" y="498">ディレクターと連携</text>
+      <text x="912" y="652">API側の修正が難しいもの</text>
+    </g>
+    <g fill="#fff">
+      <text x="1302" y="534" font-size="36" font-weight="700">Vue 2</text>
+      <text x="1302" y="584" font-size="30" font-weight="700">で実装</text>
+    </g>
+    <g stroke="#5e719b" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M422 463h46m-14-12 14 12-14 12"/>
+      <path d="M422 617h46m-14-12 14 12-14 12"/>
+      <path d="M822 463h46m-14-12 14 12-14 12"/>
+      <path d="M822 617h46m-14-12 14 12-14 12"/>
+      <path d="M1222 463h36m-14-12 14 12-14 12"/>
+      <path d="M1222 617h36m-14-12 14 12-14 12"/>
+    </g>
+    <text x="120" y="770" font-size="28">開発担当1名 / ディレクターと連携し、実装をすべて担当</text>
+    <text x="120" y="906" font-size="24" fill="#677692">担当範囲の説明図 / 顧客情報・実画面は非掲載</text>
+  </g>
+</svg>

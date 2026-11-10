@@ -14,20 +14,14 @@
 
 .p-home-skills__tiers {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: rem(10);
 }
 
 .p-home-skills__tier {
-  padding: rem(18) rem(18) rem(14);
+  padding: rem(20) rem(20) rem(10);
   border-radius: rem(16);
   background: var(--color-card);
-}
-
-.p-home-skills__tier--featured {
-  grid-column: 1 / -1;
-  padding: rem(22) rem(22) rem(10);
-  background: var(--color-accent-tint);
 
   @include mq(narrow) {
     padding-right: rem(18);
@@ -40,10 +34,6 @@
   flex-direction: column;
   gap: rem(4);
   margin: 0 0 rem(12);
-
-  .p-home-skills__tier--featured & {
-    margin-bottom: rem(14);
-  }
 }
 
 .p-home-skills__number {
@@ -56,40 +46,34 @@
 
 .p-home-skills__label {
   color: var(--color-ink);
-  font-size: rem(14);
+  font-size: rem(15);
   font-weight: 600;
   line-height: 1.5;
+}
 
-  .p-home-skills__tier--featured & {
-    font-size: rem(15);
-  }
+.p-home-skills__description {
+  margin: 0 0 rem(16);
+  color: var(--color-ink-soft);
+  font-size: rem(13);
+  line-height: 1.8;
 }
 
 .p-home-skills__items {
-  display: flex;
-  flex-direction: column;
-
-  .p-home-skills__tier--featured & {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: rem(20);
-  }
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: rem(20);
 }
 
 .p-home-skills__item {
-  padding: rem(9) 0;
+  padding: rem(10) 0;
   border-top: 1px solid var(--color-line);
-  color: var(--color-ink-soft);
-  font-size: rem(14);
+  color: var(--color-ink);
+  font-size: rem(15);
   font-weight: 500;
   line-height: 1.5;
+}
 
-  .p-home-skills__tier--featured & {
-    padding: rem(11) 0;
-    border-top-color: rgb(48 77 240 / 16%);
-    color: var(--color-ink);
-    font-size: rem(16);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-  }
+// 「axe-core」「Claude Code」など、ツール名の途中で改行しない
+.p-home-skills__name {
+  white-space: nowrap;
 }

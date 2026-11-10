@@ -1107,15 +1107,13 @@ export default class HouseJourney {
     this.root.dataset.houseStop = stop.id;
     const chapter = CHAPTERS.indexOf(stop.chapter);
     const nextChapter = CHAPTERS[chapter + 1];
-    const label = this.root.querySelector<HTMLElement>('.js-journey-label');
-    if (label) label.textContent = stop.label;
     const next = this.root.querySelector<HTMLAnchorElement>('.js-journey-next');
     if (next) {
       next.href = '#' + (nextChapter ?? 'top');
       next.classList.toggle('m-hero-scene__scroll--back', !nextChapter);
     }
     const nextLabel = this.root.querySelector<HTMLElement>('.js-journey-next-label');
-    if (nextLabel) nextLabel.textContent = nextChapter ? 'Scroll to explore' : 'Back to top';
+    if (nextLabel) nextLabel.textContent = nextChapter ? 'スクロールして進む' : '先頭へ戻る';
     for (const link of document.querySelectorAll<HTMLAnchorElement>('.js-house-nav-link')) {
       if (link.hash === '#' + stop.chapter) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');

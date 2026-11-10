@@ -9,7 +9,7 @@ const target = 'work-' + String(index + 1);
 ---
 
 <article class="p-home-work" id={target} aria-labelledby={target + '-title'}>
-  <p class="p-home-work__caption">{work.number} / {work.category} / {work.year}</p>
+  <p class="p-home-work__caption">{[work.number, work.category, work.year].filter(Boolean).join(' / ')}</p>
   <a class="p-home-work__media" href={'/works/' + work.slug + '/'} aria-label={work.title + 'の詳細を見る'}>
     <img
       class="p-home-work__image"
@@ -20,7 +20,7 @@ const target = 'work-' + String(index + 1);
       loading="lazy"
       decoding="async"
     />
-    <span class="p-home-work__image-label">VIEW PROJECT <ArrowRight class="p-home-work__image-arrow" /></span>
+    <span class="p-home-work__image-label">詳細を見る <ArrowRight class="p-home-work__image-arrow" /></span>
   </a>
   <h3 class="p-home-work__title" id={target + '-title'}>{work.title}</h3>
   <p class="p-home-work__summary">{work.summary}</p>
@@ -33,6 +33,7 @@ const target = 'work-' + String(index + 1);
       {
         [
           ['課題', work.challenge],
+          ['状況', work.status],
           ['役割', work.role],
           ['担当範囲', work.scope],
           ['実現したこと', work.outcome],

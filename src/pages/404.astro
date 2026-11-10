@@ -1,9 +1,10 @@
 ---
+import { ArrowLeft } from '@lucide/astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/pages/not-found.scss';
 ---
 
-<BaseLayout title="Page not found" description="お探しのページは見つかりませんでした。" isNoindex>
+<BaseLayout title="ページが見つかりません" description="お探しのページは見つかりませんでした。" isNoindex>
   <section class="not-found">
     <svg class="not-found__field" viewBox="0 0 800 500" aria-hidden="true">
       <g fill="none" stroke="currentColor"
@@ -16,11 +17,13 @@ import '../styles/pages/not-found.scss';
       >
     </svg>
     <div class="not-found__content">
-      <p class="eyebrow">404 / Missing coordinate</p><h1 class="not-found__title">Page not found.</h1><p
+      <p class="eyebrow">404</p><h1 class="not-found__title">ページが見つかりません</h1><p
         class="not-found__description"
       >
         お探しのページは移動したか、まだ公開されていません。
-      </p><a class="case-link not-found__link" href="/"><span>Back to home</span><span aria-hidden="true">↗</span></a>
+      </p><a class="case-link not-found__link" href="/"
+        ><ArrowLeft class="not-found__link-icon" /><span>トップページへ戻る</span></a
+      >
     </div>
   </section>
 </BaseLayout>

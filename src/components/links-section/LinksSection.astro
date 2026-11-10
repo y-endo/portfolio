@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
+import { ArrowRight } from '@lucide/astro';
 import { links } from '../../data/links';
 import './links-section.scss';
 ---
@@ -14,7 +14,7 @@ import './links-section.scss';
           <a class="p-home-links__link" href={link.href} target="_blank" rel="noreferrer">
             <span class="p-home-links__label">{link.label}</span>
             <span class="p-home-links__detail">{link.detail}</span>
-            <ArrowUpRight class="p-home-links__icon" />
+            <ArrowRight class="p-home-links__icon" />
           </a>
         </li>
       ))

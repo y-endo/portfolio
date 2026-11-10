@@ -1,4 +1,5 @@
 ---
+import { ArrowRight } from '@lucide/astro';
 import { career } from '../../data/career';
 import './career-list.scss';
 ---
@@ -20,7 +21,7 @@ import './career-list.scss';
                 Career
               </h2>
               <p class="p-home-career__intro">
-                2014年から、Webのフロントエンドエンジニアとしてキャリアをスタート。設計・開発・運用、そしてチームのリードへ。
+                2014年からWebのフロントエンドエンジニアとして、設計・開発・運用に携わってきました。直近のCMS移行では、フロントエンド5名のチームでリードを務めました。
               </p>
             </>
           )}
@@ -33,6 +34,12 @@ import './career-list.scss';
             </h3>
             <p class="p-home-career__role">{entry.role}</p>
             <p class="p-home-career__summary">{entry.summary}</p>
+            {entry.workUrl && (
+              <a class="p-home-link" href={entry.workUrl}>
+                <span>CMS移行の担当内容を読む</span>
+                <ArrowRight class="p-home-link__icon" />
+              </a>
+            )}
           </article>
         </div>
       </div>

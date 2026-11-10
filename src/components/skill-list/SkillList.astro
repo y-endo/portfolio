@@ -8,14 +8,22 @@ import './skill-list.scss';
   <div class="p-home-skills__tiers">
     {
       skillTiers.map((tier, index) => (
-        <div class:list={['p-home-skills__tier', { 'p-home-skills__tier--featured': index === 0 }]}>
+        <div class="p-home-skills__tier">
           <h4 class="p-home-skills__heading">
             <span class="p-home-skills__number">{String(index + 1).padStart(2, '0')}</span>
             <span class="p-home-skills__label">{tier.label}</span>
           </h4>
+          <p class="p-home-skills__description">{tier.description}</p>
           <ul class="p-home-skills__items">
             {tier.items.map((item) => (
-              <li class="p-home-skills__item">{item}</li>
+              <li class="p-home-skills__item">
+                {item.split(' / ').map((name, nameIndex) => (
+                  <>
+                    {nameIndex > 0 && ' / '}
+                    <span class="p-home-skills__name">{name}</span>
+                  </>
+                ))}
+              </li>
             ))}
           </ul>
         </div>
